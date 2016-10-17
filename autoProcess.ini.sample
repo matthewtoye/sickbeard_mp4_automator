@@ -17,7 +17,6 @@ apikey =
 [MP4]
 ffmpeg = ffmpeg.exe
 ffprobe = ffprobe.exe
-threads = auto
 output_directory =
 copy_to =
 move_to =

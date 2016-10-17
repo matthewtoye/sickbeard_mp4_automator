@@ -417,7 +417,7 @@ class FFMpeg(object):
 
         return info
 
-    def convert(self, infile, outfile, opts, timeout=10, preopts=None, postopts=None):
+    def convert(self, infile, outfile, opts, timeout=10, preopts=None):
         """
         Convert the source media (infile) according to specified options
         (a list of ffmpeg switches as strings) and save it to outfile.
@@ -457,8 +457,6 @@ class FFMpeg(object):
                 del opts[ind]
 
         cmds.extend(opts)
-        if postopts:
-            cmds.extend(postopts)
         cmds.extend(['-y', outfile])
 
         if timeout:
