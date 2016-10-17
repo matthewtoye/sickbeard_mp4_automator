@@ -366,6 +366,16 @@ class VideoCodec(BaseCodec):
         filters = safe['aspect_filters']
 
         optlist = ['-vcodec', self.ffmpeg_codec_name]
+        optlist.extend(['-profile:v', '2'])
+        optlist.extend(['-preset', 'slow'])
+        optlist.extend(['-rc', 'vbr_2pass'])
+        optlist.extend(['-qmin', '17'])
+        optlist.extend(['-rc-lookahead', '40' ])
+        optlist.extend(['-temporal-aq', '1'])
+        optlist.extend(['-maxrate', '4000k'])
+        optlist.extend(['-bufsize', '16000k'])
+        #optlist.extend(['-gpu', '1'])
+
         if 'map' in safe:
             optlist.extend(['-map', '0:' + str(safe['map'])])
         if 'fps' in safe:
