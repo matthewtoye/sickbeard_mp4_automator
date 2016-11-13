@@ -369,11 +369,12 @@ class VideoCodec(BaseCodec):
         optlist.extend(['-profile:v', '2'])
         optlist.extend(['-preset', 'slow'])
         optlist.extend(['-rc', 'vbr_2pass'])
-        optlist.extend(['-qmin', '17'])
+        optlist.extend(['-qmin', '4'])
+        optlist.extend(['-qmax', '50'])
         optlist.extend(['-rc-lookahead', '40' ])
         optlist.extend(['-temporal-aq', '1'])
         optlist.extend(['-maxrate', '4000k'])
-        optlist.extend(['-bufsize', '16000k'])
+        optlist.extend(['-bufsize', '20000k'])
         #optlist.extend(['-gpu', '1'])
 
         if 'map' in safe:
