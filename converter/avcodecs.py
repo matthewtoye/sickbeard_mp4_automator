@@ -375,7 +375,7 @@ class VideoCodec(BaseCodec):
         optlist.extend(['-temporal-aq', '1'])
         optlist.extend(['-maxrate', '4000k'])
         optlist.extend(['-bufsize', '20000k'])
-        optlist.extend(['-gpu', '1'])
+        #optlist.extend(['-gpu', '1'])
 
         if 'map' in safe:
             optlist.extend(['-map', '0:' + str(safe['map'])])
