@@ -16,16 +16,16 @@ Notes:
 
 Brief explanation of settings:
 
-optlist.extend(['-profile:v', '2'])   - Sets profile to High, might not properly play on 5+ year old devices
-optlist.extend(['-preset', 'slow']) - Two pass high quality
-optlist.extend(['-rc', 'vbr_2pass']) - Variable bit rate 2 pass
-optlist.extend(['-qmin', '4']) - Sets a ceiling on quality
-optlist.extend(['-qmax', '50']) - Sets a floor on quality
-optlist.extend(['-rc-lookahead', '40' ]) - Look 40 frames ahead so that it can put fancy b/i frames at the best location
-optlist.extend(['-temporal-aq', '1']) - Improves quality by using CUDA to calculate where bitrate is best spent
-optlist.extend(['-maxrate', '4000k']) - Sets the maximum bitrate at 4 mbps
-optlist.extend(['-bufsize', '20000k']) - This allows the maximum bitrate to go over 4 mbps temporarily (high-motion scenes) as long as it does not average over 4 mbps during a 5 second period. (20000k / 4000k = 5)
-#optlist.extend(['-gpu', '1'])  - If you have multiple video cards you can select which one is used for nvenc. Note that on consumer (Non-Quadro) video cards there is a global limit of 2 encoding streams per COMPUTER, not per video card.
+ optlist.extend(['-profile:v', '2'])   - Sets profile to High, might not properly play on 5+ year old devices  
+ optlist.extend(['-preset', 'slow']) - Two pass high quality  
+ optlist.extend(['-rc', 'vbr_2pass']) - Variable bit rate 2 pass  
+ optlist.extend(['-qmin', '4']) - Sets a ceiling on quality  
+ optlist.extend(['-qmax', '50']) - Sets a floor on quality  
+ optlist.extend(['-rc-lookahead', '40' ]) - Look 40 frames ahead so that it can put fancy b/i frames at the best location  
+ optlist.extend(['-temporal-aq', '1']) - Improves quality by using CUDA to calculate where bitrate is best spent  
+ optlist.extend(['-maxrate', '4000k']) - Sets the maximum bitrate at 4 mbps  
+ optlist.extend(['-bufsize', '20000k']) - This allows the maximum bitrate to go over 4 mbps temporarily (high-motion scenes) as long as it does not average over 4 mbps during a 5 second period. (20000k / 4000k = 5)  
+ optlist.extend(['-gpu', '1'])  - If you have multiple video cards you can select which one is used for nvenc. Note that on consumer (Non-Quadro) video cards there is a global limit of 2 encoding streams per COMPUTER, not per video card.  
 
 Original:
 
