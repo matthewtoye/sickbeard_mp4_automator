@@ -594,6 +594,29 @@ class MkvtoMp4:
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
 
+        if vcodec.startswith( "nvenc" ):
+            if info.video.codec.lower() == "h264":
+                options['preopts'].extend(['-c:v', 'h264_cuvid'])
+            elif info.video.codec.lower() == "mpeg":
+                options['preopts'].extend(['-c:v', 'mpeg_cuvid'])
+            elif info.video.codec.lower() == "mpeg1":
+                options['preopts'].extend(['-c:v', 'mpeg1_cuvid'])
+            elif info.video.codec.lower() == "mpeg2":
+                options['preopts'].extend(['-c:v', 'mpeg2_cuvid'])
+            elif info.video.codec.lower() == "mpeg3":
+                options['preopts'].extend(['-c:v', 'mpeg3_cuvid'])
+            elif info.video.codec.lower() == "vc1":
+                options['preopts'].extend(['-c:v', 'vc1_cuvid'])
+            elif info.video.codec.lower() == "vp8":
+                options['preopts'].extend(['-c:v', 'vp8_cuvid'])
+			
+            if info.video.codec.lower() == "hevc":
+                options['preopts'].extend(['-c:v', 'hevc_cuvid'])
+            elif info.video.codec.lower() == "vp9":
+                options['preopts'].extend(['-c:v', 'vp9_cuvid'])
+            #else:
+            #    options['preopts'].extend(['-gpu', '1'])
+
         # Add width option
         if vwidth:
             options['video']['width'] = vwidth
