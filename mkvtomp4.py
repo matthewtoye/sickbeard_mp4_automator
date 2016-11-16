@@ -31,6 +31,7 @@ class MkvtoMp4:
                  iOSFirst=False,
                  iOS_filter=None,
                  maxchannels=None,
+                 aac_adtstoasc=False,
                  awl=None,
                  swl=None,
                  adl=None,
@@ -82,6 +83,7 @@ class MkvtoMp4:
         self.maxchannels = maxchannels
         self.awl = awl
         self.adl = adl
+        self.aac_adtstoasc = aac_adtstoasc
         # Subtitle settings
         self.scodec = scodec
         self.swl = swl
@@ -127,6 +129,7 @@ class MkvtoMp4:
         self.maxchannels = settings.maxchannels
         self.awl = settings.awl
         self.adl = settings.adl
+        self.aac_adtstoasc = settings.aac_adtstoasc
         # Subtitle settings
         self.scodec = settings.scodec
         self.swl = settings.swl
@@ -419,7 +422,7 @@ class MkvtoMp4:
                     'disposition': disposition,
                 }})
 
-                if acodec == 'copy' and a.codec == 'aac':
+                if acodec == 'copy' and a.codec == 'aac' and self.aac_adtstoasc:
                     audio_settings[l]['bsf'] = 'aac_adtstoasc'
                 l = l + 1
 
