@@ -372,6 +372,7 @@ class VideoCodec(BaseCodec):
         optlist.extend(['-qmin', '16' ])
         optlist.extend(['-rc-lookahead', '80' ])
         optlist.extend(['-temporal-aq', '1'])
+        optlist.extend(['-maxrate', '4000k'])
         optlist.extend(['-bufsize', '20000k'])
         #optlist.extend(['-gpu', '1'])
 
