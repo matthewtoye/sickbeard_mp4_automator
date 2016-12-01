@@ -22,8 +22,22 @@ class MkvtoMp4:
                  video_codec=['h264', 'x264'],
                  video_bitrate=None,
                  video_width=None,
+                 nvenc_profile=None,
+                 nvenc_preset=None,
+                 nvenc_rate_control=None,
+                 qmin=None,
+                 qmax=None,
+                 maxrate=None,
+                 minrate=None,
+                 bufsize=None,
+                 nvenc_gpu=None,
+                 nvenc_temporal_aq=True,
                  h264_level=None,
                  qsv_decoder=True,
+                 nvenc_cuvid=False,
+                 nvenc_cuvid_hevc=False,
+                 nvenc_decoder_gpu=None,
+                 nvenc_decoder_hevc_gpu=None,
                  audio_codec=['ac3'],
                  audio_bitrate=256,
                  audio_filter=None,
@@ -70,8 +84,21 @@ class MkvtoMp4:
         self.video_codec = video_codec
         self.video_bitrate = video_bitrate
         self.video_width = video_width
+        self.nvenc_profile = nvenc_profile
+        self.nvenc_preset = nvenc_preset
+        self.qmin = qmin
+        self.qmax = qmax
+        self.maxrate = maxrate
+        self.minrate = minrate
+        self.bufsize = bufsize
+        self.nvenc_gpu = nvenc_gpu
+        self.nvenc_temporal_aq = nvenc_temporal_aq
         self.h264_level = h264_level
         self.qsv_decoder = qsv_decoder
+        self.nvenc_cuvid = nvenc_cuvid
+        self.nvenc_cuvid_hevc = nvenc_cuvid_hevc
+        self.nvenc_decoder_gpu = nvenc_decoder_gpu
+        self.nvenc_decoder_hevc_gpu = nvenc_decoder_hevc_gpu
         self.pix_fmt = pix_fmt
         # Audio settings
         self.audio_codec = audio_codec
@@ -116,8 +143,21 @@ class MkvtoMp4:
         self.video_codec = settings.vcodec
         self.video_bitrate = settings.vbitrate
         self.video_width = settings.vwidth
+        self.nvenc_profile = settings.nvenc_profile
+        self.nvenc_preset = settings.nvenc_preset
+        self.qmin = settings.qmin
+        self.qmax = settings.qmax
+        self.maxrate = settings.maxrate
+        self.minrate = settings.minrate
+        self.bufsize = settings.bufsize
+        self.nvenc_gpu = settings.nvenc_gpu
+        self.nvenc_temporal_aq = settings.nvenc_temporal_aq
         self.h264_level = settings.h264_level
         self.qsv_decoder = settings.qsv_decoder
+        self.nvenc_cuvid = settings.nvenc_cuvid
+        self.nvenc_cuvid_hevc = settings.nvenc_cuvid_hevc
+        self.nvenc_decoder_gpu = settings.nvenc_decoder_gpu
+        self.nvenc_decoder_hevc_gpu = settings.nvenc_decoder_hevc_gpu
         self.pix_fmt = settings.pix_fmt
         # Audio settings
         self.audio_codec = settings.acodec
@@ -596,8 +636,8 @@ class MkvtoMp4:
         # If using h264qsv, add the codec in front of the input for decoding
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
-
-        if vcodec.startswith( "nvenc" ):
+        
+        if self.nvenc_cuvid:
             if info.video.codec.lower() == "h264":
                 options['preopts'].extend(['-c:v', 'h264_cuvid'])
             elif info.video.codec.lower() == "mpeg":
@@ -612,13 +652,16 @@ class MkvtoMp4:
                 options['preopts'].extend(['-c:v', 'vc1_cuvid'])
             elif info.video.codec.lower() == "vp8":
                 options['preopts'].extend(['-c:v', 'vp8_cuvid'])
-			
-            if info.video.codec.lower() == "hevc":
+            elif info.video.codec.lower() == "hevc" and self.nvenc_cuvid_hevc:
                 options['preopts'].extend(['-c:v', 'hevc_cuvid'])
-            elif info.video.codec.lower() == "vp9":
+            elif info.video.codec.lower() == "vp9" and self.nvenc_cuvid_hevc:
                 options['preopts'].extend(['-c:v', 'vp9_cuvid'])
-            #else:
-            #    options['preopts'].extend(['-gpu', '1'])
+        
+        if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
+            if self.nvenc_decoder_hevc_gpu:
+              options['preopts'].extend(['-gpu', str( self.nvenc_decoder_hevc_gpu )])
+        elif self.nvenc_decoder_gpu:
+            options['preopts'].extend(['-gpu', str( self.nvenc_decoder_gpu )])
 
         # Add width option
         if vwidth:

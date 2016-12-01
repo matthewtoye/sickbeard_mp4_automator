@@ -245,7 +245,12 @@ class VideoCodec(BaseCodec):
         'src_height': int,
         'filter': str,
         'pix_fmt': str,
-        'map': int
+        'map': int,
+        'qmin': int,
+        'qmax': int,
+        'maxrate': float,
+        'minrate': float,
+        'bufsize': float
     }
 
     def _aspect_corrections(self, sw, sh, w, h, mode):
@@ -366,16 +371,16 @@ class VideoCodec(BaseCodec):
         filters = safe['aspect_filters']
 
         optlist = ['-vcodec', self.ffmpeg_codec_name]
-        optlist.extend(['-profile:v', '2'])
-        optlist.extend(['-preset', 'slow'])
-        optlist.extend(['-rc', 'vbr_2pass'])
-        optlist.extend(['-qmin', '18' ])
-        optlist.extend(['-rc-lookahead', '32' ])
-        optlist.extend(['-temporal-aq', '1'])
-        optlist.extend(['-maxrate', '6000k'])
-        optlist.extend(['-bufsize', '24000k'])
-        #optlist.extend(['-gpu', '1'])
-
+        if 'qmin' in safe:
+            optlist.extend(['-qmin', str(safe['qmin'])])
+        if 'qmax' in safe:
+            optlist.extend(['-qmax', str(safe['qmax'])])
+        if 'maxrate' in safe:
+            optlist.extend(['-maxrate', str(safe['maxrate']) + 'k'])
+        if 'minrate' in safe:
+            optlist.extend(['-minrate', str(safe['minrate']) + 'k'])
+        if 'bufsize' in safe:
+            optlist.extend(['-bufsize', str(safe['bufsize']) + 'k'])
         if 'map' in safe:
             optlist.extend(['-map', '0:' + str(safe['map'])])
         if 'fps' in safe:
@@ -708,6 +713,29 @@ class NVEncH264(H264Codec):
     """
     codec_name = 'nvenc_h264'
     ffmpeg_codec_name = 'nvenc_h264'
+    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options.update({
+        'nvenc_profile': str,  # common presets are ultrafast, superfast, veryfast,
+        # faster, fast, medium(default), slow, slower, veryslow
+        'nvenc_rate_control': str,
+        'nvenc_preset': int,  # 
+        'nvenc_gpu': int,  # default: not-set, for valid values see above link
+        'nvenc_temporal_aq': int
+    })
+    
+    def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
+        optlist = []
+        if 'nvenc_profile' in safe:
+            optlist.extend(['-profile:v', str(safe['nvenc_profile'])])
+        if 'nvenc_preset' in safe:
+            optlist.extend(['-preset', str(safe['nvenc_preset'])])
+        if 'nvenc_rate_control' in safe:
+            optlist.extend(['-rc', str(safe['nvenc_rate_control'])])
+        if 'nvenc_gpu' in safe:
+            optlist.extend(['-gpu', str(safe['nvenc_gpu'])])
+        if 'nvenc_temporal_aq' in safe:
+            optlist.extend(['-temporal-aq', str(safe['nvenc_temporal_aq'])])
+        return optlist
 
 
 class H264QSV(H264Codec):
@@ -784,6 +812,29 @@ class NVEncH265(H265Codec):
     codec_name = 'nvenc_h265'
     ffmpeg_codec_name = 'nvenc_hevc'
 
+    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options.update({
+        'nvenc_profile': str,  # common presets are ultrafast, superfast, veryfast,
+        # faster, fast, medium(default), slow, slower, veryslow
+        'nvenc_rate_control': str,
+        'nvenc_preset': int,  # 
+        'nvenc_gpu': int,  # default: not-set, for valid values see above link
+        'nvenc_temporal_aq': int
+    })
+    
+    def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
+        optlist = []
+        if 'nvenc_profile' in safe:
+            optlist.extend(['-profile:v', str(safe['nvenc_profile'])])
+        if 'nvenc_preset' in safe:
+            optlist.extend(['-preset', str(safe['nvenc_preset'])])
+        if 'nvenc_rate_control' in safe:
+            optlist.extend(['-rc', str(safe['nvenc_rate_control'])])
+        if 'nvenc_gpu' in safe:
+            optlist.extend(['-gpu', str(safe['nvenc_gpu'])])
+        if 'nvenc_temporal_aq' in safe:
+            optlist.extend(['-temporal-aq', str(safe['nvenc_temporal_aq'])])
+        return optlist
 
 class DivxCodec(VideoCodec):
     """

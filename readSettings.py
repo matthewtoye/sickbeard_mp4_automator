@@ -77,6 +77,19 @@ class ReadSettings:
                         'video-codec': 'h264, x264',
                         'video-bitrate': '',
                         'video-max-width': '',
+                        'nvenc_profile':'',
+                        'nvenc_preset':'',
+                        'qmin':'',
+                        'qmax':'',
+                        'maxrate':'',
+                        'minrate':'',
+                        'bufsize':'',
+                        'nvenc_gpu':'',
+                        'nvenc_temporal_aq':'',
+                        'nvenc_cuvid':'',
+                        'nvenc_cuvid_hevc':'',
+                        'nvenc_decoder_gpu':'',
+                        'nvenc_decoder_hevc_gpu':'',
                         'h264-max-level': '',
                         'aac_adtstoasc': 'False',
                         'use-qsv-decoder-with-encoder': 'True',
@@ -348,6 +361,19 @@ class ReadSettings:
                 self.h264_level = None
 
         self.qsv_decoder = config.getboolean(section, "use-qsv-decoder-with-encoder")  # Use Intel QuickSync Decoder when using QuickSync Encoder
+        self.nvenc_profile = config.get(section, "nvenc_profile")
+        self.nvenc_preset = config.get(section, "nvenc_preset")
+        self.qmin = config.get(section, "qmin")
+        self.qmax = config.get(section, "qmax")
+        self.maxrate = config.get(section, "maxrate")
+        self.minrate = config.get(section, "minrate")
+        self.bufsize = config.get(section, "bufsize")
+        self.nvenc_gpu = config.get(section, "nvenc_gpu")
+        self.nvenc_temporal_aq = config.getboolean(section, "nvenc_temporal_aq")
+        self.nvenc_cuvid = config.getboolean(section, "nvenc_cuvid") 
+        self.nvenc_cuvid_hevc = config.getboolean(section, "nvenc_cuvid_hevc")
+        self.nvenc_decoder_gpu = config.get(section, "nvenc_decoder_gpu")
+        self.nvenc_decoder_hevc_gpu = config.get(section, "nvenc_decoder_hevc_gpu")
         self.pix_fmt = config.get(section, "pix-fmt").strip().lower()
         if self.pix_fmt == '':
             self.pix_fmt = None
