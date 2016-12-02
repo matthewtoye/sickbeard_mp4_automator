@@ -720,7 +720,8 @@ class NVEncH264(H264Codec):
         'nvenc_rate_control': str,
         'nvenc_preset': int,  # 
         'nvenc_gpu': int,  # default: not-set, for valid values see above link
-        'nvenc_temporal_aq': int
+        'nvenc_temporal_aq': int,
+        'nvenc_rc_lookahead': int
     })
     
     def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
@@ -735,6 +736,8 @@ class NVEncH264(H264Codec):
             optlist.extend(['-gpu', str(safe['nvenc_gpu'])])
         if 'nvenc_temporal_aq' in safe:
             optlist.extend(['-temporal-aq', str(safe['nvenc_temporal_aq'])])
+        if 'nvenc_rc_lookahead' in safe:
+            optlist.extend(['-rc-lookahead', str(safe['nvenc_rc_lookahead'])])
         return optlist
 
 
@@ -819,7 +822,8 @@ class NVEncH265(H265Codec):
         'nvenc_rate_control': str,
         'nvenc_preset': int,  # 
         'nvenc_gpu': int,  # default: not-set, for valid values see above link
-        'nvenc_temporal_aq': int
+        'nvenc_temporal_aq': int,
+        'nvenc_rc_lookahead': int
     })
     
     def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
@@ -834,6 +838,8 @@ class NVEncH265(H265Codec):
             optlist.extend(['-gpu', str(safe['nvenc_gpu'])])
         if 'nvenc_temporal_aq' in safe:
             optlist.extend(['-temporal-aq', str(safe['nvenc_temporal_aq'])])
+        if 'nvenc_rc_lookahead' in safe:
+            optlist.extend(['-rc-lookahead', str(safe['nvenc_rc_lookahead'])])
         return optlist
 
 class DivxCodec(VideoCodec):

@@ -1,20 +1,18 @@
-Mostly a hacked up non-user friendly version of the original with the following:
-- Adds in hard-coded nvidia gpu decoder + encoder - Will not work unless you have a Geforce video card with proper ffmpeg binaries. 
-- Modify output options via avcodecs.py, around line 368
-
+Same as the original with the following added: 
+- Adds in support for nvidia gpu decoder + encoder - Will not work unless you have a Geforce video card with proper ffmpeg binaries. 
+- Settings are located in autoProcess.ini now, and begin with nvenc_
+- As documentation is always the last step, it will be added later. :P 
 I use the wonderful build script here to build ffmpeg - https://github.com/rdp/ffmpeg-windows-build-helpers
 
-My modifications to sickbeard_mp4_automator require the following: 
+My modifications to sickbeard_mp4_automator will require the following added in the compile process: 
 - CUDA Toolkit 8.0 - https://developer.nvidia.com/cuda-downloads
 - The following libraries from the above download added to the linker's lib folder - cuda.lib nvcuvid.lib nppi.lib nppc.lib
 - Also build ffmpeg using the build script with --enable-cuda --enable-cuvid --enable-libnpp added to the configuration
 
 Notes:
-- Using CUDA/Cuvid for decoding doesn't speed up the conversion, but it does free the CPU up to do other things. Rather than 20-30% cpu usage from ffmpeg, it sits around 8% when using the gpu for decoding.
-- Encoding is significantly faster, and the settings I hacked in for nvenc improve nvenc's output significantly with only 5-10% loss in speed. 
-- I set max width to 1280 for most of my stuff, if you want to keep content at 1080p, increase maxrate to 6000k.
+- Using CUDA/Cuvid for decoding doesn't speed up the conversion, but it does free the CPU up to do other things. Rather than 20-30% cpu usage from ffmpeg, it sits around 8% when using the gpu for decoding. 
 
-Brief explanation of settings:
+Brief explanation of settings: OUTDATED
 
  optlist.extend(['-profile:v', '2'])   - Sets profile to High, might not properly play on 5+ year old devices  
  optlist.extend(['-preset', 'slow']) - Two pass high quality  
@@ -27,7 +25,7 @@ Brief explanation of settings:
  optlist.extend(['-bufsize', '20000k']) - This allows the maximum bitrate to go over 4 mbps temporarily (high-motion scenes) as long as it does not average over 4 mbps during a 5 second period. (20000k / 4000k = 5)  
  optlist.extend(['-gpu', '1'])  - If you have multiple video cards you can select which one is used for nvenc. Note that on consumer (Non-Quadro) video cards there is a global limit of 2 encoding streams per COMPUTER, not per video card.  
 
-Original:
+Original README.md follows:
 
 MP4 Conversion/Tagging Automation Script.
 ==============

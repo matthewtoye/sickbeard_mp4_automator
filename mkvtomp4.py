@@ -32,6 +32,7 @@ class MkvtoMp4:
                  bufsize=None,
                  nvenc_gpu=None,
                  nvenc_temporal_aq=True,
+                 nvenc_rc_lookahead=None,
                  h264_level=None,
                  qsv_decoder=True,
                  nvenc_cuvid=False,
@@ -93,6 +94,8 @@ class MkvtoMp4:
         self.bufsize = bufsize
         self.nvenc_gpu = nvenc_gpu
         self.nvenc_temporal_aq = nvenc_temporal_aq
+        self.nvenc_rate_control = nvenc_rate_control
+        self.nvenc_rc_lookahead = nvenc_rc_lookahead
         self.h264_level = h264_level
         self.qsv_decoder = qsv_decoder
         self.nvenc_cuvid = nvenc_cuvid
@@ -152,6 +155,8 @@ class MkvtoMp4:
         self.bufsize = settings.bufsize
         self.nvenc_gpu = settings.nvenc_gpu
         self.nvenc_temporal_aq = settings.nvenc_temporal_aq
+        self.nvenc_rate_control = settings.nvenc_rate_control
+        self.nvenc_rc_lookahead = settings.nvenc_rc_lookahead
         self.h264_level = settings.h264_level
         self.qsv_decoder = settings.qsv_decoder
         self.nvenc_cuvid = settings.nvenc_cuvid

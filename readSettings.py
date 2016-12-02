@@ -86,6 +86,8 @@ class ReadSettings:
                         'bufsize':'',
                         'nvenc_gpu':'',
                         'nvenc_temporal_aq':'',
+                        'nvenc_rc_lookahead':'',
+                        'nvenc_rate_control':'',
                         'nvenc_cuvid':'',
                         'nvenc_cuvid_hevc':'',
                         'nvenc_decoder_gpu':'',
@@ -370,6 +372,8 @@ class ReadSettings:
         self.bufsize = config.get(section, "bufsize")
         self.nvenc_gpu = config.get(section, "nvenc_gpu")
         self.nvenc_temporal_aq = config.getboolean(section, "nvenc_temporal_aq")
+        self.nvenc_rate_control = config.get( section, "nvenc_rate_control")
+        self.nvenc_rc_lookahead = config.get( section, "nvenc_rc_lookahead")
         self.nvenc_cuvid = config.getboolean(section, "nvenc_cuvid") 
         self.nvenc_cuvid_hevc = config.getboolean(section, "nvenc_cuvid_hevc")
         self.nvenc_decoder_gpu = config.get(section, "nvenc_decoder_gpu")
