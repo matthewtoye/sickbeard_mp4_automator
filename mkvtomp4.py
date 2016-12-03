@@ -631,7 +631,12 @@ class MkvtoMp4:
                 'codec': vcodec,
                 'map': info.video.index,
                 'bitrate': vbitrate,
-                'level': self.h264_level
+                'level': self.h264_level,
+                'qmin': self.qmin,
+                'qmax': self.qmax,
+                'maxrate': self.maxrate,
+                'minrate': self.minrate,
+                'bufsize': self.bufsize
             },
             'audio': audio_settings,
             'subtitle': subtitle_settings,
@@ -675,6 +680,19 @@ class MkvtoMp4:
         # Add pix_fmt
         if self.pix_fmt:
             options['video']['pix_fmt'] = self.pix_fmt[0]
+        # Add Nvidia specific options
+        if self.nvenc_profile:
+            options['video']['nvenc_profile'] = self.nvenc_profile
+        if self.nvenc_profile:
+            options['video']['nvenc_preset'] = self.nvenc_preset
+        if self.nvenc_profile:
+            options['video']['nvenc_rate_control'] = self.nvenc_rate_control
+        if self.nvenc_profile:
+            options['video']['nvenc_gpu'] = self.nvenc_gpu
+        if self.nvenc_profile:
+            options['video']['nvenc_temporal_aq'] = self.nvenc_temporal_aq
+        if self.nvenc_profile:
+            options['video']['nvenc_rc_lookahead'] = self.nvenc_rc_lookahead
 
         self.options = options
         return options

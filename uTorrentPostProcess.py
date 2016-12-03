@@ -32,7 +32,7 @@ def _authToken(session=None, host=None, username=None, password=None):
 def _sendRequest(session, host='http://localhost:8080/', username=None, password=None, params=None, files=None, fnct=None):
     try:
         response = session.post(host + "gui/", auth=(username, password), params=params, files=files, timeout=30)
-    except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError), e:
+    except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
         log.exception("Problem sending command " + fnct + " - " + str(e) + ".")
         return False
 

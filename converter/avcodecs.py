@@ -248,9 +248,9 @@ class VideoCodec(BaseCodec):
         'map': int,
         'qmin': int,
         'qmax': int,
-        'maxrate': float,
-        'minrate': float,
-        'bufsize': float
+        'maxrate': int,
+        'minrate': int,
+        'bufsize': int
     }
 
     def _aspect_corrections(self, sw, sh, w, h, mode):
