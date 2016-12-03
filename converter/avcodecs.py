@@ -713,7 +713,7 @@ class NVEncH264(H264Codec):
     """
     codec_name = 'nvenc_h264'
     ffmpeg_codec_name = 'nvenc_h264'
-    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options = H264Codec.encoder_options.copy()
     encoder_options.update({
         'nvenc_profile': str,  # common presets are ultrafast, superfast, veryfast,
         # faster, fast, medium(default), slow, slower, veryslow
@@ -727,17 +727,27 @@ class NVEncH264(H264Codec):
     def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
         optlist = []
         if 'nvenc_profile' in safe:
-            optlist.extend(['-profile:v', str(safe['nvenc_profile'])])
+            optlist.extend(['-profile:v', safe['nvenc_profile']])
         if 'nvenc_preset' in safe:
             optlist.extend(['-preset', str(safe['nvenc_preset'])])
         if 'nvenc_rate_control' in safe:
-            optlist.extend(['-rc', str(safe['nvenc_rate_control'])])
+            optlist.extend(['-rc', safe['nvenc_rate_control']])
         if 'nvenc_gpu' in safe:
             optlist.extend(['-gpu', str(safe['nvenc_gpu'])])
         if 'nvenc_temporal_aq' in safe:
             optlist.extend(['-temporal-aq', str(safe['nvenc_temporal_aq'])])
         if 'nvenc_rc_lookahead' in safe:
             optlist.extend(['-rc-lookahead', str(safe['nvenc_rc_lookahead'])])
+        if 'level' in safe:
+            optlist.extend(['-level', '%0.1f' % safe['level']])
+        if 'tune' in safe:
+            optlist.extend(['-tune', safe['tune']])
+        if 'wscale' in safe and 'hscale' in safe:
+            optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
+        elif 'wscale' in safe:
+            optlist.extend(['-vf', 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale'])])
+        elif 'hscale' in safe:
+            optlist.extend(['-vf', 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale'])])
         return optlist
 
 
@@ -815,7 +825,7 @@ class NVEncH265(H265Codec):
     codec_name = 'nvenc_h265'
     ffmpeg_codec_name = 'nvenc_hevc'
 
-    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options = H265Codec.encoder_options.copy()
     encoder_options.update({
         'nvenc_profile': str,  # common presets are ultrafast, superfast, veryfast,
         # faster, fast, medium(default), slow, slower, veryslow
@@ -829,17 +839,27 @@ class NVEncH265(H265Codec):
     def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
         optlist = []
         if 'nvenc_profile' in safe:
-            optlist.extend(['-profile:v', str(safe['nvenc_profile'])])
+            optlist.extend(['-profile:v', safe['nvenc_profile']])
         if 'nvenc_preset' in safe:
             optlist.extend(['-preset', str(safe['nvenc_preset'])])
         if 'nvenc_rate_control' in safe:
-            optlist.extend(['-rc', str(safe['nvenc_rate_control'])])
+            optlist.extend(['-rc', safe['nvenc_rate_control']])
         if 'nvenc_gpu' in safe:
             optlist.extend(['-gpu', str(safe['nvenc_gpu'])])
         if 'nvenc_temporal_aq' in safe:
             optlist.extend(['-temporal-aq', str(safe['nvenc_temporal_aq'])])
         if 'nvenc_rc_lookahead' in safe:
             optlist.extend(['-rc-lookahead', str(safe['nvenc_rc_lookahead'])])
+        if 'level' in safe:
+            optlist.extend(['-level', '%0.1f' % safe['level']])
+        if 'tune' in safe:
+            optlist.extend(['-tune', safe['tune']])
+        if 'wscale' in safe and 'hscale' in safe:
+            optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
+        elif 'wscale' in safe:
+            optlist.extend(['-vf', 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale'])])
+        elif 'hscale' in safe:
+            optlist.extend(['-vf', 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale'])])
         return optlist
 
 class DivxCodec(VideoCodec):
