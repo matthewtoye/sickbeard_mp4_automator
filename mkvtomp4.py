@@ -654,14 +654,14 @@ class MkvtoMp4:
         if self.nvenc_cuvid:
             if info.video.codec.lower() == "h264":
                 options['preopts'].extend(['-c:v', 'h264_cuvid'])
-            elif info.video.codec.lower() == "mpeg":
-                options['preopts'].extend(['-c:v', 'mpeg_cuvid'])
+            elif info.video.codec.lower() == "mjpeg":
+                options['preopts'].extend(['-c:v', 'mjpeg_cuvid'])
             elif info.video.codec.lower() == "mpeg1":
                 options['preopts'].extend(['-c:v', 'mpeg1_cuvid'])
             elif info.video.codec.lower() == "mpeg2":
                 options['preopts'].extend(['-c:v', 'mpeg2_cuvid'])
-            elif info.video.codec.lower() == "mpeg3":
-                options['preopts'].extend(['-c:v', 'mpeg3_cuvid'])
+            elif info.video.codec.lower() == "mpeg4":
+                options['preopts'].extend(['-c:v', 'mpeg4_cuvid'])
             elif info.video.codec.lower() == "vc1":
                 options['preopts'].extend(['-c:v', 'vc1_cuvid'])
             elif info.video.codec.lower() == "vp8":
