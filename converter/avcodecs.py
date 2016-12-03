@@ -248,6 +248,7 @@ class VideoCodec(BaseCodec):
         'map': int,
         'qmin': int,
         'qmax': int,
+        'global_quality': int,
         'maxrate': int,
         'minrate': int,
         'bufsize': int
@@ -375,6 +376,8 @@ class VideoCodec(BaseCodec):
             optlist.extend(['-qmin', str(safe['qmin'])])
         if 'qmax' in safe:
             optlist.extend(['-qmax', str(safe['qmax'])])
+        if 'global_quality' in safe:
+            optlist.extend(['-global_quality:v', str(safe['global_quality'])])
         if 'maxrate' in safe:
             optlist.extend(['-maxrate', str(safe['maxrate']) + 'k'])
         if 'minrate' in safe:
@@ -715,13 +718,12 @@ class NVEncH264(H264Codec):
     ffmpeg_codec_name = 'nvenc_h264'
     encoder_options = H264Codec.encoder_options.copy()
     encoder_options.update({
-        'nvenc_profile': str,  # common presets are ultrafast, superfast, veryfast,
-        # faster, fast, medium(default), slow, slower, veryslow
-        'nvenc_rate_control': str,
-        'nvenc_preset': int,  # 
-        'nvenc_gpu': int,  # default: not-set, for valid values see above link
-        'nvenc_temporal_aq': int,
-        'nvenc_rc_lookahead': int
+        'nvenc_profile': str,  # Options include: baseline, main, high, high444p - default is main
+        'nvenc_rate_control': str, # Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass - default is constqp
+        'nvenc_preset': int,  # Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
+        'nvenc_gpu': int,  # Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any) 
+        'nvenc_temporal_aq': int, # Default off
+        'nvenc_rc_lookahead': int # Number of frames to look ahead, default -1
     })
     
     def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
@@ -827,13 +829,12 @@ class NVEncH265(H265Codec):
 
     encoder_options = H265Codec.encoder_options.copy()
     encoder_options.update({
-        'nvenc_profile': str,  # common presets are ultrafast, superfast, veryfast,
-        # faster, fast, medium(default), slow, slower, veryslow
-        'nvenc_rate_control': str,
-        'nvenc_preset': int,  # 
-        'nvenc_gpu': int,  # default: not-set, for valid values see above link
-        'nvenc_temporal_aq': int,
-        'nvenc_rc_lookahead': int
+        'nvenc_profile': str,  # Options include: main, main10, rext - default is main
+        'nvenc_rate_control': str, # Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass - default is constqp
+        'nvenc_preset': int,  # Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
+        'nvenc_gpu': int,  # Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any) 
+        'nvenc_temporal_aq': int, # Default off
+        'nvenc_rc_lookahead': int # Number of frames to look ahead, default -1
     })
     
     def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):

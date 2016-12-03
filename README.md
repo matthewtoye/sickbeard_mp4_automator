@@ -1,29 +1,36 @@
-Same as the original with the following added: 
-- Adds in support for nvidia gpu decoder + encoder - Will not work unless you have a Geforce video card with proper ffmpeg binaries. 
-- Settings are located in autoProcess.ini now, and begin with nvenc_
-- As documentation is always the last step, it will be added later. :P 
-I use the wonderful build script here to build ffmpeg - https://github.com/rdp/ffmpeg-windows-build-helpers
+Same as the original with better nvidia support.
+I use https://github.com/rdp/ffmpeg-windows-build-helpers to cross-compile ffmpeg for windows using linux
 
-My modifications to sickbeard_mp4_automator will require the following added in the compile process: 
+My modifications to sickbeard_mp4_automator will require the following added to https://github.com/rdp/ffmpeg-windows-build-helpers :
 - CUDA Toolkit 8.0 - https://developer.nvidia.com/cuda-downloads
 - The following libraries from the above download added to the linker's lib folder - cuda.lib nvcuvid.lib nppi.lib nppc.lib
 - Also build ffmpeg using the build script with --enable-cuda --enable-cuvid --enable-libnpp added to the configuration
+(Recently, ffmpeg changed some things so that this may not be necessary anymore, but I haven't checked.)
 
-Notes:
-- Using CUDA/Cuvid for decoding doesn't speed up the conversion, but it does free the CPU up to do other things. Rather than 20-30% cpu usage from ffmpeg, it sits around 8% when using the gpu for decoding. 
+Note:
+- Using the gpu for decoding doesn't change the speed of taking a file and converting it to another format, but it does free the cpu so that it may be used for other things.
 
-Brief explanation of settings: OUTDATED
+Brief explanation of added settings:
 
- optlist.extend(['-profile:v', '2'])   - Sets profile to High, might not properly play on 5+ year old devices  
- optlist.extend(['-preset', 'slow']) - Two pass high quality  
- optlist.extend(['-rc', 'vbr_2pass']) - Variable bit rate 2 pass  
- optlist.extend(['-qmin', '4']) - Sets a ceiling on quality  
- optlist.extend(['-qmax', '50']) - Sets a floor on quality  
- optlist.extend(['-rc-lookahead', '40' ]) - Look 40 frames ahead so that it can put fancy b/i frames at the best location  
- optlist.extend(['-temporal-aq', '1']) - Improves quality by using CUDA to calculate where bitrate is best spent  
- optlist.extend(['-maxrate', '4000k']) - Sets the maximum bitrate at 4 mbps  
- optlist.extend(['-bufsize', '20000k']) - This allows the maximum bitrate to go over 4 mbps temporarily (high-motion scenes) as long as it does not average over 4 mbps during a 5 second period. (20000k / 4000k = 5)  
- optlist.extend(['-gpu', '1'])  - If you have multiple video cards you can select which one is used for nvenc. Note that on consumer (Non-Quadro) video cards there is a global limit of 2 encoding streams per COMPUTER, not per video card.  
+- 'qmin' = minimum video quantizer scale (VBR) (from -1 to 69) (default 2)
+- 'qmax' = maximum video quantizer scale (VBR) (from -1 to 1024) (default 31)
+- 'global_quality' = Must be set when nvenc_rate_control is constqp - I usually set it to the same value as qmin
+- 'maxrate' = maximum bitrate (in kb/s). Used for VBV together with bufsize. (from 0 to INT_MAX) (default 0)
+- 'minrate' = minimum bitrate (in kb/s). Most useful in setting up a CBR encode. It is of little use otherwise. (from INT_MIN to INT_MAX) (default 0)
+- 'bufsize' = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0)
+- 'nvenc_encoder_gpu' = Selects which NVENC capable GPU to use for encoding. First GPU is 0, second is 1, and so on. Default is any
+- 'nvenc_profile' = Options include: baseline, main, high, high444p - default is main
+- 'nvenc_preset' = Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
+- 'nvenc_rate_control' = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass - default is constqp
+- 'nvenc_temporal_aq' = Improves output quality slightly, adds 2-5% extra processing time - default off
+- 'nvenc_rc_lookahead' = Number of frames to look ahead for rate-control (from -1 to INT_MAX) - default -1
+- 'enable_nvenc_decoder' = Tell script to use the gpu for decoding
+- 'enable_nvenc_hevc_decoder' = Tell script that you have a gpu that can decode hevc/vp9, and wish to use it - Geforce 950/960/1050/1060/1070/1080
+- 'nvenc_decoder_gpu' = Selects which NVENC capable GPU to use for decoding. First GPU is 0, second is 1, and so on. Default is any
+- 'nvenc_hevc_decoder_gpu' = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any
+
+If you have multiple nvidia cards you can decode on one and encode on the other, but it doesn't seem to speed up the process at all.
+Decoding by itself does not count towards the nvenc 2 stream limit
 
 Original README.md follows:
 

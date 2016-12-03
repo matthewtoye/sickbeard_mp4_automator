@@ -27,6 +27,7 @@ class MkvtoMp4:
                  nvenc_rate_control=None,
                  qmin=None,
                  qmax=None,
+                 global_quality=None,
                  maxrate=None,
                  minrate=None,
                  bufsize=None,
@@ -89,6 +90,7 @@ class MkvtoMp4:
         self.nvenc_preset = nvenc_preset
         self.qmin = qmin
         self.qmax = qmax
+        self.global_quality = global_quality
         self.maxrate = maxrate
         self.minrate = minrate
         self.bufsize = bufsize
@@ -150,6 +152,7 @@ class MkvtoMp4:
         self.nvenc_preset = settings.nvenc_preset
         self.qmin = settings.qmin
         self.qmax = settings.qmax
+        self.global_quality = settings.global_quality
         self.maxrate = settings.maxrate
         self.minrate = settings.minrate
         self.bufsize = settings.bufsize
@@ -634,6 +637,7 @@ class MkvtoMp4:
                 'level': self.h264_level,
                 'qmin': self.qmin,
                 'qmax': self.qmax,
+                'global_quality': self.global_quality,
                 'maxrate': self.maxrate,
                 'minrate': self.minrate,
                 'bufsize': self.bufsize
@@ -683,15 +687,21 @@ class MkvtoMp4:
         # Add Nvidia specific options
         if self.nvenc_profile:
             options['video']['nvenc_profile'] = self.nvenc_profile
-        if self.nvenc_profile:
+        if self.nvenc_preset:
             options['video']['nvenc_preset'] = self.nvenc_preset
-        if self.nvenc_profile:
+        if self.nvenc_rate_control:
             options['video']['nvenc_rate_control'] = self.nvenc_rate_control
-        if self.nvenc_profile:
+            if self.nvenc_rate_control == "vbr_minqp" and self.qmin is None and self.qmax is None:
+                self.log.error("nvenc vbr_minqp requires qmin and/or qmax option set.")
+            elif self.nvenc_rate_control == "vbr_2pass" and self.qmin is None:
+                self.log.error("nvenc vbr_2pass requires qmin to be set." )
+            elif self.nvenc_rate_control == "constqp" and self.global_quality is None:
+                self.log.error("nvenc constqp requires global_quality to be set." )
+        if self.nvenc_gpu:
             options['video']['nvenc_gpu'] = self.nvenc_gpu
-        if self.nvenc_profile:
+        if self.nvenc_temporal_aq:
             options['video']['nvenc_temporal_aq'] = self.nvenc_temporal_aq
-        if self.nvenc_profile:
+        if self.nvenc_rc_lookahead:
             options['video']['nvenc_rc_lookahead'] = self.nvenc_rc_lookahead
 
         self.options = options

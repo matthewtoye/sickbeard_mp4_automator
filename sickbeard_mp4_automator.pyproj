@@ -22,7 +22,6 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="autoProcess.ini" />
     <Content Include="logging.ini" />
   </ItemGroup>
   <ItemGroup>

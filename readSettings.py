@@ -81,17 +81,18 @@ class ReadSettings:
                         'nvenc_preset':'',
                         'qmin':'',
                         'qmax':'',
+                        'global_quality':'',
                         'maxrate':'',
                         'minrate':'',
                         'bufsize':'',
-                        'nvenc_gpu':'',
+                        'nvenc_encoder_gpu':'',
                         'nvenc_temporal_aq':'',
                         'nvenc_rc_lookahead':'',
                         'nvenc_rate_control':'',
-                        'nvenc_cuvid':'',
-                        'nvenc_cuvid_hevc':'',
+                        'enable_nvenc_decoder':'',
+                        'enable_nvenc_hevc_decoder':'',
                         'nvenc_decoder_gpu':'',
-                        'nvenc_decoder_hevc_gpu':'',
+                        'nvenc_hevc_decoder_gpu':'',
                         'h264-max-level': '',
                         'aac_adtstoasc': 'False',
                         'use-qsv-decoder-with-encoder': 'True',
@@ -367,17 +368,18 @@ class ReadSettings:
         self.nvenc_preset = config.get(section, "nvenc_preset")
         self.qmin = config.get(section, "qmin")
         self.qmax = config.get(section, "qmax")
+        self.global_quality = config.get(section, "global_quality")
         self.maxrate = config.get(section, "maxrate")
         self.minrate = config.get(section, "minrate")
         self.bufsize = config.get(section, "bufsize")
-        self.nvenc_gpu = config.get(section, "nvenc_gpu")
+        self.nvenc_gpu = config.get(section, "nvenc_encoder_gpu")
         self.nvenc_temporal_aq = config.getboolean(section, "nvenc_temporal_aq")
         self.nvenc_rate_control = config.get( section, "nvenc_rate_control")
         self.nvenc_rc_lookahead = config.get( section, "nvenc_rc_lookahead")
-        self.nvenc_cuvid = config.getboolean(section, "nvenc_cuvid") 
-        self.nvenc_cuvid_hevc = config.getboolean(section, "nvenc_cuvid_hevc")
+        self.nvenc_cuvid = config.getboolean(section, "enable_nvenc_decoder") 
+        self.nvenc_cuvid_hevc = config.getboolean(section, "enable_nvenc_hevc_decoder")
         self.nvenc_decoder_gpu = config.get(section, "nvenc_decoder_gpu")
-        self.nvenc_decoder_hevc_gpu = config.get(section, "nvenc_decoder_hevc_gpu")
+        self.nvenc_decoder_hevc_gpu = config.get(section, "nvenc_hevc_decoder_gpu")
         self.pix_fmt = config.get(section, "pix-fmt").strip().lower()
         if self.pix_fmt == '':
             self.pix_fmt = None
