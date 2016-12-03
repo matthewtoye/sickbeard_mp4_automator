@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{a6d6a31e-2c7f-4f28-a0c3-32e3321bd089}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>manual.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId>{2af0f10d-7135-4994-9156-5d01c9c11b7e}</InterpreterId>
+    <InterpreterVersion>3.5</InterpreterVersion>
+    <IsWindowsApplication>False</IsWindowsApplication>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="autoProcess.ini" />
+    <Content Include="logging.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="autoprocess\autoProcessMovie.py" />
+    <Compile Include="autoprocess\autoProcessTV.py" />
+    <Compile Include="autoprocess\autoProcessTVSR.py" />
+    <Compile Include="autoprocess\plex.py" />
+    <Compile Include="autoprocess\sonarr.py" />
+    <Compile Include="autoprocess\__init__.py" />
+    <Compile Include="converter\avcodecs.py" />
+    <Compile Include="converter\ffmpeg.py" />
+    <Compile Include="converter\formats.py" />
+    <Compile Include="converter\__init__.py" />
+    <Compile Include="delugePostProcess.py" />
+    <Compile Include="extensions.py" />
+    <Compile Include="manual.py" />
+    <Compile Include="mkvtomp4.py" />
+    <Compile Include="mutagen\aac.py" />
+    <Compile Include="mutagen\mp4\_as_entry.py" />
+    <Compile Include="mutagen\mp4\_atom.py" />
+    <Compile Include="mutagen\mp4\_util.py" />
+    <Compile Include="mutagen\mp4\__init__.py" />
+    <Compile Include="mutagen\_compat.py" />
+    <Compile Include="mutagen\_constants.py" />
+    <Compile Include="mutagen\_file.py" />
+    <Compile Include="mutagen\_tags.py" />
+    <Compile Include="mutagen\_util.py" />
+    <Compile Include="mutagen\_vorbis.py" />
+    <Compile Include="mutagen\__init__.py" />
+    <Compile Include="NZBGetPostProcess.py" />
+    <Compile Include="postConversion.py" />
+    <Compile Include="postCouchPotato.py" />
+    <Compile Include="postSonarr.py" />
+    <Compile Include="post_processor.py" />
+    <Compile Include="post_process\iTunes.py" />
+    <Compile Include="post_process\resources\__init__.py" />
+    <Compile Include="post_process\sample.py" />
+    <Compile Include="readSettings.py" />
+    <Compile Include="SABPostProcess.py" />
+    <Compile Include="setup\ez_setup.py" />
+    <Compile Include="setup\PostProcess\main.py" />
+    <Compile Include="setup\PostProcess\__init__.py" />
+    <Compile Include="setup\__init__.py" />
+    <Compile Include="tmdb_api\tmdb.py" />
+    <Compile Include="tmdb_api\__init__.py" />
+    <Compile Include="tmdb_mp4.py" />
+    <Compile Include="tvdb_api\tvdb_api.py" />
+    <Compile Include="tvdb_api\tvdb_cache.py" />
+    <Compile Include="tvdb_api\tvdb_exceptions.py" />
+    <Compile Include="tvdb_api\tvdb_ui.py" />
+    <Compile Include="tvdb_api\__init__.py" />
+    <Compile Include="tvdb_mp4.py" />
+    <Compile Include="uTorrentPostProcess.py" />
+    <Compile Include="__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="autoprocess" />
+    <Folder Include="converter" />
+    <Folder Include="mutagen" />
+    <Folder Include="mutagen\mp4" />
+    <Folder Include="post_process" />
+    <Folder Include="post_process\resources" />
+    <Folder Include="setup" />
+    <Folder Include="setup\PostProcess" />
+    <Folder Include="tmdb_api" />
+    <Folder Include="tvdb_api" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{2af0f10d-7135-4994-9156-5d01c9c11b7e}\3.5" />
+  </ItemGroup>
+  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+</Project>
