@@ -848,7 +848,7 @@ class NVEncH265(H265Codec):
         if 'nvenc_gpu' in safe:
             optlist.extend(['-gpu', str(safe['nvenc_gpu'])])
         if 'nvenc_temporal_aq' in safe:
-            optlist.extend(['-temporal-aq', str(safe['nvenc_temporal_aq'])])
+            optlist.extend(['-temporal_aq', str(safe['nvenc_temporal_aq'])])
         if 'nvenc_rc_lookahead' in safe:
             optlist.extend(['-rc-lookahead', str(safe['nvenc_rc_lookahead'])])
         if 'level' in safe:
