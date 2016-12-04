@@ -1,8 +1,11 @@
 Same as the original with better nvidia support.
 
-I use https://github.com/rdp/ffmpeg-windows-build-helpers to cross-compile ffmpeg for windows using linux, but nightly builds from https://ffmpeg.zeranoe.com/builds/ will also work with all settings.
+I use https://github.com/rdp/ffmpeg-windows-build-helpers to cross-compile ffmpeg for windows using linux, but nightly builds from https://ffmpeg.zeranoe.com/builds/ will also work with all settings except scale_npp
 
-TODO: add in nppscale support
+scale_npp support requires the following:
+  - CUDA Toolkit 8.0 - https://developer.nvidia.com/cuda-downloads - Also make sure the /bin folder is added to your windows path, although I believe the installer does that for you.
+  - The following libraries from the above download added to the ffmpeg linker's lib folder - nppi.lib nppc.lib
+  - Also build ffmpeg using the build script with --enable-libnpp added to the configuration - Take note that this is currently a nonfree option, much like libfdk_aac 
 
 Using the gpu for decoding doesn't change the speed of taking a file and converting it to another format, but it does free the cpu so that it may be used for other things.
 
@@ -20,10 +23,11 @@ Brief explanation of added settings:
 - 'nvenc_rate_control' = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass - default is constqp
 - 'nvenc_temporal_aq' = Improves output quality slightly, adds 2-5% extra processing time - default off
 - 'nvenc_rc_lookahead' = Number of frames to look ahead for rate-control (from -1 to INT_MAX) - default -1
-- 'enable_nvenc_decoder' = Tell script to use the gpu for decoding
-- 'enable_nvenc_hevc_decoder' = Tell script that you have a gpu that can decode hevc/vp9, and wish to use it - Geforce 950/960/1050/1060/1070/1080
+- 'enable_nvenc_decoder' = (true/false) Tell script to use the gpu for decoding
+- 'enable_nvenc_hevc_decoder' = (true/false) Tell script that you have a gpu that can decode hevc/vp9, and wish to use it - Geforce 950/960/1050/1060/1070/1080
 - 'nvenc_decoder_gpu' = Selects which NVENC capable GPU to use for decoding. First GPU is 0, second is 1, and so on. Default is any
 - 'nvenc_hevc_decoder_gpu' = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any
+Not functional yet - 'scale_npp' =  (true/false) enables usage of https://developer.nvidia.com/npp in ffmpeg to resize resolution. Requires building ffmpeg yourself, as it uses a nonfree license
 
 If you have multiple nvidia cards you can decode on one and encode on the other, but it doesn't seem to speed up the process at all.
 Decoding by itself does not count towards the nvenc 2 stream limit
