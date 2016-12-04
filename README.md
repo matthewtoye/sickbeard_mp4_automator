@@ -1,13 +1,12 @@
 Same as the original with better nvidia support.
 
-I use https://github.com/rdp/ffmpeg-windows-build-helpers to cross-compile ffmpeg for windows using linux, but nightly builds from https://ffmpeg.zeranoe.com/builds/ will also work with all settings except scale_npp
+Nightly builds from https://ffmpeg.zeranoe.com/builds/ will work with all added options except scale_npp.
 
 scale_npp support requires the following:
-  - CUDA Toolkit 8.0 - https://developer.nvidia.com/cuda-downloads - Also make sure the /bin folder is added to your windows path, although I believe the installer does that for you.
-  - The following libraries from the above download added to the ffmpeg linker's lib folder - nppi.lib nppc.lib
-  - Also build ffmpeg using the build script with --enable-libnpp added to the configuration - Take note that this is currently a nonfree option, much like libfdk_aac 
+  - CUDA Toolkit 8.0 - https://developer.nvidia.com/cuda-downloads installed on the pc using ffmpeg. Unfortunately there doesn't seem to be a way to statically compile scale_npp support on Windows, and this is the only way to get the shared libraries so ffmpeg doesn't complain about missing .dlls when loaded.
+  - I created a fork of ffmpeg-windows-build-helpers and edited the build script so that it will add scale_npp to ffmpeg while compiling - https://github.com/Collisionc/ffmpeg-windows-build-helpers - Make sure to enable non-free libraries for scale_npp support
 
-Using the gpu for decoding doesn't change the speed of taking a file and converting it to another format, but it does free the cpu so that it may be used for other things.
+Using the gpu for decoding doesn't change the speed of taking a file and converting it to another format, but it does free the cpu so that it may be used for other things. scale_npp may speed up downscaling resolution from 1080p --> 720p, but I haven't benchmarked it yet.
 
 Brief explanation of added settings:
 
