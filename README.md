@@ -1,14 +1,10 @@
 Same as the original with better nvidia support.
-I use https://github.com/rdp/ffmpeg-windows-build-helpers to cross-compile ffmpeg for windows using linux
 
-My modifications to sickbeard_mp4_automator will require the following added to https://github.com/rdp/ffmpeg-windows-build-helpers :
-- CUDA Toolkit 8.0 - https://developer.nvidia.com/cuda-downloads
-- The following libraries from the above download added to the linker's lib folder - cuda.lib nvcuvid.lib nppi.lib nppc.lib
-- Also build ffmpeg using the build script with --enable-cuda --enable-cuvid --enable-libnpp added to the configuration
-(Recently, ffmpeg changed some things so that this may not be necessary anymore, but I haven't checked.)
+I use https://github.com/rdp/ffmpeg-windows-build-helpers to cross-compile ffmpeg for windows using linux, but nightly builds from https://ffmpeg.zeranoe.com/builds/ will also work with all settings.
 
-Note:
-- Using the gpu for decoding doesn't change the speed of taking a file and converting it to another format, but it does free the cpu so that it may be used for other things.
+TODO: add in nppscale support
+
+Using the gpu for decoding doesn't change the speed of taking a file and converting it to another format, but it does free the cpu so that it may be used for other things.
 
 Brief explanation of added settings:
 
