@@ -1,0 +1,1 @@
+ffmpeg -h full > ffmpegHelpOutput.txt
