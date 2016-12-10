@@ -404,7 +404,7 @@ class VideoCodec(BaseCodec):
                 optlist.extend(['-aspect', '%d:%d' % (ow, oh)])
 
         if filters:
-            optlist.extend(['-vf', filters + ',interp_algo=lanczos'])
+            optlist.extend(['-vf', filters ])
 
         optlist.extend(self._codec_specific_produce_ffmpeg_list(safe))
 
@@ -723,8 +723,22 @@ class NVEncH264(H264Codec):
         'nvenc_preset': int,  # Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
         'nvenc_gpu': int,  # Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any) 
         'nvenc_temporal_aq': int, # Default off
-        'nvenc_rc_lookahead': int # Number of frames to look ahead, default -1
+        'nvenc_rc_lookahead': int, # Number of frames to look ahead, default -1
+        'scale_npp_enabled': bool,
+        'scale_npp_interp_algo': str,
+        'scale_npp_wscale': int,
+        'scale_npp_hscale': int
     })
+
+    def parse_options(self, opt, stream=0):
+        if opt['scale_npp_enabled'] == True:
+            if 'width' in opt:
+                opt['scale_npp_wscale'] = opt['width']
+                del(opt['width'])
+            if 'height' in opt:
+                opt['scale_npp_hscale'] = opt['height']
+                del(opt['height'])
+        return super(NVEncH264, self).parse_options(opt, stream)
     
     def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
         optlist = []
@@ -744,12 +758,13 @@ class NVEncH264(H264Codec):
             optlist.extend(['-level', '%0.1f' % safe['level']])
         if 'tune' in safe:
             optlist.extend(['-tune', safe['tune']])
-        if 'wscale' in safe and 'hscale' in safe:
-            optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
-        elif 'wscale' in safe:
-            optlist.extend(['-vf', 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale'])])
-        elif 'hscale' in safe:
-            optlist.extend(['-vf', 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale'])])
+        if 'scale_npp_enabled' in safe:
+            if 'scale_npp_wscale' in safe and 'scale_npp_hscale' in safe:
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:%s:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['scale_npp_interp_algo'])])
+            elif 'scale_npp_wscale' in safe:
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:trunc(ow/a/2)*2:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_wscale'], safe['scale_npp_interp_algo'] )])
+            elif 'scale_npp_hscale' in safe:
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=trunc((oh*a)/2)*2:%s:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_hscale'], safe['scale_npp_interp_algo'] )])
         return optlist
 
 
@@ -834,8 +849,22 @@ class NVEncH265(H265Codec):
         'nvenc_preset': int,  # Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
         'nvenc_gpu': int,  # Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any) 
         'nvenc_temporal_aq': int, # Default off
-        'nvenc_rc_lookahead': int # Number of frames to look ahead, default -1
+        'nvenc_rc_lookahead': int, # Number of frames to look ahead, default -1
+        'scale_npp_enabled': bool,
+        'scale_npp_interp_algo': str,
+        'scale_npp_wscale': int,
+        'scale_npp_hscale': int
     })
+
+    def parse_options(self, opt, stream=0):
+        if opt['scale_npp_enabled'] == True:
+            if 'width' in opt:
+                opt['scale_npp_wscale'] = opt['width']
+                del(opt['width'])
+            if 'height' in opt:
+                opt['scale_npp_hscale'] = opt['height']
+                del(opt['height'])
+        return super(NVEncH264, self).parse_options(opt, stream)
     
     def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
         optlist = []
@@ -855,12 +884,13 @@ class NVEncH265(H265Codec):
             optlist.extend(['-level', '%0.1f' % safe['level']])
         if 'tune' in safe:
             optlist.extend(['-tune', safe['tune']])
-        if 'wscale' in safe and 'hscale' in safe:
-            optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
-        elif 'wscale' in safe:
-            optlist.extend(['-vf', 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale'])])
-        elif 'hscale' in safe:
-            optlist.extend(['-vf', 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale'])])
+        if 'scale_npp_enabled' in safe:
+            if 'scale_npp_wscale' in safe and 'scale_npp_hscale' in safe:
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:%s:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['scale_npp_interp_algo'])])
+            elif 'scale_npp_wscale' in safe:
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:trunc(ow/a/2)*2:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_wscale'], safe['scale_npp_interp_algo'] )])
+            elif 'scale_npp_hscale' in safe:
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=trunc((oh*a)/2)*2:%s:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_hscale'], safe['scale_npp_interp_algo'] )])
         return optlist
 
 class DivxCodec(VideoCodec):

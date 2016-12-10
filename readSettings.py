@@ -93,6 +93,8 @@ class ReadSettings:
                         'enable_nvenc_hevc_decoder':'',
                         'nvenc_decoder_gpu':'',
                         'nvenc_hevc_decoder_gpu':'',
+                        'scale_npp_enabled':'',
+                        'scale_npp_interp_algo':'',
                         'h264-max-level': '',
                         'aac_adtstoasc': 'False',
                         'use-qsv-decoder-with-encoder': 'True',
@@ -383,6 +385,8 @@ class ReadSettings:
         self.nvenc_cuvid_hevc = config.getboolean(section, "enable_nvenc_hevc_decoder")
         self.nvenc_decoder_gpu = config.get(section, "nvenc_decoder_gpu")
         self.nvenc_decoder_hevc_gpu = config.get(section, "nvenc_hevc_decoder_gpu")
+        self.scale_npp_enabled = config.getboolean( section, "scale_npp_enabled")
+        self.scale_npp_interp_algo = config.get( section, "scale_npp_interp_algo" )
         self.pix_fmt = config.get(section, "pix-fmt").strip().lower()
         if self.pix_fmt == '':
             self.pix_fmt = None

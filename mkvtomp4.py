@@ -40,6 +40,8 @@ class MkvtoMp4:
                  nvenc_cuvid_hevc=False,
                  nvenc_decoder_gpu=None,
                  nvenc_decoder_hevc_gpu=None,
+                 scale_npp_enabled=None,
+                 scale_npp_interp_algo=None,
                  audio_codec=['ac3'],
                  audio_bitrate=256,
                  audio_filter=None,
@@ -104,6 +106,8 @@ class MkvtoMp4:
         self.nvenc_cuvid_hevc = nvenc_cuvid_hevc
         self.nvenc_decoder_gpu = nvenc_decoder_gpu
         self.nvenc_decoder_hevc_gpu = nvenc_decoder_hevc_gpu
+        self.scale_npp_enabled = scale_npp_enabled
+        self.scale_npp_interp_algo = scale_npp_interp_algo
         self.pix_fmt = pix_fmt
         # Audio settings
         self.audio_codec = audio_codec
@@ -166,6 +170,8 @@ class MkvtoMp4:
         self.nvenc_cuvid_hevc = settings.nvenc_cuvid_hevc
         self.nvenc_decoder_gpu = settings.nvenc_decoder_gpu
         self.nvenc_decoder_hevc_gpu = settings.nvenc_decoder_hevc_gpu
+        self.scale_npp_enabled = settings.scale_npp_enabled
+        self.scale_npp_interp_algo = settings.scale_npp_interp_algo
         self.pix_fmt = settings.pix_fmt
         # Audio settings
         self.audio_codec = settings.acodec
@@ -651,7 +657,7 @@ class MkvtoMp4:
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
         
-        if self.nvenc_cuvid:
+        if self.nvenc_cuvid and vcodec != "copy":
             if info.video.codec.lower() == "h264":
                 options['preopts'].extend(['-c:v', 'h264_cuvid'])
             elif info.video.codec.lower() == "mjpeg":
@@ -671,11 +677,12 @@ class MkvtoMp4:
             elif info.video.codec.lower() == "vp9" and self.nvenc_cuvid_hevc:
                 options['preopts'].extend(['-c:v', 'vp9_cuvid'])
         
-        if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
-            if self.nvenc_decoder_hevc_gpu:
-              options['preopts'].extend(['-gpu', str( self.nvenc_decoder_hevc_gpu )])
-        elif self.nvenc_decoder_gpu:
-            options['preopts'].extend(['-gpu', str( self.nvenc_decoder_gpu )])
+        if vcodec != "copy":
+            if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
+                if self.nvenc_decoder_hevc_gpu:
+                  options['preopts'].extend(['-gpu', str( self.nvenc_decoder_hevc_gpu )])
+            elif self.nvenc_decoder_gpu:
+                options['preopts'].extend(['-gpu', str( self.nvenc_decoder_gpu )])
 
         # Add width option
         if vwidth:
@@ -703,7 +710,10 @@ class MkvtoMp4:
             options['video']['nvenc_temporal_aq'] = self.nvenc_temporal_aq
         if self.nvenc_rc_lookahead:
             options['video']['nvenc_rc_lookahead'] = self.nvenc_rc_lookahead
-
+        if self.scale_npp_enabled:
+            options['video']['scale_npp_enabled'] = self.scale_npp_enabled
+        if self.scale_npp_interp_algo:
+            options['video']['scale_npp_interp_algo'] = self.scale_npp_interp_algo
         self.options = options
         return options
 
