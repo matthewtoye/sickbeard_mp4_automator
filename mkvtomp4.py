@@ -40,7 +40,7 @@ class MkvtoMp4:
                  nvenc_cuvid_hevc=False,
                  nvenc_decoder_gpu=None,
                  nvenc_decoder_hevc_gpu=None,
-                 scale_npp_enabled=None,
+                 scale_npp_enabled=False,
                  scale_npp_interp_algo=None,
                  audio_codec=['ac3'],
                  audio_bitrate=256,
