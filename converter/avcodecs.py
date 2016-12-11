@@ -754,17 +754,13 @@ class NVEncH264(H264Codec):
             optlist.extend(['-temporal-aq', str(safe['nvenc_temporal_aq'])])
         if 'nvenc_rc_lookahead' in safe:
             optlist.extend(['-rc-lookahead', str(safe['nvenc_rc_lookahead'])])
-        if 'level' in safe:
-            optlist.extend(['-level', '%0.1f' % safe['level']])
-        if 'tune' in safe:
-            optlist.extend(['-tune', safe['tune']])
-        if 'scale_npp_enabled' in safe:
+        if 'scale_npp_enabled' in safe and safe['scale_npp_enabled'] == True:
             if 'scale_npp_wscale' in safe and 'scale_npp_hscale' in safe:
-                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:%s:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['scale_npp_interp_algo'])])
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:%s:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['pix_fmt'], safe['scale_npp_interp_algo'], safe['pix_fmt'] )])
             elif 'scale_npp_wscale' in safe:
-                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:trunc(ow/a/2)*2:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_wscale'], safe['scale_npp_interp_algo'] )])
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:trunc(ow/a/2)*2:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_wscale'], safe['pix_fmt'], safe['scale_npp_interp_algo'], safe['pix_fmt'] )])
             elif 'scale_npp_hscale' in safe:
-                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=trunc((oh*a)/2)*2:%s:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_hscale'], safe['scale_npp_interp_algo'] )])
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=trunc((oh*a)/2)*2:%s:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_hscale'], safe['pix_fmt'], safe['scale_npp_interp_algo'], safe['pix_fmt'] )])
         return optlist
 
 
@@ -880,17 +876,13 @@ class NVEncH265(H265Codec):
         #    optlist.extend(['-temporal_aq', str(safe['nvenc_temporal_aq'])]) Gives nvenc device not found error with hevc?
         if 'nvenc_rc_lookahead' in safe:
             optlist.extend(['-rc-lookahead', str(safe['nvenc_rc_lookahead'])])
-        if 'level' in safe:
-            optlist.extend(['-level', '%0.1f' % safe['level']])
-        if 'tune' in safe:
-            optlist.extend(['-tune', safe['tune']])
-        if 'scale_npp_enabled' in safe:
+        if 'scale_npp_enabled' in safe and safe['scale_npp_enabled'] == True:
             if 'scale_npp_wscale' in safe and 'scale_npp_hscale' in safe:
-                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:%s:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['scale_npp_interp_algo'])])
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:%s:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['pix_fmt'], safe['scale_npp_interp_algo'], safe['pix_fmt'] )])
             elif 'scale_npp_wscale' in safe:
-                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:trunc(ow/a/2)*2:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_wscale'], safe['scale_npp_interp_algo'] )])
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:trunc(ow/a/2)*2:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_wscale'], safe['pix_fmt'], safe['scale_npp_interp_algo'], safe['pix_fmt'] )])
             elif 'scale_npp_hscale' in safe:
-                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=trunc((oh*a)/2)*2:%s:format=yuv420p:interp_algo=%s,hwdownload,format=yuv420p'  % (safe['scale_npp_hscale'], safe['scale_npp_interp_algo'] )])
+                optlist.extend(['-vf', 'hwupload_cuda,scale_npp=trunc((oh*a)/2)*2:%s:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_hscale'], safe['pix_fmt'], safe['scale_npp_interp_algo'], safe['pix_fmt'] )])
         return optlist
 
 class DivxCodec(VideoCodec):

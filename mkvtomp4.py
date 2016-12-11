@@ -657,32 +657,35 @@ class MkvtoMp4:
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
         
-        if self.nvenc_cuvid and vcodec != "copy":
-            if info.video.codec.lower() == "h264":
-                options['preopts'].extend(['-c:v', 'h264_cuvid'])
-            elif info.video.codec.lower() == "mjpeg":
-                options['preopts'].extend(['-c:v', 'mjpeg_cuvid'])
-            elif info.video.codec.lower() == "mpeg1":
-                options['preopts'].extend(['-c:v', 'mpeg1_cuvid'])
-            elif info.video.codec.lower() == "mpeg2":
-                options['preopts'].extend(['-c:v', 'mpeg2_cuvid'])
-            elif info.video.codec.lower() == "mpeg4":
-                options['preopts'].extend(['-c:v', 'mpeg4_cuvid'])
-            elif info.video.codec.lower() == "vc1":
-                options['preopts'].extend(['-c:v', 'vc1_cuvid'])
-            elif info.video.codec.lower() == "vp8":
-                options['preopts'].extend(['-c:v', 'vp8_cuvid'])
-            elif info.video.codec.lower() == "hevc" and self.nvenc_cuvid_hevc:
-                options['preopts'].extend(['-c:v', 'hevc_cuvid'])
-            elif info.video.codec.lower() == "vp9" and self.nvenc_cuvid_hevc:
-                options['preopts'].extend(['-c:v', 'vp9_cuvid'])
+        # cuvid only seems to (easily) support input from the formats that nvenc can encode.
+        if info.video.pix_fmt.lower() in { "yuv420p", "nv12", "p010le", "yuv444p", "yuv444p16le", "bgr0", "rgb0" }:
+            if self.nvenc_cuvid and vcodec != "copy":
+
+                if info.video.codec.lower() == "h264":
+                    options['preopts'].extend(['-c:v', 'h264_cuvid'])
+                elif info.video.codec.lower() == "mjpeg":
+                    options['preopts'].extend(['-c:v', 'mjpeg_cuvid'])
+                elif info.video.codec.lower() == "mpeg1":
+                    options['preopts'].extend(['-c:v', 'mpeg1_cuvid'])
+                elif info.video.codec.lower() == "mpeg2":
+                    options['preopts'].extend(['-c:v', 'mpeg2_cuvid'])
+                elif info.video.codec.lower() == "mpeg4":
+                    options['preopts'].extend(['-c:v', 'mpeg4_cuvid'])
+                elif info.video.codec.lower() == "vc1":
+                    options['preopts'].extend(['-c:v', 'vc1_cuvid'])
+                elif info.video.codec.lower() == "vp8":
+                    options['preopts'].extend(['-c:v', 'vp8_cuvid'])
+                elif info.video.codec.lower() == "hevc" and self.nvenc_cuvid_hevc:
+                    options['preopts'].extend(['-c:v', 'hevc_cuvid'])
+                elif info.video.codec.lower() == "vp9" and self.nvenc_cuvid_hevc:
+                    options['preopts'].extend(['-c:v', 'vp9_cuvid'])
         
-        if vcodec != "copy":
-            if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
-                if self.nvenc_decoder_hevc_gpu:
-                  options['preopts'].extend(['-gpu', str( self.nvenc_decoder_hevc_gpu )])
-            elif self.nvenc_decoder_gpu:
-                options['preopts'].extend(['-gpu', str( self.nvenc_decoder_gpu )])
+            if vcodec != "copy":
+                if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
+                    if self.nvenc_decoder_hevc_gpu:
+                        options['preopts'].extend(['-gpu', str( self.nvenc_decoder_hevc_gpu )])
+                elif self.nvenc_decoder_gpu:
+                    options['preopts'].extend(['-gpu', str( self.nvenc_decoder_gpu )])
 
         # Add width option
         if vwidth:
@@ -711,7 +714,10 @@ class MkvtoMp4:
         if self.nvenc_rc_lookahead:
             options['video']['nvenc_rc_lookahead'] = self.nvenc_rc_lookahead
         if self.scale_npp_enabled:
-            options['video']['scale_npp_enabled'] = self.scale_npp_enabled
+            if info.video.pix_fmt.lower() in { "yuv420p", "nv12", "p010le", "yuv444p", "yuv444p16le", "bgr0", "rgb0" }:
+                options['video']['scale_npp_enabled'] = self.scale_npp_enabled
+            else:
+                options['video']['scale_npp_enabled'] = False
         if self.scale_npp_interp_algo:
             options['video']['scale_npp_interp_algo'] = self.scale_npp_interp_algo
         self.options = options
