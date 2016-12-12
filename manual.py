@@ -227,6 +227,18 @@ def processFile(inputfile, tagdata, relativePath=None):
 
 def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
     for r, d, f in os.walk(dir):
+        biggest_file_size = 0
+        biggest_file_name = ""
+        m2ts_file = False
+        for file in f:
+            filepath = os.path.join(r, file)
+            if filepath.endswith('.m2ts'): #m2ts files just screw up everything, but typically the largest file is the file that we want to convert.
+                m2ts_file = True
+                size = os.path.getsize(filepath)
+                if size > biggest_file_size:
+                    biggest_file_size = size
+                    biggest_file_name = filepath
+
         for file in f:
             filepath = os.path.join(r, file)
             relative = os.path.split(os.path.relpath(filepath, dir))[0] if preserveRelative else None
@@ -243,7 +255,11 @@ def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
                         tagdata = getinfo(filepath, silent, tvdbid=tvdbid)
                     else:
                         tagdata = None
-                    processFile(filepath, tagdata, relativePath=relative)
+                    if m2ts_file == True:
+                        processFile( biggest_file_name, tagdata, relativePath=relative )
+                        break
+                    else:
+                        processFile(filepath, tagdata, relativePath=relative)
             except Exception as e:
                 print("An unexpected error occurred, processing of this file has failed")
                 print(str(e))

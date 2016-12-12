@@ -54,12 +54,27 @@ if settings.SAB['convert']:
     
     converter = MkvtoMp4(settings)
     for r, d, f in os.walk(path):
+        biggest_file_size = 0
+        biggest_file_name = ""
+        m2ts_file = False
+        for file in f:
+            filepath = os.path.join(r, file)
+            if filepath.endswith('.m2ts'): #m2ts files just screw up everything, but typically the largest file is the file that we want to convert.
+                m2ts_file = True
+                size = os.path.getsize(filepath)
+                if size > biggest_file_size:
+                    biggest_file_size = size
+                    biggest_file_name = filepath
         for files in f:
             inputfile = os.path.join(r, files)
             if MkvtoMp4(settings).validSource(inputfile):
                 log.info("Processing file %s." % inputfile)
                 try:
-                    output = converter.process(inputfile)
+                    if m2ts_file == True:
+                        output = converter.process( biggest_file_name )
+                        break
+                    else:
+                        output = converter.process(inputfile)
                 except:
                     log.exception("Error converting file %s." % inputfile)
             else:
