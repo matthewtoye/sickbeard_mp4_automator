@@ -1,4 +1,4 @@
-Same as the original with better nvidia support.
+Same as the original with better nvidia support, my changes are as follows:
 
 Nightly builds from https://ffmpeg.zeranoe.com/builds/ will work with all added options except scale_npp.
 
@@ -6,30 +6,34 @@ scale_npp support requires the following:
   - CUDA Toolkit 8.0 - https://developer.nvidia.com/cuda-downloads installed on the pc using ffmpeg. Unfortunately there doesn't seem to be a way to statically compile scale_npp support on Windows, and this is the only way to get the shared libraries so ffmpeg doesn't complain about missing .dlls when loaded.
   - I created a fork of ffmpeg-windows-build-helpers and edited the build script so that it will add scale_npp to ffmpeg while compiling - https://github.com/Collisionc/ffmpeg-windows-build-helpers - Make sure to enable non-free libraries for scale_npp support
 
-Using the gpu for decoding doesn't change the speed of taking a file and converting it to another format, but it does free the cpu so that it may be used for other things. scale_npp may speed up downscaling resolution from 1080p --> 720p, but I haven't benchmarked it yet.
+Using the gpu for decoding doesn't change the overall speed of taking a file and encoding it via gpu to another format, but it does free the cpu so that it may be used for other things.
+
+scale_npp may speed up downscaling resolution from 1080p --> 720p, but I haven't benchmarked it yet.
 
 Brief explanation of added settings:
 
-- 'qmin' = minimum video quantizer scale (VBR) (from -1 to 69) (default 2)
+- 'qmin' = minimum video quantizer scale (VBR) (from -1 to 69) (default 2) - Must be set when nvenc_rate_control is vbr_2pass or vbr_minqp.
 - 'qmax' = maximum video quantizer scale (VBR) (from -1 to 1024) (default 31)
-- 'global_quality' = Must be set when nvenc_rate_control is constqp - I usually set it to the same value as qmin
+- 'global_quality' = Must be set when nvenc_rate_control is constqp
 - 'maxrate' = maximum bitrate (in kb/s). Used for VBV together with bufsize. (from 0 to INT_MAX) (default 0)
 - 'minrate' = minimum bitrate (in kb/s). Most useful in setting up a CBR encode. It is of little use otherwise. (from INT_MIN to INT_MAX) (default 0)
-- 'bufsize' = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0)
+- 'bufsize' = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0) - I usually set this to 5*average bitrate, but mileage will vary.
 - 'nvenc_encoder_gpu' = Selects which NVENC capable GPU to use for encoding. First GPU is 0, second is 1, and so on. Default is any
-- 'nvenc_profile' = Options include: baseline, main, high, high444p - default is main
+- 'nvenc_profile' = h264 options include: baseline, main, high, high444p - default is main
 - 'nvenc_preset' = Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
 - 'nvenc_rate_control' = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass - default is constqp
-- 'nvenc_temporal_aq' = Improves output quality slightly, adds 2-5% extra processing time - default off
+- 'nvenc_temporal_aq' = (true/false) Improves output quality slightly, adds 2-5% extra processing time - default off
 - 'nvenc_rc_lookahead' = Number of frames to look ahead for rate-control (from -1 to INT_MAX) - default -1
-- 'enable_nvenc_decoder' = (true/false) Tell script to use the gpu for decoding
-- 'enable_nvenc_hevc_decoder' = (true/false) Tell script that you have a gpu that can decode hevc/vp9, and wish to use it - Geforce 950/960/1050/1060/1070/1080
+- 'enable_nvenc_decoder' = (true/false) Enable gpu decoding. Default is false
+- 'enable_nvenc_hevc_decoder' = (true/false) Enable GPU decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false
 - 'nvenc_decoder_gpu' = Selects which NVENC capable GPU to use for decoding. First GPU is 0, second is 1, and so on. Default is any
-- 'nvenc_hevc_decoder_gpu' = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any
-Not functional yet - 'scale_npp' =  (true/false) enables usage of https://developer.nvidia.com/npp in ffmpeg to resize resolution. Requires building ffmpeg yourself, as it uses a nonfree license
+- 'nvenc_hevc_decoder_gpu' = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any. 
+- 'scale_npp_enabled' = (true/false) Enables usage of https://developer.nvidia.com/npp to resize video output resolution. Requires building ffmpeg yourself, as npp is currently a nonfree license.  Default - false
+- 'scale_npp_interp_algo' = Which algorithm to use with scale_npp - Options include: nn, linear, cubic, cubic2p_bspline, cubic2p_catmullrom, cubic2p_b05c03, super, lanczos. Default - super
 
 If you have multiple nvidia cards you can decode on one and encode on the other, but it doesn't seem to speed up the process at all.
-Decoding by itself does not count towards the nvenc 2 stream limit
+Decoding by itself does not count towards the nvenc 2 stream limit.
+
 
 Original README.md follows:
 
