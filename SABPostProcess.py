@@ -81,7 +81,8 @@ if settings.SAB['convert']:
             if m2ts_file == True:
                 filelist = [ f_r for f_r in os.listdir(dir_name) if f_r.endswith(".m2ts") ]
                 for f_r in filelist:
-                    os.remove(f_r)
+                    file_to_remove = os.path.join(r, f_r)
+                    os.remove(file_to_remove)
                 break
     if converter.output_dir:
         path = converter.output_dir

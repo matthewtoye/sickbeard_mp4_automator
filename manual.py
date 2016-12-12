@@ -262,7 +262,8 @@ def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
                     if m2ts_file == True:
                         filelist = [ f_r for f_r in os.listdir(dir_name) if f_r.endswith(".m2ts") ]
                         for f_r in filelist:
-                            os.remove(f_r)
+                            file_to_remove = os.path.join(r, f_r)
+                            os.remove(file_to_remove)
                         break
             except Exception as e:
                 print("An unexpected error occurred, processing of this file has failed")
