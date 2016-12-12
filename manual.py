@@ -226,10 +226,10 @@ def processFile(inputfile, tagdata, relativePath=None):
 
 
 def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
+    biggest_file_size = 0
+    biggest_file_name = ""
+    m2ts_file = False
     for r, d, f in os.walk(dir):
-        biggest_file_size = 0
-        biggest_file_name = ""
-        m2ts_file = False
         for file in f:
             filepath = os.path.join(r, file)
             if filepath.endswith('.m2ts'): #m2ts files just screw up everything, but typically the largest file is the file that we want to convert.
@@ -241,6 +241,9 @@ def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
 
         for file in f:
             filepath = os.path.join(r, file)
+            if m2ts_file == True:
+                dir_name = os.path.dirname(os.path.realpath( biggest_file_name ))
+                filepath = biggest_file_name
             relative = os.path.split(os.path.relpath(filepath, dir))[0] if preserveRelative else None
             try:
                 if MkvtoMp4(settings, logger=log).validSource(filepath):
@@ -255,11 +258,12 @@ def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
                         tagdata = getinfo(filepath, silent, tvdbid=tvdbid)
                     else:
                         tagdata = None
+                    processFile(filepath, tagdata, relativePath=relative)
                     if m2ts_file == True:
-                        processFile( biggest_file_name, tagdata, relativePath=relative )
-                        break
-                    else:
-                        processFile(filepath, tagdata, relativePath=relative)
+                        for file in os.scandir(dir_name):
+                            if file.name.endswith(".m2ts"):
+                                os.unlink(file.path)
+                        break;
             except Exception as e:
                 print("An unexpected error occurred, processing of this file has failed")
                 print(str(e))

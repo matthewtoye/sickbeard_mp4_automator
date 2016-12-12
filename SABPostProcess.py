@@ -67,18 +67,22 @@ if settings.SAB['convert']:
                     biggest_file_name = filepath
         for files in f:
             inputfile = os.path.join(r, files)
+            if m2ts_file == True:
+                dir_name = os.path.dirname(os.path.realpath( biggest_file_name ))
+                inputfile = biggest_file_name
             if MkvtoMp4(settings).validSource(inputfile):
                 log.info("Processing file %s." % inputfile)
                 try:
-                    if m2ts_file == True:
-                        output = converter.process( biggest_file_name )
-                        break
-                    else:
-                        output = converter.process(inputfile)
+                    output = converter.process(inputfile)
                 except:
                     log.exception("Error converting file %s." % inputfile)
             else:
                 log.debug("Ignoring file %s." % inputfile)
+            if m2ts_file == True:
+                for file in os.scandir(dir_name):
+                    if file.name.endswith(".m2ts"):
+                        os.unlink(file.path)
+                break
     if converter.output_dir:
         path = converter.output_dir
 else:
