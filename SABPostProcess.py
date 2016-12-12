@@ -53,10 +53,10 @@ if settings.SAB['convert']:
         log.debug("Overriding output_dir to %s." % settings.SAB['output_dir'])
     
     converter = MkvtoMp4(settings)
+    biggest_file_size = 0
+    biggest_file_name = ""
+    m2ts_file = False
     for r, d, f in os.walk(path):
-        biggest_file_size = 0
-        biggest_file_name = ""
-        m2ts_file = False
         for file in f:
             filepath = os.path.join(r, file)
             if filepath.endswith('.m2ts'): #m2ts files just screw up everything, but typically the largest file is the file that we want to convert.
