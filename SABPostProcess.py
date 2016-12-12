@@ -79,9 +79,9 @@ if settings.SAB['convert']:
             else:
                 log.debug("Ignoring file %s." % inputfile)
             if m2ts_file == True:
-                for file in os.scandir(dir_name):
-                    if file.name.endswith(".m2ts"):
-                        os.unlink(file.path)
+                filelist = [ f_r for f_r in os.listdir(dir_name) if f_r.endswith(".m2ts") ]
+                for f_r in filelist:
+                    os.remove(f_r)
                 break
     if converter.output_dir:
         path = converter.output_dir

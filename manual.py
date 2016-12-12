@@ -260,10 +260,10 @@ def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
                         tagdata = None
                     processFile(filepath, tagdata, relativePath=relative)
                     if m2ts_file == True:
-                        for file in os.scandir(dir_name):
-                            if file.name.endswith(".m2ts"):
-                                os.unlink(file.path)
-                        break;
+                        filelist = [ f_r for f_r in os.listdir(dir_name) if f_r.endswith(".m2ts") ]
+                        for f_r in filelist:
+                            os.remove(f_r)
+                        break
             except Exception as e:
                 print("An unexpected error occurred, processing of this file has failed")
                 print(str(e))
