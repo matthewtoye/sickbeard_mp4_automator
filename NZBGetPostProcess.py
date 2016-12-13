@@ -179,9 +179,23 @@ if 'NZBOP_SCRIPTDIR' in os.environ and not os.environ['NZBOP_VERSION'][0:5] < '1
         if output_dir:
             settings.output_dir = output_dir
         converter = MkvtoMp4(settings, logger=log)
+        biggest_file_size = 0
+        biggest_file_name = ""
+        m2ts_file = False
         for r, d, f in os.walk(path):
+            for file in f:
+                filepath = os.path.join(r, file)
+                if filepath.endswith('.m2ts'): #m2ts files just screw up everything, but typically the largest file is the file that we want to convert.
+                    m2ts_file = True
+                    size = os.path.getsize(filepath)
+                    if size > biggest_file_size:
+                        biggest_file_size = size
+                        biggest_file_name = filepath
             for files in f:
                 inputfile = os.path.join(r, files)
+                if m2ts_file == True:
+                    dir_name = os.path.dirname(os.path.realpath( biggest_file_name ))
+                    inputfile = biggest_file_name
                 #DEBUG#print inputfile
                 #Ignores files under 50MB
                 if os.path.getsize(inputfile) > 50000000:
@@ -191,6 +205,12 @@ if 'NZBOP_SCRIPTDIR' in os.environ and not os.environ['NZBOP_VERSION'][0:5] < '1
                             log.info("Successfully processed %s." % inputfile)
                         except:
                             log.exception("File processing failed.")
+                        if m2ts_file == True:
+                            filelist = [ f_r for f_r in os.listdir(dir_name) if f_r.endswith(".m2ts") ]
+                            for f_r in filelist:
+                                file_to_remove = os.path.join(r, f_r)
+                                os.remove(file_to_remove)
+                            break
         if converter.output_dir:
             path = converter.output_dir
     if (category.lower() == categories[0]):
