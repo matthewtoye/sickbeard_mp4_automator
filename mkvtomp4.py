@@ -666,9 +666,9 @@ class MkvtoMp4:
                 options['preopts'].extend(['-c:v', 'h264_cuvid'])
             elif info.video.codec.lower() == "mjpeg":
                 options['preopts'].extend(['-c:v', 'mjpeg_cuvid'])
-            elif info.video.codec.lower() == "mpeg1":
+            elif info.video.codec.lower() == "mpeg1video":
                 options['preopts'].extend(['-c:v', 'mpeg1_cuvid'])
-            elif info.video.codec.lower() == "mpeg2":
+            elif info.video.codec.lower() == "mpeg2video":
                 options['preopts'].extend(['-c:v', 'mpeg2_cuvid'])
             elif info.video.codec.lower() == "mpeg4":
                 options['preopts'].extend(['-c:v', 'mpeg4_cuvid'])
