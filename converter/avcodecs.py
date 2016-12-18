@@ -890,7 +890,7 @@ class NVEncH265(H265Codec):
             else:
                 opt['hwaccel_enabled'] = False
 
-        return super(NVEncH264, self).parse_options(opt, stream)
+        return super(NVEncH265, self).parse_options(opt, stream)
     
     def _codec_specific_produce_ffmpeg_list(self, safe, stream=0):
         optlist = []
