@@ -3251,7 +3251,7 @@ AVFormatContext AVOptions:
   -format_whitelist  <string>     .D...... List of demuxers that are allowed to be used
   -protocol_whitelist <string>     .D...... List of protocols that are allowed to be used
   -protocol_blacklist <string>     .D...... List of protocols that are not allowed to be used
-  -max_streams       <int>        .D...... maximum number of streams (from 0 to INT_MAX) (default INT_MAX)
+  -max_streams       <int>        .D...... maximum number of streams (from 0 to INT_MAX) (default 1000)
 
 AVIOContext AVOptions:
   -protocol_whitelist <string>     .D...... List of protocols that are allowed to be used
@@ -3295,8 +3295,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.59.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.59.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.61.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.61.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3323,8 +3323,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.59.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.59.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.61.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.61.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3793,6 +3793,9 @@ microdvddec AVOptions:
 mjpeg demuxer AVOptions:
   -framerate         <video_rate> .D......  (default "25")
 
+mjpeg_2000 demuxer AVOptions:
+  -framerate         <video_rate> .D......  (default "25")
+
 mov,mp4,m4a,3gp,3g2,mj2 AVOptions:
   -use_absolute_path <boolean>    .D.V.... allow using absolute path when opening alias, this is a possible security issue (default false)
   -seek_streams_individually <boolean>    .D.V.... Seek each stream individually to the to the closest point (default true)
@@ -3948,7 +3951,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.59.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.61.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4260,6 +4263,24 @@ png demuxer AVOptions:
      ns                           .D...... nano second precision
 
 ppm demuxer AVOptions:
+  -framerate         <video_rate> .D...... set the video framerate (default "25")
+  -loop              <boolean>    .D...... force loop over input file sequence (default false)
+  -pattern_type      <int>        .D...... set pattern type (from 0 to INT_MAX) (default 4)
+     glob_sequence                .D...... select glob/sequence pattern type
+     glob                         .D...... select glob pattern type
+     sequence                     .D...... select sequence pattern type
+     none                         .D...... disable pattern matching
+  -pixel_format      <string>     .D...... set video pixel format
+  -start_number      <int>        .D...... set first number in the sequence (from INT_MIN to INT_MAX) (default 0)
+  -start_number_range <int>        .D...... set range for looking at the first sequence number (from 1 to INT_MAX) (default 5)
+  -video_size        <image_size> .D...... set video size
+  -frame_size        <int>        .D...... force frame size in bytes (from 0 to INT_MAX) (default 0)
+  -ts_from_file      <int>        .D...... set frame timestamp from file's one (from 0 to 2) (default none)
+     none                         .D...... none
+     sec                          .D...... second precision
+     ns                           .D...... nano second precision
+
+psd demuxer AVOptions:
   -framerate         <video_rate> .D...... set the video framerate (default "25")
   -loop              <boolean>    .D...... force loop over input file sequence (default false)
   -pattern_type      <int>        .D...... set pattern type (from 0 to INT_MAX) (default 4)
@@ -5003,7 +5024,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.59.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.61.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
