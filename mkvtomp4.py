@@ -714,8 +714,9 @@ class MkvtoMp4:
         if self.nvenc_rc_lookahead:
             options['video']['nvenc_rc_lookahead'] = self.nvenc_rc_lookahead
         if self.scale_npp_enabled:
-            if info.video.pix_fmt.lower() in { "yuv420p", "nv12", "yuv444p" }:
-                if self.pix_fmt in { "yuv420p", "nv12", "yuv444p" }:
+            scale_npp_pix_fmts = { "yuv420p", "nv12", "yuv444p" }
+            if info.video.pix_fmt.lower() in scale_npp_pix_fmts:
+                if self.pix_fmt in scale_npp_pix_fmts:
                     options['video']['scale_npp_enabled'] = self.scale_npp_enabled
                 elif self.pix_fmt is None:
                     options['video']['pix_fmt'] = info.video.pix_fmt.lower()
