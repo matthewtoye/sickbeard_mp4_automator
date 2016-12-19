@@ -713,7 +713,7 @@ class MkvtoMp4:
             options['video']['nvenc_temporal_aq'] = self.nvenc_temporal_aq
         if self.nvenc_rc_lookahead:
             options['video']['nvenc_rc_lookahead'] = self.nvenc_rc_lookahead
-        if self.scale_npp_enabled:
+        if self.scale_npp_enabled and vcodec != "copy":
             scale_npp_pix_fmts = { "yuv420p", "nv12", "yuv444p" }
             if info.video.pix_fmt.lower() in scale_npp_pix_fmts:
                 if self.pix_fmt in scale_npp_pix_fmts:
