@@ -8,7 +8,11 @@ scale_npp support requires the following:
 
 Using the gpu for decoding doesn't change the overall speed of taking a file and encoding it via gpu to another format, but it does free the cpu so that it may be used for other things.
 
-scale_npp may speed up downscaling resolution from 1080p --> 720p, but I haven't benchmarked it yet.
+scale_npp requires that the input and output pixel formats be either yuv420p, nv12 or yuv444p. It will not work with any other pixel format. 
+
+The GPU decoder also only supports pixel formats with 420 chroma, so it will not work with yuv444p, yuv422p, etc. 
+
+When these formats are encountered, GPU decoding or scale_npp will be disabled. 
 
 Brief explanation of added settings:
 
