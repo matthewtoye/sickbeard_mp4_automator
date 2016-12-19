@@ -747,6 +747,13 @@ class NVEncH264(H264Codec):
                 opt['hwaccel_enabled'] = True
             else:
                 opt['hwaccel_enabled'] = False
+        else:
+            if 'width' in opt:
+                opt['wscale'] = opt['width']
+                del(opt['width'])
+            if 'height' in opt:
+                opt['hscale'] = opt['height']
+                del(opt['height'])
 
         return super(NVEncH264, self).parse_options(opt, stream)
     
@@ -781,6 +788,16 @@ class NVEncH264(H264Codec):
                     optlist.extend(['-vf', 'scale_npp=%s:trunc(ow/a/2)*2:format=%s:interp_algo=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
                 elif 'scale_npp_hscale' in safe:
                     optlist.extend(['-vf', 'scale_npp=trunc((oh*a)/2)*2:%s:format=%s:interp_algo=%s'  % (safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
+        if 'level' in safe:
+            optlist.extend(['-level', '%0.1f' % safe['level']])
+        if 'tune' in safe:
+            optlist.extend(['-tune', safe['tune']])
+        if 'wscale' in safe and 'hscale' in safe:
+            optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
+        elif 'wscale' in safe:
+            optlist.extend(['-vf', 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale'])])
+        elif 'hscale' in safe:
+            optlist.extend(['-vf', 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale'])])
         return optlist
 
 
@@ -889,6 +906,13 @@ class NVEncH265(H265Codec):
                 opt['hwaccel_enabled'] = True
             else:
                 opt['hwaccel_enabled'] = False
+        else:
+            if 'width' in opt:
+                opt['wscale'] = opt['width']
+                del(opt['width'])
+            if 'height' in opt:
+                opt['hscale'] = opt['height']
+                del(opt['height'])
 
         return super(NVEncH265, self).parse_options(opt, stream)
     
@@ -923,6 +947,16 @@ class NVEncH265(H265Codec):
                     optlist.extend(['-vf', 'scale_npp=%s:trunc(ow/a/2)*2:format=%s:interp_algo=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
                 elif 'scale_npp_hscale' in safe:
                     optlist.extend(['-vf', 'scale_npp=trunc((oh*a)/2)*2:%s:format=%s:interp_algo=%s'  % (safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
+        if 'level' in safe:
+            optlist.extend(['-level', '%0.1f' % safe['level']])
+        if 'tune' in safe:
+            optlist.extend(['-tune', safe['tune']])
+        if 'wscale' in safe and 'hscale' in safe:
+            optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
+        elif 'wscale' in safe:
+            optlist.extend(['-vf', 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale'])])
+        elif 'hscale' in safe:
+            optlist.extend(['-vf', 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale'])])
         return optlist
 
 class DivxCodec(VideoCodec):

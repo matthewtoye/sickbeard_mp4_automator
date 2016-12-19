@@ -714,9 +714,11 @@ class MkvtoMp4:
         if self.nvenc_rc_lookahead:
             options['video']['nvenc_rc_lookahead'] = self.nvenc_rc_lookahead
         if self.scale_npp_enabled:
-            if info.video.pix_fmt.lower() in { "yuv420p", "nv12", "p010le", "yuv444p", "yuv444p16le", "bgr0", "rgb0" }:
+            if info.video.pix_fmt.lower() in { "yuv42p", "nv12", "yuv444p" } and self.pix_fmt in { "yuv420p", "nv12", "yuv444p" }:
                 options['video']['scale_npp_enabled'] = self.scale_npp_enabled
             else:
+                if self.scale_npp_enabled:
+                    self.log.info("scale_npp must use yuv420p, yuv444p or nv12 as the pixel format. Disabling scale_npp for this file." )
                 options['video']['scale_npp_enabled'] = False
         if self.scale_npp_interp_algo:
             options['video']['scale_npp_interp_algo'] = self.scale_npp_interp_algo
