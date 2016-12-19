@@ -657,11 +657,12 @@ class MkvtoMp4:
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
         
-        if self.nvenc_cuvid and vcodec != "copy":
-            if not info.video.pix_fmt.find( "10le" ) and info.video.pix_fmt.find( "16le" ): #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
+        if self.nvenc_cuvid and vcodec != "copy" and not ( info.video.pix_fmt.find( "422" ) or info.video.pix_fmt.find( "444" ) ): #Cuvid only supports 420 chroma at the moment. 
+            if not ( info.video.pix_fmt.find( "10le" ) and info.video.pix_fmt.find( "16le" ) ): #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
                 options['preopts'].extend(['-hwaccel', 'cuvid' ])
             elif self.video_codec == "nvenc_h264": #nvenc_h264 seems to require yuv420p output when accepting a 10 bit stream that was semi-hardware decoded by cuvid.
                 self.pix_fmt = "yuv420p"
+
             if info.video.codec.lower() == "h264":
                 options['preopts'].extend(['-c:v', 'h264_cuvid'])
             elif info.video.codec.lower() == "mjpeg":
@@ -680,8 +681,6 @@ class MkvtoMp4:
                 options['preopts'].extend(['-c:v', 'hevc_cuvid'])
             elif info.video.codec.lower() == "vp9" and self.nvenc_cuvid_hevc:
                 options['preopts'].extend(['-c:v', 'vp9_cuvid'])
-        
-        if vcodec != "copy":
             if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
                 if self.nvenc_decoder_hevc_gpu:
                     options['preopts'].extend(['-gpu', str( self.nvenc_decoder_hevc_gpu )])
