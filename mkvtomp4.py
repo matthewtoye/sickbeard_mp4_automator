@@ -720,7 +720,7 @@ class MkvtoMp4:
         if self.scale_npp_enabled and vcodec != "copy":
             scale_npp_pix_fmts = { "yuv420p", "nv12", "yuv444p" }
             if info.video.pix_fmt.lower() in scale_npp_pix_fmts:
-                if options['video']['pix_fmt'] in scale_npp_pix_fmts:
+                if self.pix_fmt and options['video']['pix_fmt'] in scale_npp_pix_fmts:
                     options['video']['scale_npp_enabled'] = self.scale_npp_enabled
                 elif self.pix_fmt is None:
                     options['video']['pix_fmt'] = info.video.pix_fmt.lower()
