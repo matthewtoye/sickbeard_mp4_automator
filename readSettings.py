@@ -369,6 +369,7 @@ class ReadSettings:
                 self.h264_level = None
 
         self.qsv_decoder = config.getboolean(section, "use-qsv-decoder-with-encoder")  # Use Intel QuickSync Decoder when using QuickSync Encoder
+        self.nvenc_hwaccel_enabled = False
         self.nvenc_profile = config.get(section, "nvenc_profile")
         self.nvenc_preset = config.get(section, "nvenc_preset")
         self.qmin = config.get(section, "qmin")

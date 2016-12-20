@@ -40,6 +40,7 @@ class MkvtoMp4:
                  nvenc_cuvid_hevc=False,
                  nvenc_decoder_gpu=None,
                  nvenc_decoder_hevc_gpu=None,
+                 nvenc_hwaccel_enabled=False,
                  scale_npp_enabled=False,
                  scale_npp_interp_algo=None,
                  audio_codec=['ac3'],
@@ -106,6 +107,7 @@ class MkvtoMp4:
         self.nvenc_cuvid_hevc = nvenc_cuvid_hevc
         self.nvenc_decoder_gpu = nvenc_decoder_gpu
         self.nvenc_decoder_hevc_gpu = nvenc_decoder_hevc_gpu
+        self.nvenc_hwaccel_enabled = nvenc_hwaccel_enabled
         self.scale_npp_enabled = scale_npp_enabled
         self.scale_npp_interp_algo = scale_npp_interp_algo
         self.pix_fmt = pix_fmt
@@ -170,6 +172,7 @@ class MkvtoMp4:
         self.nvenc_cuvid_hevc = settings.nvenc_cuvid_hevc
         self.nvenc_decoder_gpu = settings.nvenc_decoder_gpu
         self.nvenc_decoder_hevc_gpu = settings.nvenc_decoder_hevc_gpu
+        self.nvenc_hwaccel_enabled = settings.nvenc_hwaccel_enabled
         self.scale_npp_enabled = settings.scale_npp_enabled
         self.scale_npp_interp_algo = settings.scale_npp_interp_algo
         self.pix_fmt = settings.pix_fmt
@@ -657,9 +660,10 @@ class MkvtoMp4:
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
         
-        if self.nvenc_cuvid and vcodec != "copy" and not ( info.video.pix_fmt.find( "422" ) or info.video.pix_fmt.find( "444" ) ): #Cuvid only supports 420 chroma at the moment. 
-            if not ( info.video.pix_fmt.find( "10le" ) and info.video.pix_fmt.find( "16le" ) ): #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
+        if self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
+            if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
                 options['preopts'].extend(['-hwaccel', 'cuvid' ])
+                options['video']['nvenc_hwaccel_enabled'] = True
             elif self.video_codec == "nvenc_h264": #nvenc_h264 seems to require yuv420p output when accepting a 10 bit stream that was semi-hardware decoded by cuvid.
                 self.pix_fmt = "yuv420p"
 
@@ -716,7 +720,7 @@ class MkvtoMp4:
         if self.scale_npp_enabled and vcodec != "copy":
             scale_npp_pix_fmts = { "yuv420p", "nv12", "yuv444p" }
             if info.video.pix_fmt.lower() in scale_npp_pix_fmts:
-                if self.pix_fmt in scale_npp_pix_fmts:
+                if options['video']['pix_fmt'] in scale_npp_pix_fmts:
                     options['video']['scale_npp_enabled'] = self.scale_npp_enabled
                 elif self.pix_fmt is None:
                     options['video']['pix_fmt'] = info.video.pix_fmt.lower()
