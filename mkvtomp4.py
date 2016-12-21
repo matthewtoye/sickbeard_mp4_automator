@@ -659,8 +659,11 @@ class MkvtoMp4:
         # If using h264qsv, add the codec in front of the input for decoding
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
-        
-        if self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
+
+
+        nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "mpeg4", "vc1", "vp8", "hevc", "vp9" }
+        if info.video.pix_fmt.lower() in nvenc_cuvid_codecs and \
+        self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
             if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
                 options['preopts'].extend(['-hwaccel', 'cuvid' ])
                 if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
@@ -671,8 +674,10 @@ class MkvtoMp4:
                     options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_gpu )])
                     self.nvenc_decoder_gpu = None
                 options['video']['nvenc_hwaccel_enabled'] = True
-            elif self.video_codec == "nvenc_h264": #nvenc_h264 seems to require yuv420p output when accepting a 10 bit stream that was semi-hardware decoded by cuvid.
-                self.pix_fmt = "yuv420p"
+            else:
+                options['video']['nvenc_hwaccel_enabled'] = False
+                if self.video_codec == "nvenc_h264": #nvenc_h264 seems to require yuv420p output when accepting a 10 bit stream that was semi-hardware decoded by cuvid.
+                    self.pix_fmt = "yuv420p"
 
             if info.video.codec.lower() == "h264":
                 options['preopts'].extend(['-c:v', 'h264_cuvid'])
@@ -697,6 +702,8 @@ class MkvtoMp4:
                     options['preopts'].extend(['-gpu', str( self.nvenc_decoder_hevc_gpu )])
             elif self.nvenc_decoder_gpu:
                 options['preopts'].extend(['-gpu', str( self.nvenc_decoder_gpu )])
+        else:
+            options['video']['nvenc_hwaccel_enabled'] = False
 
         # Add width option
         if vwidth:
