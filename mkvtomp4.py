@@ -660,8 +660,9 @@ class MkvtoMp4:
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
 
-
-        nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "mpeg4", "vc1", "vp8", "hevc", "vp9" }
+        # "mpeg4", Removed mpeg4 from list of cuvid_codecs as I ran into a lot of errors with gpu-decoding on various files.
+        # It's not worth the trouble for the files that do work on as the CPU can easily handle mpeg4 decoding.
+        nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "vc1", "vp8", "hevc", "vp9" }
         if info.video.codec.lower() in nvenc_cuvid_codecs and \
         self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
             if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
