@@ -10,12 +10,12 @@ Using the gpu for decoding doesn't change the overall speed of taking a file and
 
 scale_npp requires that the input and output pixel formats be either yuv420p, nv12 or yuv444p. It will not work with any other pixel format. 
 
-The GPU decoder also only supports pixel formats with 420 chroma, so it will not work with yuv444p, yuv422p, etc. 
-
-When these formats are encountered, GPU decoding or scale_npp will be disabled. 
+Cuvid/NVDEC also only support pixel formats with 420 chroma, so it will not work with yuv444p, yuv422p, etc. When these formats are encountered, NVDEC or scale_npp will be disabled. 
 
 Brief explanation of added settings:
 
+- 'enable_dxva2_gpu_decode = Enable GPU decoding by using DXVA2 - Windows only.
+  **After much testing, I would recommend using dxva2 over cuvid/nvenc decoding. It still uses the GPU, is generally more stable and doesn't randomly drop frames (so far).**
 - 'qmin' = minimum video quantizer scale (VBR) (from -1 to 69) (default 2) - Must be set when nvenc_rate_control is vbr_2pass or vbr_minqp.
 - 'qmax' = maximum video quantizer scale (VBR) (from -1 to 1024) (default 31)
 - 'global_quality' = Must be set when nvenc_rate_control is constqp
@@ -28,8 +28,8 @@ Brief explanation of added settings:
 - 'nvenc_rate_control' = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass - default is constqp
 - 'nvenc_temporal_aq' = (true/false) Improves output quality slightly, adds 2-5% extra processing time - default off
 - 'nvenc_rc_lookahead' = Number of frames to look ahead for rate-control (from -1 to INT_MAX) - default -1
-- 'enable_nvenc_decoder' = (true/false) Enable gpu decoding. Default is false
-- 'enable_nvenc_hevc_decoder' = (true/false) Enable GPU decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false
+- 'enable_nvenc_decoder' = (true/false) Enable NVDEC gpu decoding. Default is false
+- 'enable_nvenc_hevc_decoder' = (true/false) Enable NVDEC gpu decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false
 - 'nvenc_decoder_gpu' = Selects which NVENC capable GPU to use for decoding. First GPU is 0, second is 1, and so on. Default is any
 - 'nvenc_hevc_decoder_gpu' = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any. 
 - 'scale_npp_enabled' = (true/false) Enables usage of https://developer.nvidia.com/npp to resize video output resolution. Requires building ffmpeg yourself, as npp is currently a nonfree license.  Default - false
