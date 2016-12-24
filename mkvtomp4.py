@@ -36,6 +36,7 @@ class MkvtoMp4:
                  nvenc_rc_lookahead=None,
                  h264_level=None,
                  qsv_decoder=True,
+                 dxva2_decoder=False,
                  nvenc_cuvid=False,
                  nvenc_cuvid_hevc=False,
                  nvenc_decoder_gpu=None,
@@ -103,6 +104,7 @@ class MkvtoMp4:
         self.nvenc_rc_lookahead = nvenc_rc_lookahead
         self.h264_level = h264_level
         self.qsv_decoder = qsv_decoder
+        self.dxva2_decoder = dxva2_decoder
         self.nvenc_cuvid = nvenc_cuvid
         self.nvenc_cuvid_hevc = nvenc_cuvid_hevc
         self.nvenc_decoder_gpu = nvenc_decoder_gpu
@@ -168,6 +170,7 @@ class MkvtoMp4:
         self.nvenc_rc_lookahead = settings.nvenc_rc_lookahead
         self.h264_level = settings.h264_level
         self.qsv_decoder = settings.qsv_decoder
+        self.dxva2_decoder = settings.dxva2_decoder
         self.nvenc_cuvid = settings.nvenc_cuvid
         self.nvenc_cuvid_hevc = settings.nvenc_cuvid_hevc
         self.nvenc_decoder_gpu = settings.nvenc_decoder_gpu
@@ -660,10 +663,14 @@ class MkvtoMp4:
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
 
-        # "mpeg4", Removed mpeg4 from list of cuvid_codecs as I ran into a lot of errors with gpu-decoding on various files.
-        # It's not worth the trouble for the files that do work on as the CPU can easily handle mpeg4 decoding.
-        nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "vc1", "vp8", "hevc", "vp9" }
-        if info.video.codec.lower() in nvenc_cuvid_codecs and \
+        nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "mpeg4", "vc1", "vp8", "hevc", "vp9" }
+
+        if self.dxva2_decoder: # Generally, dxva2 tends to be more consistent in handling decoding, and it uses the GPU as well. 
+            options['preopts'].extend(['-hwaccel', 'dxva2' ])
+            self.nvenc_cuvid = False
+            self.nvenc_hwaccel_enabled = False
+            self.scale_npp_enabled = False
+        elif info.video.codec.lower() in nvenc_cuvid_codecs and \
         self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
             if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
                 options['preopts'].extend(['-hwaccel', 'cuvid' ])
@@ -748,6 +755,8 @@ class MkvtoMp4:
                 options['video']['scale_npp_enabled'] = False
             if self.scale_npp_interp_algo:
                 options['video']['scale_npp_interp_algo'] = self.scale_npp_interp_algo
+        else:
+            options['video']['scale_npp_enabled'] = False
         self.options = options
         return options
 

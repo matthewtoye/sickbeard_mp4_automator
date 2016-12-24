@@ -6968,6 +6968,9 @@ deband AVOptions:
   direction         <float>      ..FV.... set direction (from -6.28319 to 6.28319) (default 6.28319)
   d                 <float>      ..FV.... set direction (from -6.28319 to 6.28319) (default 6.28319)
   blur              <boolean>    ..FV.... set blur (default true)
+  b                 <boolean>    ..FV.... set blur (default true)
+  coupling          <boolean>    ..FV.... set plane coupling (default false)
+  c                 <boolean>    ..FV.... set plane coupling (default false)
 
 decimate AVOptions:
   cycle             <int>        ..FV.... set the number of frame from which one will be dropped (from 2 to 25) (default 5)
