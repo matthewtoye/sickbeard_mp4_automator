@@ -14,7 +14,7 @@ Cuvid/NVDEC also only support pixel formats with 420 chroma, so it will not work
 
 Brief explanation of added settings:
 
-- 'enable_dxva2_gpu_decode = Enable GPU decoding by using DXVA2 - Windows only.
+- 'enable_dxva2_gpu_decode = Enable GPU decoding by using DXVA2 - Windows only, will disable Nvidia's decoder.
   **After much testing, I would recommend using dxva2 over cuvid/nvenc decoding. It still uses the GPU, is generally more stable and doesn't randomly drop frames (so far).**
 - 'qmin' = minimum video quantizer scale (VBR) (from -1 to 69) (default 2) - Must be set when nvenc_rate_control is vbr_2pass or vbr_minqp.
 - 'qmax' = maximum video quantizer scale (VBR) (from -1 to 1024) (default 31)

@@ -669,7 +669,6 @@ class MkvtoMp4:
             options['preopts'].extend(['-hwaccel', 'dxva2' ])
             self.nvenc_cuvid = False
             self.nvenc_hwaccel_enabled = False
-            self.scale_npp_enabled = False
         elif info.video.codec.lower() in nvenc_cuvid_codecs and \
         self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
             if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
@@ -748,10 +747,10 @@ class MkvtoMp4:
                     options['video']['pix_fmt'] = info.video.pix_fmt.lower()
                     options['video']['scale_npp_enabled'] = self.scale_npp_enabled
                 else:
-                    self.log.info("scale_npp must use yuv420p, yuv444p or nv12 as the pixel format. Disabling scale_npp for this file." )
+                    self.log.info("scale_npp requires the output pix_fmt to be either yuv420p, nv12 or yuv444p. Disabling scale_npp for this file." )
                     options['video']['scale_npp_enabled'] = False
             else:
-                self.log.info("scale_npp must use yuv420p, yuv444p or nv12 as the pixel format. Disabling scale_npp for this file." )
+                self.log.info("scale_npp requires the pixel format of the input file to be yuv420p, yuv444p or nv12. Disabling scale_npp for this file." )
                 options['video']['scale_npp_enabled'] = False
             if self.scale_npp_interp_algo:
                 options['video']['scale_npp_interp_algo'] = self.scale_npp_interp_algo
