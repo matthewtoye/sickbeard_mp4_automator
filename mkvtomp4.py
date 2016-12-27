@@ -669,6 +669,7 @@ class MkvtoMp4:
             options['preopts'].extend(['-hwaccel', 'dxva2' ])
             self.nvenc_cuvid = False
             self.nvenc_hwaccel_enabled = False
+            options['video']['nvenc_hwaccel_enabled'] = False
         elif info.video.codec.lower() in nvenc_cuvid_codecs and \
         self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
             if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
