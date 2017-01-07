@@ -2392,6 +2392,7 @@ libvpx-vp9 encoder AVOptions:
      variance                     E..V.... Variance based Aq
      complexity                   E..V.... Complexity based Aq
      cyclic                       E..V.... Cyclic Refresh Aq
+  -level             <float>      E..V.... Specify level (from -1 to 6.2) (default -1)
   -speed             <int>        E..V....  (from -16 to 16) (default 1)
   -quality           <int>        E..V....  (from INT_MIN to INT_MAX) (default good)
      best                         E..V....
@@ -2713,6 +2714,8 @@ h264_nvenc AVOptions:
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -aud               <boolean>    E..V.... Use access unit delimiters (default false)
+  -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
 
 h264_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -2834,6 +2837,8 @@ nvenc AVOptions:
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -aud               <boolean>    E..V.... Use access unit delimiters (default false)
+  -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
 
 nvenc_h264 AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -2904,6 +2909,8 @@ nvenc_h264 AVOptions:
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -aud               <boolean>    E..V.... Use access unit delimiters (default false)
+  -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
 
 nvenc_hevc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -2972,6 +2979,8 @@ nvenc_hevc AVOptions:
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -aud               <boolean>    E..V.... Use access unit delimiters (default false)
+  -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
 
 hevc_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3048,6 +3057,8 @@ hevc_nvenc AVOptions:
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -aud               <boolean>    E..V.... Use access unit delimiters (default false)
+  -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
 
 hevc_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -4588,6 +4599,9 @@ hls muxer AVOptions:
      split_by_time                E....... split the hls segment by time which user set by hls_time
      append_list                  E....... append the new segments into old hls segment list
      program_date_time              E....... add EXT-X-PROGRAM-DATE-TIME
+     second_level_segment_index              E....... include segment index in segment filenames when use_localtime
+     second_level_segment_duration              E....... include segment duration in segment filenames when use_localtime
+     second_level_segment_size              E....... include segment size in segment filenames when use_localtime
   -use_localtime     <boolean>    E....... set filename expansion with strftime at segment creation (default false)
   -use_localtime_mkdir <boolean>    E....... create last directory component in strftime-generated filename (default false)
   -hls_playlist_type <int>        E....... set the HLS playlist type (from 0 to 2) (default 0)
@@ -5118,6 +5132,10 @@ spdif AVOptions:
      be                           E....... output in big-endian format (for use as s16be)
   -dtshd_rate        <int>        E....... mux complete DTS frames in HD mode at the specified IEC958 rate (in Hz, default 0=disabled) (from 0 to 768000) (default 0)
   -dtshd_fallback_time <int>        E....... min secs to strip HD for after an overflow (-1: till the end, default 60) (from -1 to INT_MAX) (default 60)
+
+Tee muxer AVOptions:
+  -use_fifo          <boolean>    E....... Use fifo pseudo-muxer to separate actual muxers from encoder (default false)
+  -fifo_options      <string>     E....... fifo pseudo-muxer options
 
 tg2 muxer AVOptions:
   -movflags          <flags>      E....... MOV muxer flags (default 0)
@@ -5876,6 +5894,12 @@ astreamselect AVOptions:
   inputs            <int>        ..FVA... number of input streams (from 2 to INT_MAX) (default 2)
   map               <string>     ..FVA... input indexes to remap to outputs
 
+asyncts AVOptions:
+  compensate        <boolean>    ..F.A... Stretch/squeeze the data to make it match the timestamps (default false)
+  min_delta         <float>      ..F.A... Minimum difference between timestamps and audio data (in seconds) to trigger padding/trimmin the data. (from 0 to INT_MAX) (default 0.1)
+  max_comp          <int>        ..F.A... Maximum compensation in samples per second. (from 0 to INT_MAX) (default 500)
+  first_pts         <int64>      ..F.A... Assume the first pts should be this value. (from I64_MIN to I64_MAX) (default I64_MIN)
+
 atempo AVOptions:
   tempo             <double>     ..F.A... set tempo scale factor (from 0.5 to 2) (default 1)
 
@@ -6137,6 +6161,54 @@ lowpass AVOptions:
 
 pan AVOptions:
   args              <string>     ..F.A...
+
+AVAudioResampleContext AVOptions:
+  -in_channel_layout <int64>      ....A... Input Channel Layout (from I64_MIN to I64_MAX) (default 0)
+  -in_sample_fmt     <int>        ....A... Input Sample Format (from 0 to 11) (default 1)
+  -in_sample_rate    <int>        ....A... Input Sample Rate (from 1 to INT_MAX) (default 48000)
+  -out_channel_layout <int64>      ....A... Output Channel Layout (from I64_MIN to I64_MAX) (default 0)
+  -out_sample_fmt    <int>        ....A... Output Sample Format (from 0 to 11) (default 1)
+  -out_sample_rate   <int>        ....A... Output Sample Rate (from 1 to INT_MAX) (default 48000)
+  -internal_sample_fmt <int>        ....A... Internal Sample Format (from -1 to 11) (default -1)
+     u8                           ....A... 8-bit unsigned integer
+     s16                          ....A... 16-bit signed integer
+     s32                          ....A... 32-bit signed integer
+     flt                          ....A... 32-bit float
+     dbl                          ....A... 64-bit double
+     u8p                          ....A... 8-bit unsigned integer planar
+     s16p                         ....A... 16-bit signed integer planar
+     s32p                         ....A... 32-bit signed integer planar
+     fltp                         ....A... 32-bit float planar
+     dblp                         ....A... 64-bit double planar
+  -mix_coeff_type    <int>        ....A... Mixing Coefficient Type (from 0 to 2) (default flt)
+     q8                           ....A... 16-bit 8.8 Fixed-Point
+     q15                          ....A... 32-bit 17.15 Fixed-Point
+     flt                          ....A... Floating-Point
+  -center_mix_level  <double>     ....A... Center Mix Level (from -32 to 32) (default 0.707107)
+  -surround_mix_level <double>     ....A... Surround Mix Level (from -32 to 32) (default 0.707107)
+  -lfe_mix_level     <double>     ....A... LFE Mix Level (from -32 to 32) (default 0)
+  -normalize_mix_level <int>        ....A... Normalize Mix Level (from 0 to 1) (default 1)
+  -force_resampling  <int>        ....A... Force Resampling (from 0 to 1) (default 0)
+  -filter_size       <int>        ....A... Resampling Filter Size (from 0 to 32) (default 16)
+  -phase_shift       <int>        ....A... Resampling Phase Shift (from 0 to 30) (default 10)
+  -linear_interp     <int>        ....A... Use Linear Interpolation (from 0 to 1) (default 0)
+  -cutoff            <double>     ....A... Cutoff Frequency Ratio (from 0 to 1) (default 0.8)
+  -resample_cutoff   <double>     ....A... Cutoff Frequency Ratio (from 0 to 1) (default 0.8)
+  -matrix_encoding   <int>        ....A... Matrixed Stereo Encoding (from 0 to 6) (default none)
+     none                         ....A... None
+     dolby                        ....A... Dolby
+     dplii                        ....A... Dolby Pro Logic II
+  -filter_type       <int>        ....A... Filter Type (from 0 to 2) (default kaiser)
+     cubic                        ....A... Cubic
+     blackman_nuttall              ....A... Blackman Nuttall Windowed Sinc
+     kaiser                       ....A... Kaiser Windowed Sinc
+  -kaiser_beta       <int>        ....A... Kaiser Window Beta (from 2 to 16) (default 9)
+  -dither_method     <int>        ....A... Dither Method (from 0 to 4) (default none)
+     none                         ....A... No Dithering
+     rectangular                  ....A... Rectangular Dither
+     triangular                   ....A... Triangular Dither
+     triangular_hp                ....A... Triangular Dither With High Pass
+     triangular_ns                ....A... Triangular Dither With Noise Shaping
 
 rubberband AVOptions:
   tempo             <double>     ..F.A... set tempo scale factor (from 0.01 to 100) (default 1)
@@ -7786,6 +7858,9 @@ pad AVOptions:
   x                 <string>     ..FV.... set the x offset expression for the input image position (default "0")
   y                 <string>     ..FV.... set the y offset expression for the input image position (default "0")
   color             <color>      ..FV.... set the color of the padded area border (default "black")
+  eval              <int>        ..FV.... specify when to evaluate expressions (from 0 to 1) (default init)
+     init                         ..FV.... eval expressions once during initialization
+     frame                        ..FV.... eval expressions during initialization and per-frame
 
 palettegen AVOptions:
   max_colors        <int>        ..FV.... set the maximum number of colors to use in the palette (from 4 to 256) (default 256)
@@ -8562,6 +8637,10 @@ tinterlace AVOptions:
 
 transpose AVOptions:
   dir               <int>        ..FV.... set transpose direction (from 0 to 7) (default cclock_flip)
+     cclock_flip                  ..FV.... rotate counter-clockwise with vertical flip
+     clock                        ..FV.... rotate clockwise
+     cclock                       ..FV.... rotate counter-clockwise
+     clock_flip                   ..FV.... rotate clockwise with vertical flip
   passthrough       <int>        ..FV.... do not apply transposition if the input matches the specified geometry (from 0 to INT_MAX) (default none)
      none                         ..FV.... always apply transposition
      portrait                     ..FV.... preserve portrait geometry
@@ -9284,6 +9363,7 @@ aphasemeter AVOptions:
   gc                <int>        ..FV.... set green contrast (from 0 to 255) (default 7)
   bc                <int>        ..FV.... set blue contrast (from 0 to 255) (default 1)
   mpc               <string>     ..FV.... set median phase color (default "none")
+  video             <boolean>    ..FV.... set video output (default true)
 
 avectorscope AVOptions:
   mode              <int>        ..FV.... set mode (from 0 to 2) (default lissajous)
