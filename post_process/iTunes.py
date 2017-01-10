@@ -29,7 +29,7 @@ def main():
                 subprocess.call(['rm', '-rf', filename])
             except Exception as e:
                 print('Error adding %s to iTunes.' % filename)
-                print( e )
+                print e
 
 if __name__ == "__main__":
     main()
