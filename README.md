@@ -1,4 +1,5 @@
 Same as the original with better nvidia support, my changes are as follows:
+**Note: Python 2.7 currently will not work, you must use Python 3. I'll fix python 2.7 support in the future, but it's not a high priority.**
 
 Nightly builds from https://ffmpeg.zeranoe.com/builds/ will work with all added options except scale_npp.
 
