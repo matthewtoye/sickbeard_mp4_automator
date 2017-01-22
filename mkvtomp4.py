@@ -20,6 +20,7 @@ class MkvtoMp4:
                  relocate_moov=True,
                  output_format='mp4',
                  video_codec=['h264', 'x264'],
+                 video_bitrate_restriction=None,
                  video_bitrate=None,
                  video_width=None,
                  nvenc_profile=None,
@@ -88,6 +89,7 @@ class MkvtoMp4:
         self.permissions = permissions
         # Video settings
         self.video_codec = video_codec
+        self.video_bitrate_restriction = video_bitrate_restriction
         self.video_bitrate = video_bitrate
         self.video_width = video_width
         self.nvenc_profile = nvenc_profile
@@ -154,6 +156,7 @@ class MkvtoMp4:
         self.permissions = settings.permissions
         # Video settings
         self.video_codec = settings.vcodec
+        self.video_bitrate_restriction = settings.video_bitrate_restriction
         self.video_bitrate = settings.vbitrate
         self.video_width = settings.vwidth
         self.nvenc_profile = settings.nvenc_profile
@@ -332,6 +335,13 @@ class MkvtoMp4:
             vbr = self.estimateVideoBitrate(info)
         except:
             vbr = info.format.bitrate / 1000
+
+        count = 0
+        while ( count < len( self.video_bitrate_restriction ) ):
+            if int(self.video_bitrate_restriction[count]) >= info.video.video_width:
+                self.video_bitrate = self.video_bitrate_restriction[count+1]
+                break
+            count+=2
 
         if info.video.codec.lower() in self.video_codec:
             vcodec = 'copy'

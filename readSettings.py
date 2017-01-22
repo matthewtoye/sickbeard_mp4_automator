@@ -75,6 +75,7 @@ class ReadSettings:
                         'audio-filter': '',
                         'audio-channel-bitrate': '256',
                         'video-codec': 'h264, x264',
+                        'resolution-bitrate-restriction': '',
                         'video-bitrate': '',
                         'video-max-width': '',
                         'nvenc_profile':'',
@@ -335,6 +336,9 @@ class ReadSettings:
             self.vcodec == ['h264', 'x264']
         else:
             self.vcodec = self.vcodec.lower().replace(' ', '').split(',')
+
+        self.video_bitrate_restriction = config.get(section, "resolution-bitrate-restriction" )
+        self.video_bitrate_restriction = self.video_bitrate_restriction.replace(' ', '').split(',')
 
         self.vbitrate = config.get(section, "video-bitrate")
         if self.vbitrate == '':

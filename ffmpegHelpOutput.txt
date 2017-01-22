@@ -89,6 +89,7 @@ Advanced global options:
 -isync              this option is deprecated and does nothing
 -override_ffserver   override the options from ffserver
 -sdp_file file      specify a file in which to print sdp information
+-qsv_device device  set QSV hardware device (DirectX adapter index, DRM path or X11 display name)
 
 Per-file main options:
 -f fmt              force format
@@ -137,6 +138,7 @@ Advanced per-file options:
 -autorotate         automatically insert correct rotate filters
 -muxdelay seconds   set the maximum demux-decode delay
 -muxpreload seconds  set the initial demux-decode delay
+-time_base ratio    set the desired time base hint for output stream (1:24, 1:48000 or 0.04166, 2.0833e-5)
 -bsf bitstream_filters  A comma-separated list of bitstream filters
 -fpre filename      set options from indicated preset file
 -max_muxing_queue_size packets  maximum number of packets that can be buffered while waiting for all streams to initialize
@@ -4608,6 +4610,10 @@ hls muxer AVOptions:
      event                        E....... EVENT playlist
      vod                          E....... VOD playlist
   -method            <string>     E....... set the HTTP method
+  -hls_start_number_source <int>        E....... set source of first number in sequence (from 0 to 2) (default generic)
+     generic                      E....... start_number value (default)
+     epoch                        E....... seconds since epoch
+     datetime                     E....... current datetime as YYYYMMDDhhmmss
 
 image2 muxer AVOptions:
   -updatefirst       <boolean>    E....... continuously overwrite one file (default false)
@@ -7173,6 +7179,7 @@ drawtext AVOptions:
   shadowcolor       <color>      ..FV.... set shadow color (default "black")
   box               <boolean>    ..FV.... set box (default false)
   boxborderw        <int>        ..FV.... set box border width (from INT_MIN to INT_MAX) (default 0)
+  line_spacing      <int>        ..FV.... set line spacing in pixels (from INT_MIN to INT_MAX) (default 0)
   fontsize          <int>        ..FV.... set font size (from 0 to INT_MAX) (default 0)
   x                 <string>     ..FV.... set x expression (default "0")
   y                 <string>     ..FV.... set y expression (default "0")
@@ -9761,7 +9768,7 @@ Encoders:
  V..... ayuv                 Uncompressed packed MS 4:4:4:4
  V..... bmp                  BMP (Windows and OS/2 bitmap)
  V..... libxavs              libxavs Chinese AVS (Audio Video Standard) (codec cavs)
- V..... cinepak              Cinepak / CVID
+ V..... cinepak              Cinepak
  V..... cljr                 Cirrus Logic AccuPak
  V.S... vc2                  SMPTE VC-2 (codec dirac)
  V..... libschroedinger      libschroedinger Dirac 2.2 (codec dirac)
@@ -10102,6 +10109,7 @@ Decoders:
  V..... smvjpeg              SMV JPEG
  V....D snow                 Snow
  V....D sp5x                 Sunplus JPEG (SP5X)
+ V....D speedhq              NewTek SpeedHQ
  V....D sunrast              Sun Rasterfile image
  V....D svq1                 Sorenson Vector Quantizer 1 / Sorenson Video 1 / SVQ1
  V...BD svq3                 Sorenson Vector Quantizer 3 / Sorenson Video 3 / SVQ3
@@ -10536,6 +10544,7 @@ Codecs:
  D.V... smvjpeg              Sigmatel Motion Video
  DEV.LS snow                 Snow
  D.VIL. sp5x                 Sunplus JPEG (SP5X)
+ D.VIL. speedhq              NewTek SpeedHQ
  DEVI.S sunrast              Sun Rasterfile image
  DEV.L. svq1                 Sorenson Vector Quantizer 1 / Sorenson Video 1 / SVQ1
  D.V.L. svq3                 Sorenson Vector Quantizer 3 / Sorenson Video 3 / SVQ3
