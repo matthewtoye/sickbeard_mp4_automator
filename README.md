@@ -14,7 +14,7 @@ Cuvid/NVDEC also only support pixel formats with 420 chroma, so it will not work
 
 Brief explanation of added settings:
 
-- 'resolution-bitrate-restriction' = Per-resolution bitrate restriction. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
+- 'resolution-bitrate-restriction' = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
   Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 
   That line will restrict 1280x720 to a bitrate of 6000, 1920x1080 to a bitrate of 10000 and 4k to a bitrate of 40000
   This will override the bitrate set under video-bitrate
