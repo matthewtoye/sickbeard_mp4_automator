@@ -336,10 +336,10 @@ class MkvtoMp4:
         except:
             vbr = info.format.bitrate / 1000
 
-        count = 0
+        count = 1
         while ( count < len( self.video_bitrate_restriction ) ):
-            if int(self.video_bitrate_restriction[count]) >= info.video.video_width:
-                self.video_bitrate = self.video_bitrate_restriction[count+1]
+            if int(self.video_bitrate_restriction[count - 1]) >= info.video.video_width:
+                self.video_bitrate = self.video_bitrate_restriction[count]
                 break
             count+=2
 
