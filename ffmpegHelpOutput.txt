@@ -82,6 +82,7 @@ Advanced global options:
 -psnr               calculate PSNR of compressed frames
 -vstats             dump video coding statistics to file
 -vstats_file file   dump video coding statistics to file
+-vstats_version     Version of the vstats format to use.
 -qphist             show QP histogram
 -hwaccel_lax_profile_check  attempt to decode anyway if HW accelerated decoder's supported profiles do not exactly match the stream
 -vc channel         deprecated, use -channel
@@ -170,6 +171,7 @@ Advanced Video options:
 -psnr               calculate PSNR of compressed frames
 -vstats             dump video coding statistics to file
 -vstats_file file   dump video coding statistics to file
+-vstats_version     Version of the vstats format to use.
 -intra_matrix matrix  specify intra matrix coeffs
 -inter_matrix matrix  specify inter matrix coeffs
 -chroma_intra_matrix matrix  specify intra matrix coeffs
@@ -2015,6 +2017,7 @@ AC-3 Encoder AVOptions:
      auto                         E...A... Selected by the Encoder
 
 AC3 decoder AVOptions:
+  -cons_noisegen     <boolean>    .D..A... enable consistent noise generation (default false)
   -drc_scale         <float>      .D..A... percentage of dynamic range compression to apply (from 0 to 6) (default 1)
   -heavy_compr       <boolean>    .D..A... enable heavy dynamic range compression (default false)
   -target_level      <int>        .D..A... target level in -dBFS (0 not applied) (from -31 to 0) (default 0)
@@ -2063,6 +2066,7 @@ Fixed-Point AC-3 Encoder AVOptions:
      auto                         E...A... Selected by the Encoder
 
 Fixed-Point AC-3 Decoder AVOptions:
+  -cons_noisegen     <boolean>    .D..A... enable consistent noise generation (default false)
   -drc_scale         <float>      .D..A... percentage of dynamic range compression to apply (from 0 to 6) (default 1)
   -heavy_compr       <boolean>    .D..A... enable heavy dynamic range compression (default false)
 
@@ -2122,6 +2126,7 @@ E-AC-3 Encoder AVOptions:
      auto                         E...A... Selected by the Encoder
 
 E-AC3 decoder AVOptions:
+  -cons_noisegen     <boolean>    .D..A... enable consistent noise generation (default false)
   -drc_scale         <float>      .D..A... percentage of dynamic range compression to apply (from 0 to 6) (default 1)
   -heavy_compr       <boolean>    .D..A... enable heavy dynamic range compression (default false)
   -target_level      <int>        .D..A... target level in -dBFS (0 not applied) (from -31 to 0) (default 0)
@@ -3308,8 +3313,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.62.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.62.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.65.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.65.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3336,8 +3341,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.62.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.62.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.65.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.65.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3964,7 +3969,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.62.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.65.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -5044,7 +5049,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.62.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.65.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -7977,6 +7982,19 @@ random AVOptions:
   frames            <int>        ..FV.... set number of frames in cache (from 2 to 512) (default 30)
   seed              <int64>      ..FV.... set the seed (from -1 to UINT32_MAX) (default -1)
 
+readeia608 AVOptions:
+  scan_min          <int>        ..FV.... set from which line to scan for codes (from 0 to INT_MAX) (default 0)
+  scan_max          <int>        ..FV.... set to which line to scan for codes (from 0 to INT_MAX) (default 29)
+  mac               <float>      ..FV.... set minimal acceptable amplitude change for sync codes detection (from 0.001 to 1) (default 0.2)
+  spw               <float>      ..FV.... set ratio of width reserved for sync code detection (from 0.1 to 0.7) (default 0.27)
+  mhd               <float>      ..FV.... set max peaks height difference for sync code detection (from 0 to 0.5) (default 0.1)
+  mpd               <float>      ..FV.... set max peaks period difference for sync code detection (from 0 to 0.5) (default 0.1)
+  msd               <float>      ..FV.... set first two max start code bits differences (from 0 to 0.5) (default 0.02)
+  bhd               <float>      ..FV.... set min ratio of bits height compared to 3rd start code bit (from 0.01 to 1) (default 0.75)
+  th_w              <float>      ..FV.... set white color threshold (from 0.1 to 1) (default 0.35)
+  th_b              <float>      ..FV.... set black color threshold (from 0 to 0.5) (default 0.15)
+  chp               <boolean>    ..FV.... check and apply parity bit (default false)
+
 readvitc AVOptions:
   scan_max          <int>        ..FV.... maximum line numbers to scan for VITC data (from -1 to INT_MAX) (default 45)
   thr_b             <double>     ..FV.... black color threshold (from 0 to 1) (default 0.2)
@@ -10360,7 +10378,7 @@ Decoders:
  S..... dvbsub               DVB subtitles (codec dvb_subtitle)
  S..... libzvbi_teletextdec  Libzvbi DVB teletext decoder (codec dvb_teletext)
  S..... dvdsub               DVD subtitles (codec dvd_subtitle)
- S..... cc_dec               Closed Caption (EIA-608 / CEA-708) Decoder (codec eia_608)
+ S..... cc_dec               Closed Caption (EIA-608 / CEA-708) (codec eia_608)
  S..... pgssub               HDMV Presentation Graphic Stream subtitles (codec hdmv_pgs_subtitle)
  S..... jacosub              JACOsub subtitle
  S..... microdvd             MicroDVD subtitle
@@ -11245,9 +11263,12 @@ File formats:
  D  sami            SAMI subtitle format
  DE sap             SAP output
  D  sbg             SBaGen binaural beats script
+ D  scc             Scenarist Closed Captions
   E sdl,sdl2        SDL2 output device
  D  sdp             SDP
  D  sdr2            SDR2
+ D  sds             MIDI Sample Dump Standard
+ D  sdx             Sample Dump eXchange
   E segment         segment
  D  sgi_pipe        piped sgi sequence
  D  shn             raw Shorten
@@ -11693,8 +11714,11 @@ File formats:
  D  sami            SAMI subtitle format
  D  sap             SAP input
  D  sbg             SBaGen binaural beats script
+ D  scc             Scenarist Closed Captions
  D  sdp             SDP
  D  sdr2            SDR2
+ D  sds             MIDI Sample Dump Standard
+ D  sdx             Sample Dump eXchange
  D  sgi_pipe        piped sgi sequence
  D  shn             raw Shorten
  D  siff            Beam Software SIFF
@@ -11983,6 +12007,7 @@ Filters:
  ... pullup            V->V       Pullup from field sequence to frames.
  T.. qp                V->V       Change video quantization parameters.
  ... random            V->V       Return random frames.
+ T.. readeia608        V->V       Read EIA-608 Closed Caption codes from input video and write them to frame metadata.
  ... readvitc          V->V       Read vertical interval timecode and write it to frame metadata.
  ... realtime          V->V       Slow down filtering to match realtime.
  T.. remap             VVV->V     Remap pixels

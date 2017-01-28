@@ -675,11 +675,15 @@ class MkvtoMp4:
 
         nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "mpeg4", "vc1", "vp8", "hevc", "vp9" }
 
+        use_yuv420p = False
         if self.dxva2_decoder: # Generally, dxva2 tends to be more consistent in handling decoding, and it uses the GPU as well. 
             options['preopts'].extend(['-hwaccel', 'dxva2' ])
             self.nvenc_cuvid = False
             self.nvenc_hwaccel_enabled = False
             options['video']['nvenc_hwaccel_enabled'] = False
+            if '10le' in info.video.pix_fmt or '16le' in info.video.pix_fmt:
+                if 'nvenc_h264' in self.video_codec: #nvenc_h264 seems to require yuv420p output when accepting a 10 bit stream from dxva .
+                    use_yuv420p = True
         elif info.video.codec.lower() in nvenc_cuvid_codecs and \
         self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
             if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
@@ -694,9 +698,8 @@ class MkvtoMp4:
                 options['video']['nvenc_hwaccel_enabled'] = True
             else:
                 options['video']['nvenc_hwaccel_enabled'] = False
-                if self.video_codec == "nvenc_h264": #nvenc_h264 seems to require yuv420p output when accepting a 10 bit stream that was semi-hardware decoded by cuvid.
-                    self.pix_fmt = "yuv420p"
-
+                if 'nvenc_h264' in self.video_codec: #nvenc_h264 seems to require yuv420p output when accepting a 10 bit stream that was semi-hardware decoded by cuvid.
+                    use_yuv420p = True
             if info.video.codec.lower() == "h264":
                 options['preopts'].extend(['-c:v', 'h264_cuvid'])
             elif info.video.codec.lower() == "mjpeg":
@@ -728,8 +731,10 @@ class MkvtoMp4:
             options['video']['width'] = vwidth
 
         # Add pix_fmt
-        if self.pix_fmt:
+        if self.pix_fmt and use_yuv420p == False:
             options['video']['pix_fmt'] = self.pix_fmt[0]
+        elif use_yuv420p == True:
+            options['video']['pix_fmt'] = "yuv420p"
         # Add Nvidia specific options
         if self.nvenc_profile:
             options['video']['nvenc_profile'] = self.nvenc_profile
