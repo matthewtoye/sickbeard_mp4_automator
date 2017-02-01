@@ -16,9 +16,11 @@ log.info("Radarr extra script post processing started.")
 
 settings = ReadSettings(os.path.dirname(sys.argv[0]), "autoProcess.ini")
 
-inputfile = os.environ.get('Radarr_moviefile_path')
-original = os.environ.get('Radarr_moviefile_scenename')
-imdbid = os.environ.get('Radarr_movie_id')
+log.info(os.environ)
+
+inputfile = os.environ.get('radarr_moviefile_path')
+original = os.environ.get('radarr_moviefile_scenename')
+imdbid = os.environ.get('radarr_movie_imdbid')
 
 converter = MkvtoMp4(settings)
 

@@ -3313,8 +3313,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.65.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.65.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3341,8 +3341,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.65.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.65.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3969,7 +3969,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.65.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4445,12 +4445,6 @@ Blackmagic DeckLink muxer AVOptions:
   -list_devices      <int>        E....... list available devices (from 0 to 1) (default 0)
   -list_formats      <int>        E....... list supported formats (from 0 to 1) (default 0)
   -preroll           <double>     E....... video preroll in seconds (from 0 to 5) (default 0.5)
-
-sdl2 outdev AVOptions:
-  -window_title      <string>     E....... set SDL window title
-  -window_size       <image_size> E....... set SDL window forced size
-  -window_fullscreen <boolean>    E....... set SDL window fullscreen (default false)
-  -window_borderless <boolean>    E....... set SDL window border off (default false)
 
 ADTS muxer AVOptions:
   -write_id3v2       <boolean>    E....... Enable ID3v2 tag writing (default false)
@@ -5049,7 +5043,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.65.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -9331,6 +9325,13 @@ yuvtestsrc AVOptions:
   d                 <duration>   ..FV.... set video duration (default -0.000001)
   sar               <rational>   ..FV.... set video sample aspect ratio (from 0 to INT_MAX) (default 1/1)
 
+abitscope AVOptions:
+  rate              <video_rate> ..FV.... set video rate (default "25")
+  r                 <video_rate> ..FV.... set video rate (default "25")
+  size              <image_size> ..FV.... set video size (default "1024x256")
+  s                 <image_size> ..FV.... set video size (default "1024x256")
+  colors            <string>     ..FV.... set channels colors (default "red|green|blue|yellow|orange|lime|pink|magenta|brown")
+
 adrawgraph AVOptions:
   m1                <string>     ..FV.... set 1st metadata key (default "")
   fg1               <string>     ..FV.... set 1st foreground color expression (default "0xffff0000")
@@ -9446,8 +9447,8 @@ showcqt AVOptions:
   bar_g             <float>      ..FV.... set bargraph gamma (from 1 to 7) (default 1)
   gamma2            <float>      ..FV.... set bargraph gamma (from 1 to 7) (default 1)
   bar_t             <float>      ..FV.... set bar transparency (from 0 to 1) (default 1)
-  timeclamp         <double>     ..FV.... set timeclamp (from 0.1 to 1) (default 0.17)
-  tc                <double>     ..FV.... set timeclamp (from 0.1 to 1) (default 0.17)
+  timeclamp         <double>     ..FV.... set timeclamp (from 0.002 to 1) (default 0.17)
+  tc                <double>     ..FV.... set timeclamp (from 0.002 to 1) (default 0.17)
   basefreq          <double>     ..FV.... set base frequency (from 10 to 100000) (default 20.0152)
   endfreq           <double>     ..FV.... set end frequency (from 10 to 100000) (default 20495.6)
   coeffclamp        <float>      ..FV.... set coeffclamp (from 0.1 to 10) (default 1)
@@ -11263,8 +11264,7 @@ File formats:
  D  sami            SAMI subtitle format
  DE sap             SAP output
  D  sbg             SBaGen binaural beats script
- D  scc             Scenarist Closed Captions
-  E sdl,sdl2        SDL2 output device
+ DE scc             Scenarist Closed Captions
  D  sdp             SDP
  D  sdr2            SDR2
  D  sds             MIDI Sample Dump Standard
@@ -11466,7 +11466,7 @@ File formats:
   E s32le           PCM signed 32-bit little-endian
   E s8              PCM signed 8-bit
   E sap             SAP output
-  E sdl,sdl2        SDL2 output device
+  E scc             Scenarist Closed Captions
   E segment         segment
   E singlejpeg      JPEG single image
   E smjpeg          Loki SDL MJPEG
@@ -12010,7 +12010,7 @@ Filters:
  T.. readeia608        V->V       Read EIA-608 Closed Caption codes from input video and write them to frame metadata.
  ... readvitc          V->V       Read vertical interval timecode and write it to frame metadata.
  ... realtime          V->V       Slow down filtering to match realtime.
- T.. remap             VVV->V     Remap pixels
+ T.. remap             VVV->V     Remap pixels.
  TS. removegrain       V->V       Remove grain.
  T.. removelogo        V->V       Remove a TV logo based on a mask image.
  ... repeatfields      V->V       Hard repeat fields based on MPEG repeat field flag.
@@ -12086,6 +12086,7 @@ Filters:
  ... testsrc2          |->V       Generate another test pattern.
  ... yuvtestsrc        |->V       Generate YUV test pattern.
  ... nullsink          V->|       Do absolutely nothing with the input video.
+ ... abitscope         A->V       Convert input audio to audio bit scope video output.
  ... adrawgraph        A->V       Draw a graph using input audio metadata.
  ... ahistogram        A->V       Convert input audio to histogram video output.
  ... aphasemeter       A->N       Convert input audio to phase meter video output.
