@@ -6,11 +6,9 @@ scale_npp support requires the following:
   - CUDA Toolkit 8.0 - https://developer.nvidia.com/cuda-downloads installed on the pc using ffmpeg. Unfortunately there doesn't seem to be a way to statically compile scale_npp support on Windows, and this is the only way to get the shared libraries so ffmpeg doesn't complain about missing .dlls when loaded.
   - I created a fork of ffmpeg-windows-build-helpers and edited the build script so that it will add scale_npp to ffmpeg while compiling - https://github.com/Collisionc/ffmpeg-windows-build-helpers - Make sure to enable non-free libraries for scale_npp support
 
-Using the gpu for decoding doesn't change the overall speed of taking a file and encoding it via gpu to another format, but it does free the cpu so that it may be used for other things.
+scale_npp requires that the input and output pixel formats be either yuv420p, nv12 or yuv444p. It will not work with any other pixel format, but will automatically be disabled whenever non-compatible pixel formats are found. It is a fairly noticable speed increase when downscaling is needed, anywhere from 30-70% faster than when it is turned off. 
 
-scale_npp requires that the input and output pixel formats be either yuv420p, nv12 or yuv444p. It will not work with any other pixel format. 
-
-Cuvid/NVDEC also only support pixel formats with 420 chroma, so it will not work with yuv444p, yuv422p, etc. When these formats are encountered, NVDEC or scale_npp will be disabled. 
+Cuvid/NVDEC also only support pixel formats with 420 chroma, so it will not work with yuv444p, yuv422p, etc. When these formats are encountered, NVDEC will be disabled. 
 
 Brief explanation of added settings:
 

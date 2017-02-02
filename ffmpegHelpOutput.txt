@@ -3313,8 +3313,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.101")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.101")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3341,8 +3341,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.101")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.101")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3969,7 +3969,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.101")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4472,6 +4472,7 @@ ASF stream muxer AVOptions:
   -packet_size       <int>        E....... Packet size (from 100 to 65536) (default 3200)
 
 AVI muxer AVOptions:
+  -reserve_index_space <int>        E....... reserve space (in bytes) at the beginning of the file for each stream index (from 0 to INT_MAX) (default 0)
   -write_channel_mask <boolean>    E....... write channel mask into wave format header (default true)
 
 dash muxer AVOptions:
@@ -5043,7 +5044,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.101")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -7842,11 +7843,12 @@ overlay AVOptions:
      frame                        ..FV.... eval expressions per-frame
   rgb               <boolean>    ..FV.... force packed RGB in input and output (deprecated) (default false)
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
-  format            <int>        ..FV.... set output format (from 0 to 3) (default yuv420)
+  format            <int>        ..FV.... set output format (from 0 to 4) (default yuv420)
      yuv420                       ..FV.... 
      yuv422                       ..FV.... 
      yuv444                       ..FV.... 
      rgb                          ..FV.... 
+     gbrp                         ..FV.... 
   repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
 
 owdenoise AVOptions:
@@ -8632,6 +8634,9 @@ telecine AVOptions:
      bottom                       ..FV.... select bottom field first
      b                            ..FV.... select bottom field first
   pattern           <string>     ..FV.... pattern that describe for how many fields a frame is to be displayed (default "23")
+
+threshold AVOptions:
+  planes            <int>        ..FV.... set planes to filter (from 0 to 15) (default 15)
 
 thumbnail AVOptions:
   n                 <int>        ..FV.... set the frames batch size (from 2 to INT_MAX) (default 100)
@@ -12048,6 +12053,7 @@ Filters:
  T.. swapuv            V->V       Swap U and V components.
  .S. tblend            V->V       Blend successive frames.
  ... telecine          V->V       Apply a telecine pattern.
+ T.. threshold         VVVV->V    Threshold first video stream using other video streams.
  ... thumbnail         V->V       Select the most representative frame in a given sequence of consecutive frames.
  ... tile              V->V       Tile several successive frames together.
  ... tinterlace        V->V       Perform temporal field interlacing.
