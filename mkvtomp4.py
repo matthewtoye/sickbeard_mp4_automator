@@ -405,8 +405,7 @@ class MkvtoMp4:
             if self.adl is not None and a.metadata['language'] == 'und':
                 self.log.debug("Undefined language detected, defaulting to [%s]." % self.adl)
                 a.metadata['language'] = self.adl
-            if not a.codec == "truehd": #truehd copying/encoding seems to not work in ffmpeg as of 2/11/2017
-                                        # I'll poke around later to see what i'm doing wrong, but for now, skip it.
+            if not a.codec == "truehd": # ffmpeg cannot decode truehd streams, so we need to skip these to avoid crashing.
             # Proceed if no whitelist is set, or if the language is in the whitelist
                 if self.awl is None or a.metadata['language'].lower() in self.awl:
                 # Create iOS friendly audio stream if the default audio stream has too many channels (iOS only likes AAC stereo)
