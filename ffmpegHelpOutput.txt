@@ -769,6 +769,9 @@ amv encoder AVOptions:
      left                         E..V....
      plane                        E..V....
      median                       E..V....
+  -huffman           <int>        E..V.... Huffman table strategy (from 0 to 1) (default default)
+     default                      E..V....
+     optimal                      E..V....
 
 APNG encoder AVOptions:
   -dpi               <int>        E..V.... Set image resolution (in dots per inch) (from 0 to 65536) (default 0)
@@ -1223,6 +1226,9 @@ mjpeg encoder AVOptions:
      left                         E..V....
      plane                        E..V....
      median                       E..V....
+  -huffman           <int>        E..V.... Huffman table strategy (from 0 to 1) (default default)
+     default                      E..V....
+     optimal                      E..V....
 
 MJPEG decoder AVOptions:
   -extern_huff       <boolean>    .D.V.... Use external huffman table. (default false)
@@ -3313,8 +3319,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.101")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.101")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.102")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3341,8 +3347,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.101")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.101")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.102")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3969,7 +3975,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.101")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.102")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4446,6 +4452,12 @@ Blackmagic DeckLink muxer AVOptions:
   -list_formats      <int>        E....... list supported formats (from 0 to 1) (default 0)
   -preroll           <double>     E....... video preroll in seconds (from 0 to 5) (default 0.5)
 
+sdl2 outdev AVOptions:
+  -window_title      <string>     E....... set SDL window title
+  -window_size       <image_size> E....... set SDL window forced size
+  -window_fullscreen <boolean>    E....... set SDL window fullscreen (default false)
+  -window_borderless <boolean>    E....... set SDL window border off (default false)
+
 ADTS muxer AVOptions:
   -write_id3v2       <boolean>    E....... Enable ID3v2 tag writing (default false)
   -write_apetag      <boolean>    E....... Enable APE tag writing (default false)
@@ -4585,7 +4597,7 @@ hls muxer AVOptions:
   -hls_list_size     <int>        E....... set maximum number of playlist entries (from 0 to INT_MAX) (default 5)
   -hls_ts_options    <string>     E....... set hls mpegts list of options for the container format used for hls
   -hls_vtt_options   <string>     E....... set hls vtt list of options for the container format used for hls
-  -hls_wrap          <int>        E....... set number after which the index wraps (from 0 to INT_MAX) (default 0)
+  -hls_wrap          <int>        E....... set number after which the index wraps (will be deprecated) (from 0 to INT_MAX) (default 0)
   -hls_allow_cache   <int>        E....... explicitly set whether the client MAY (1) or MUST NOT (0) cache media segments (from INT_MIN to INT_MAX) (default -1)
   -hls_base_url      <string>     E....... url to prepend to each playlist entry
   -hls_segment_filename <string>     E....... filename template for segment files
@@ -4594,6 +4606,7 @@ hls muxer AVOptions:
   -hls_subtitle_path <string>     E....... set path of hls subtitles
   -hls_flags         <flags>      E....... set flags affecting HLS playlist and media file generation (default 0)
      single_file                  E....... generate a single media file indexed with byte ranges
+     temp_file                    E....... write segment to temporary file and rename when complete
      delete_segments              E....... delete segment files that are no longer part of the playlist
      round_durations              E....... round durations in m3u8 to whole numbers
      discont_start                E....... start the playlist with a discontinuity tag
@@ -5044,7 +5057,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.101")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.102")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -7676,6 +7689,9 @@ metadata AVOptions:
   expr              <string>     ..FV.... set expression for expr function
   file              <string>     ..FV.... set file where to print metadata information
 
+midequalizer AVOptions:
+  planes            <int>        ..FV.... set planes (from 0 to 15) (default 15)
+
 minterpolate AVOptions:
   fps               <video_rate> ..FV.... output's frame rate (default "60")
   mi_mode           <int>        ..FV.... motion interpolation mode (from 0 to 2) (default mci)
@@ -10260,7 +10276,9 @@ Decoders:
  A....D ape                  Monkey's Audio
  A....D atrac1               ATRAC1 (Adaptive TRansform Acoustic Coding)
  A....D atrac3               ATRAC3 (Adaptive TRansform Acoustic Coding 3)
+ A....D atrac3al             ATRAC3 AL (Adaptive TRansform Acoustic Coding 3 Advanced Lossless)
  A....D atrac3plus           ATRAC3+ (Adaptive TRansform Acoustic Coding 3+) (codec atrac3p)
+ A....D atrac3plusal         ATRAC3+ AL (Adaptive TRansform Acoustic Coding 3+ Advanced Lossless) (codec atrac3pal)
  A....D on2avc               On2 Audio for Video Codec (codec avc)
  A....D binkaudio_dct        Bink Audio (DCT)
  A....D binkaudio_rdft       Bink Audio (RDFT)
@@ -10686,7 +10704,9 @@ Codecs:
  D.A..S ape                  Monkey's Audio
  D.A.L. atrac1               ATRAC1 (Adaptive TRansform Acoustic Coding)
  D.A.L. atrac3               ATRAC3 (Adaptive TRansform Acoustic Coding 3)
+ D.A..S atrac3al             ATRAC3 AL (Adaptive TRansform Acoustic Coding 3 Advanced Lossless)
  D.A.L. atrac3p              ATRAC3+ (Adaptive TRansform Acoustic Coding 3+) (decoders: atrac3plus )
+ D.A..S atrac3pal            ATRAC3+ AL (Adaptive TRansform Acoustic Coding 3+ Advanced Lossless) (decoders: atrac3plusal )
  D.A.L. avc                  On2 Audio for Video Codec (decoders: on2avc )
  D.A.L. binkaudio_dct        Bink Audio (DCT)
  D.A.L. binkaudio_rdft       Bink Audio (RDFT)
@@ -11020,8 +11040,8 @@ IO... gray12be               1            12
 IO... gray12le               1            12
 IO... gray10be               1            10
 IO... gray10le               1            10
-..... p016le                 3            24
-..... p016be                 3            24
+I.... p016le                 3            24
+I.... p016be                 3            24
 File formats:
  D. = Demuxing supported
  .E = Muxing supported
@@ -11270,6 +11290,7 @@ File formats:
  DE sap             SAP output
  D  sbg             SBaGen binaural beats script
  DE scc             Scenarist Closed Captions
+  E sdl,sdl2        SDL2 output device
  D  sdp             SDP
  D  sdr2            SDR2
  D  sds             MIDI Sample Dump Standard
@@ -11472,6 +11493,7 @@ File formats:
   E s8              PCM signed 8-bit
   E sap             SAP output
   E scc             Scenarist Closed Captions
+  E sdl,sdl2        SDL2 output device
   E segment         segment
   E singlejpeg      JPEG single image
   E smjpeg          Loki SDL MJPEG
@@ -11987,6 +12009,7 @@ Filters:
  ... mergeplanes       N->V       Merge planes.
  ... mestimate         V->V       Generate motion vectors.
  T.. metadata          V->V       Manipulate video frame metadata.
+ T.. midequalizer      VV->V      Apply Midway Equalization.
  ... minterpolate      V->V       Frame rate conversion using Motion Interpolation.
  ... mpdecimate        V->V       Remove near-duplicate frames.
  T.. negate            V->V       Negate input video.
