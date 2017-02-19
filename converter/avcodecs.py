@@ -540,7 +540,6 @@ class SubtitleCopyCodec(BaseCodec):
 class VorbisCodec(AudioCodec):
     """
     Vorbis audio codec.
-    @see http://ffmpeg.org/trac/ffmpeg/wiki/TheoraVorbisEncodingGuide
     """
     codec_name = 'vorbis'
     ffmpeg_codec_name = 'libvorbis'
@@ -655,7 +654,6 @@ class Mp2Codec(AudioCodec):
 class TheoraCodec(VideoCodec):
     """
     Theora video codec.
-    @see http://ffmpeg.org/trac/ffmpeg/wiki/TheoraVorbisEncodingGuide
     """
     codec_name = 'theora'
     ffmpeg_codec_name = 'libtheora'
@@ -675,7 +673,6 @@ class TheoraCodec(VideoCodec):
 class H264Codec(VideoCodec):
     """
     H.264/AVC video codec.
-    @see http://ffmpeg.org/trac/ffmpeg/wiki/x264EncodingGuide
     """
     codec_name = 'h264'
     ffmpeg_codec_name = 'libx264'
@@ -685,7 +682,6 @@ class H264Codec(VideoCodec):
         # faster, fast, medium(default), slow, slower, veryslow
         'quality': int,  # constant rate factor, range:0(lossless)-51(worst)
         # default:23, recommended: 18-28
-        # http://mewiki.project357.com/wiki/X264_Settings#profile
         'profile': str,  # default: not-set, for valid values see above link
         'level': float,  # default: not-set, values range from 3.0 to 4.2
         'tune': str,  # default: not-set, for valid values see above link
@@ -730,7 +726,6 @@ class H264Codec(VideoCodec):
 class NVEncH264(H264Codec):
     """
     Nvidia H.264/AVC video codec.
-    @see http://ffmpeg.org/trac/ffmpeg/wiki/x264EncodingGuide
     """
     codec_name = 'nvenc_h264'
     ffmpeg_codec_name = 'nvenc_h264'
@@ -818,7 +813,6 @@ class NVEncH264(H264Codec):
 class H264QSV(H264Codec):
     """
     H.264/AVC video codec.
-    @see http://ffmpeg.org/trac/ffmpeg/wiki/x264EncodingGuide
     """
     codec_name = 'h264qsv'
     ffmpeg_codec_name = 'h264_qsv'
@@ -832,7 +826,6 @@ class H264QSV(H264Codec):
 class H265Codec(VideoCodec):
     """
     H.265/AVC video codec.
-    @see https://trac.ffmpeg.org/wiki/Encode/H.265
     """
     codec_name = 'h265'
     ffmpeg_codec_name = 'libx265'
@@ -842,7 +835,6 @@ class H265Codec(VideoCodec):
         # faster, fast, medium(default), slow, slower, veryslow
         'quality': int,  # constant rate factor, range:0(lossless)-51(worst)
         # default:23, recommended: 18-28
-        # http://mewiki.project357.com/wiki/X264_Settings#profile
         'profile': str,  # default: not-set, for valid values see above link
         'level': float,  # default: not-set, values range from 3.0 to 4.2
         'tune': str,  # default: not-set, for valid values see above link
@@ -884,7 +876,6 @@ class H265Codec(VideoCodec):
 class NVEncH265(H265Codec):
     """
     Nvidia H.265/AVC video codec.
-    @see https://trac.ffmpeg.org/wiki/Encode/H.265
     """
     codec_name = 'nvenc_h265'
     ffmpeg_codec_name = 'nvenc_hevc'
