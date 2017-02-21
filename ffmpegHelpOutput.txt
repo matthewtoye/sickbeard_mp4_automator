@@ -2174,6 +2174,9 @@ FLAC decoder AVOptions:
 G.723.1 decoder AVOptions:
   -postfilter        <boolean>    .D..A... enable postfilter (default true)
 
+Opus encoder AVOptions:
+  -opus_delay        <float>      E...A... Maximum delay (and lookahead) in milliseconds (from 2.5 to 360) (default 360)
+
 TTA Decoder AVOptions:
   -password          <string>     .D..A... Set decoding password
 
@@ -2657,6 +2660,7 @@ h264_cuvid AVOptions:
      adaptive                     .D.V.... Adaptive deinterlacing
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
+  -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
 
 h264_nvenc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -2718,7 +2722,7 @@ h264_nvenc AVOptions:
      list                         E..V.... List the available devices
   -delay             <int>        E..V.... Delay frame output by the given amount of frames (from 0 to INT_MAX) (default INT_MAX)
   -no-scenecut       <boolean>    E..V.... When lookahead is enabled, set this to 1 to disable adaptive I-frame insertion at scene cuts (default false)
-  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default auto)
+  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default false)
   -b_adapt           <boolean>    E..V.... When lookahead is enabled, set this to 0 to disable adaptive B-frame decision (default true)
   -spatial-aq        <boolean>    E..V.... set to 1 to enable Spatial AQ (default false)
   -temporal-aq       <boolean>    E..V.... set to 1 to enable Temporal AQ (default false)
@@ -2841,7 +2845,7 @@ nvenc AVOptions:
      list                         E..V.... List the available devices
   -delay             <int>        E..V.... Delay frame output by the given amount of frames (from 0 to INT_MAX) (default INT_MAX)
   -no-scenecut       <boolean>    E..V.... When lookahead is enabled, set this to 1 to disable adaptive I-frame insertion at scene cuts (default false)
-  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default auto)
+  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default false)
   -b_adapt           <boolean>    E..V.... When lookahead is enabled, set this to 0 to disable adaptive B-frame decision (default true)
   -spatial-aq        <boolean>    E..V.... set to 1 to enable Spatial AQ (default false)
   -temporal-aq       <boolean>    E..V.... set to 1 to enable Temporal AQ (default false)
@@ -2913,7 +2917,7 @@ nvenc_h264 AVOptions:
      list                         E..V.... List the available devices
   -delay             <int>        E..V.... Delay frame output by the given amount of frames (from 0 to INT_MAX) (default INT_MAX)
   -no-scenecut       <boolean>    E..V.... When lookahead is enabled, set this to 1 to disable adaptive I-frame insertion at scene cuts (default false)
-  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default auto)
+  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default false)
   -b_adapt           <boolean>    E..V.... When lookahead is enabled, set this to 0 to disable adaptive B-frame decision (default true)
   -spatial-aq        <boolean>    E..V.... set to 1 to enable Spatial AQ (default false)
   -temporal-aq       <boolean>    E..V.... set to 1 to enable Temporal AQ (default false)
@@ -2984,7 +2988,7 @@ nvenc_hevc AVOptions:
      list                         E..V.... List the available devices
   -delay             <int>        E..V.... Delay frame output by the given amount of frames (from 0 to INT_MAX) (default INT_MAX)
   -no-scenecut       <boolean>    E..V.... When lookahead is enabled, set this to 1 to disable adaptive I-frame insertion at scene cuts (default false)
-  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default auto)
+  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default false)
   -spatial_aq        <boolean>    E..V.... set to 1 to enable Spatial AQ (default false)
   -temporal_aq       <boolean>    E..V.... set to 1 to enable Temporal AQ (default false)
   -zerolatency       <boolean>    E..V.... Set 1 to indicate zero latency operation (no reordering delay) (default false)
@@ -3002,6 +3006,7 @@ hevc_cuvid AVOptions:
      adaptive                     .D.V.... Adaptive deinterlacing
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
+  -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
 
 hevc_nvenc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -3062,7 +3067,7 @@ hevc_nvenc AVOptions:
      list                         E..V.... List the available devices
   -delay             <int>        E..V.... Delay frame output by the given amount of frames (from 0 to INT_MAX) (default INT_MAX)
   -no-scenecut       <boolean>    E..V.... When lookahead is enabled, set this to 1 to disable adaptive I-frame insertion at scene cuts (default false)
-  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default auto)
+  -forced-idr        <boolean>    E..V.... If forcing keyframes, force them as IDR frames. (default false)
   -spatial_aq        <boolean>    E..V.... set to 1 to enable Spatial AQ (default false)
   -temporal_aq       <boolean>    E..V.... set to 1 to enable Temporal AQ (default false)
   -zerolatency       <boolean>    E..V.... Set 1 to indicate zero latency operation (no reordering delay) (default false)
@@ -3114,6 +3119,7 @@ mjpeg_cuvid AVOptions:
      adaptive                     .D.V.... Adaptive deinterlacing
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
+  -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
 
 mpeg1_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3122,6 +3128,7 @@ mpeg1_cuvid AVOptions:
      adaptive                     .D.V.... Adaptive deinterlacing
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
+  -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
 
 mpeg2_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3130,6 +3137,7 @@ mpeg2_cuvid AVOptions:
      adaptive                     .D.V.... Adaptive deinterlacing
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
+  -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
 
 mpeg2_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -3167,6 +3175,7 @@ mpeg4_cuvid AVOptions:
      adaptive                     .D.V.... Adaptive deinterlacing
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
+  -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
 
 vc1_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3175,6 +3184,7 @@ vc1_cuvid AVOptions:
      adaptive                     .D.V.... Adaptive deinterlacing
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
+  -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
 
 vp8_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3183,6 +3193,7 @@ vp8_cuvid AVOptions:
      adaptive                     .D.V.... Adaptive deinterlacing
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
+  -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
 
 vp9_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3191,6 +3202,7 @@ vp9_cuvid AVOptions:
      adaptive                     .D.V.... Adaptive deinterlacing
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
+  -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
 
 AVFormatContext AVOptions:
   -avioflags         <flags>      ED...... (default 0)
@@ -4622,7 +4634,7 @@ hls muxer AVOptions:
   -hls_playlist_type <int>        E....... set the HLS playlist type (from 0 to 2) (default 0)
      event                        E....... EVENT playlist
      vod                          E....... VOD playlist
-  -method            <string>     E....... set the HTTP method
+  -method            <string>     E....... set the HTTP method(default: PUT)
   -hls_start_number_source <int>        E....... set source of first number in sequence (from 0 to 2) (default generic)
      generic                      E....... start_number value (default)
      epoch                        E....... seconds since epoch
@@ -7582,17 +7594,17 @@ loop AVOptions:
   start             <int64>      ..FV.... set the loop start frame (from 0 to I64_MAX) (default 0)
 
 lut AVOptions:
-  c0                <string>     ..FV.... set component #0 expression (default "val")
-  c1                <string>     ..FV.... set component #1 expression (default "val")
-  c2                <string>     ..FV.... set component #2 expression (default "val")
-  c3                <string>     ..FV.... set component #3 expression (default "val")
-  y                 <string>     ..FV.... set Y expression (default "val")
-  u                 <string>     ..FV.... set U expression (default "val")
-  v                 <string>     ..FV.... set V expression (default "val")
-  r                 <string>     ..FV.... set R expression (default "val")
-  g                 <string>     ..FV.... set G expression (default "val")
-  b                 <string>     ..FV.... set B expression (default "val")
-  a                 <string>     ..FV.... set A expression (default "val")
+  c0                <string>     ..FV.... set component #0 expression (default "clipval")
+  c1                <string>     ..FV.... set component #1 expression (default "clipval")
+  c2                <string>     ..FV.... set component #2 expression (default "clipval")
+  c3                <string>     ..FV.... set component #3 expression (default "clipval")
+  y                 <string>     ..FV.... set Y expression (default "clipval")
+  u                 <string>     ..FV.... set U expression (default "clipval")
+  v                 <string>     ..FV.... set V expression (default "clipval")
+  r                 <string>     ..FV.... set R expression (default "clipval")
+  g                 <string>     ..FV.... set G expression (default "clipval")
+  b                 <string>     ..FV.... set B expression (default "clipval")
+  a                 <string>     ..FV.... set A expression (default "clipval")
 
 lut2 AVOptions:
   c0                <string>     ..FV.... set component #0 expression (default "x")
@@ -7608,30 +7620,30 @@ lut3d AVOptions:
      tetrahedral                  ..FV.... interpolate values using a tetrahedron
 
 lutrgb AVOptions:
-  c0                <string>     ..FV.... set component #0 expression (default "val")
-  c1                <string>     ..FV.... set component #1 expression (default "val")
-  c2                <string>     ..FV.... set component #2 expression (default "val")
-  c3                <string>     ..FV.... set component #3 expression (default "val")
-  y                 <string>     ..FV.... set Y expression (default "val")
-  u                 <string>     ..FV.... set U expression (default "val")
-  v                 <string>     ..FV.... set V expression (default "val")
-  r                 <string>     ..FV.... set R expression (default "val")
-  g                 <string>     ..FV.... set G expression (default "val")
-  b                 <string>     ..FV.... set B expression (default "val")
-  a                 <string>     ..FV.... set A expression (default "val")
+  c0                <string>     ..FV.... set component #0 expression (default "clipval")
+  c1                <string>     ..FV.... set component #1 expression (default "clipval")
+  c2                <string>     ..FV.... set component #2 expression (default "clipval")
+  c3                <string>     ..FV.... set component #3 expression (default "clipval")
+  y                 <string>     ..FV.... set Y expression (default "clipval")
+  u                 <string>     ..FV.... set U expression (default "clipval")
+  v                 <string>     ..FV.... set V expression (default "clipval")
+  r                 <string>     ..FV.... set R expression (default "clipval")
+  g                 <string>     ..FV.... set G expression (default "clipval")
+  b                 <string>     ..FV.... set B expression (default "clipval")
+  a                 <string>     ..FV.... set A expression (default "clipval")
 
 lutyuv AVOptions:
-  c0                <string>     ..FV.... set component #0 expression (default "val")
-  c1                <string>     ..FV.... set component #1 expression (default "val")
-  c2                <string>     ..FV.... set component #2 expression (default "val")
-  c3                <string>     ..FV.... set component #3 expression (default "val")
-  y                 <string>     ..FV.... set Y expression (default "val")
-  u                 <string>     ..FV.... set U expression (default "val")
-  v                 <string>     ..FV.... set V expression (default "val")
-  r                 <string>     ..FV.... set R expression (default "val")
-  g                 <string>     ..FV.... set G expression (default "val")
-  b                 <string>     ..FV.... set B expression (default "val")
-  a                 <string>     ..FV.... set A expression (default "val")
+  c0                <string>     ..FV.... set component #0 expression (default "clipval")
+  c1                <string>     ..FV.... set component #1 expression (default "clipval")
+  c2                <string>     ..FV.... set component #2 expression (default "clipval")
+  c3                <string>     ..FV.... set component #3 expression (default "clipval")
+  y                 <string>     ..FV.... set Y expression (default "clipval")
+  u                 <string>     ..FV.... set U expression (default "clipval")
+  v                 <string>     ..FV.... set V expression (default "clipval")
+  r                 <string>     ..FV.... set R expression (default "clipval")
+  g                 <string>     ..FV.... set G expression (default "clipval")
+  b                 <string>     ..FV.... set B expression (default "clipval")
+  a                 <string>     ..FV.... set A expression (default "clipval")
 
 maskedclamp AVOptions:
   undershoot        <int>        ..FV.... set undershoot (from 0 to INT_MAX) (default 0)
@@ -9921,6 +9933,7 @@ Encoders:
  A..... libtwolame           libtwolame MP2 (MPEG audio layer 2) (codec mp2)
  A..... libmp3lame           libmp3lame MP3 (MPEG audio layer 3) (codec mp3)
  A..... nellymoser           Nellymoser Asao
+ A..X.. opus                 Opus
  A..... libopus              libopus Opus (codec opus)
  A..... pcm_alaw             PCM A-law / G.711 A-law
  A..... pcm_f32be            PCM 32-bit floating point big-endian
@@ -10043,6 +10056,7 @@ Decoders:
  V....D flashsv2             Flash Screen Video v2
  V....D flic                 Autodesk Animator Flic video
  V...BD flv                  FLV / Sorenson Spark / Sorenson H.263 (Flash Video) (codec flv1)
+ V....D fmvc                 FM Screen Capture Codec
  VF...D fraps                Fraps
  V....D frwu                 Forward Uncompressed
  V....D g2m                  Go2Meeting
@@ -10491,6 +10505,7 @@ Codecs:
  DEV.L. flashsv2             Flash Screen Video v2
  D.V..S flic                 Autodesk Animator Flic video
  DEV.L. flv1                 FLV / Sorenson Spark / Sorenson H.263 (Flash Video) (decoders: flv ) (encoders: flv )
+ D.V..S fmvc                 FM Screen Capture Codec
  D.V..S fraps                Fraps
  D.VI.S frwu                 Forward Uncompressed
  D.V.L. g2m                  Go2Meeting
@@ -10748,7 +10763,7 @@ Codecs:
  D.A.L. musepack7            Musepack SV7 (decoders: mpc7 )
  D.A.L. musepack8            Musepack SV8 (decoders: mpc8 )
  DEA.L. nellymoser           Nellymoser Asao
- DEA.L. opus                 Opus (Opus Interactive Audio Codec) (decoders: opus libopus ) (encoders: libopus )
+ DEA.L. opus                 Opus (Opus Interactive Audio Codec) (decoders: opus libopus ) (encoders: opus libopus )
  D.A.L. paf_audio            Amazing Studio Packed Animation File Audio
  DEA.L. pcm_alaw             PCM A-law / G.711 A-law
  D.A..S pcm_bluray           PCM signed 16|20|24-bit big-endian for Blu-ray media
