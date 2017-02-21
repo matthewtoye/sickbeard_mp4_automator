@@ -7,6 +7,7 @@ import signal
 from subprocess import Popen, PIPE
 import logging
 import locale
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -475,6 +476,10 @@ class FFMpeg(object):
         buf = ''
         total_output = ''
         pat = re.compile(r'time=([0-9.:]+) ')
+        fra = re.compile(r'frame=(\s*\d+) ')
+        frame = 0
+        starttime = time.time()
+        lastframetime = starttime
         while True:
             if timeout:
                 signal.alarm(timeout)
@@ -501,10 +506,22 @@ class FFMpeg(object):
 
             total_output += ret
             buf += ret
+            
             if '\r' in buf:
                 line, buf = buf.split('\r', 1)
 
                 tmp = pat.findall(line)
+                tmpframe = fra.findall(line)
+                if len(tmpframe) == 1 and frame != 0 and frame == int( tmpframe[0] ):
+                    if starttime == lastframetime:
+                        lastframetime = time.time()
+                    elif ( time.time() - lastframetime ) > 60.0:
+                        raise FFMpegError('Forcing ffmpeg to close due to taking more than 60 seconds to render a single frame. Source file may be corrupt.')
+                else:
+                    starttime = time.time()
+                    lastframetime = starttime
+                if len( tmpframe ) == 1:
+                    frame = int( tmpframe[0] )
                 if len(tmp) == 1:
                     timespec = tmp[0]
                     if ':' in timespec:
