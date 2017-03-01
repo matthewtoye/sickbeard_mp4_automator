@@ -2733,6 +2733,9 @@ h264_nvenc AVOptions:
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
+  -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
+  -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
+  -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
 
 h264_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -2856,6 +2859,9 @@ nvenc AVOptions:
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
+  -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
+  -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
+  -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
 
 nvenc_h264 AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -2928,6 +2934,9 @@ nvenc_h264 AVOptions:
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
+  -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
+  -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
+  -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
 
 nvenc_hevc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -2998,6 +3007,9 @@ nvenc_hevc AVOptions:
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
+  -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
+  -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
+  -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
 
 hevc_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3077,6 +3089,9 @@ hevc_nvenc AVOptions:
   -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
+  -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
+  -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
+  -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
 
 hevc_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -10154,6 +10169,7 @@ Decoders:
  VF...D rv30                 RealVideo 3.0
  VF...D rv40                 RealVideo 4.0
  V....D sanm                 LucasArts SANM/Smush video
+ V....D scpr                 ScreenPressor
  V....D screenpresso         Screenpresso
  V....D sgi                  SGI image
  V....D sgirle               Silicon Graphics RLE 8-bit video
@@ -10592,6 +10608,7 @@ Codecs:
  D.V.L. rv30                 RealVideo 3.0
  D.V.L. rv40                 RealVideo 4.0
  D.V.L. sanm                 LucasArts SANM/SMUSH video
+ D.V.LS scpr                 ScreenPressor
  D.V..S screenpresso         Screenpresso
  DEVI.S sgi                  SGI image
  D.VI.S sgirle               SGI RLE 8-bit

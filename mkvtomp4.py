@@ -763,10 +763,8 @@ class MkvtoMp4:
             options['video']['nvenc_preset'] = self.nvenc_preset
         if self.nvenc_rate_control:
             options['video']['nvenc_rate_control'] = self.nvenc_rate_control
-            if self.nvenc_rate_control == "vbr_minqp" and self.qmin is None and self.qmax is None:
-                self.log.error("nvenc vbr_minqp requires qmin and/or qmax option set.")
-            elif self.nvenc_rate_control == "vbr_2pass" and self.qmin is None:
-                self.log.error("nvenc vbr_2pass requires qmin to be set." )
+            if self.nvenc_rate_control == "vbr_minqp" and self.qmin is None:
+                self.log.error("nvenc vbr_minqp requires qmin option set.")
             elif self.nvenc_rate_control == "constqp" and self.global_quality is None:
                 self.log.error("nvenc constqp requires global_quality to be set." )
         if self.nvenc_gpu:
