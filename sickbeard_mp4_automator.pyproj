@@ -29,6 +29,7 @@
     <Compile Include="autoprocess\autoProcessTV.py" />
     <Compile Include="autoprocess\autoProcessTVSR.py" />
     <Compile Include="autoprocess\plex.py" />
+    <Compile Include="autoprocess\radarr.py" />
     <Compile Include="autoprocess\sonarr.py" />
     <Compile Include="autoprocess\__init__.py" />
     <Compile Include="converter\avcodecs.py" />

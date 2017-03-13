@@ -2280,10 +2280,9 @@ libopenjpeg AVOptions:
      rpcl                         E..V....
      pcrl                         E..V....
      cprl                         E..V....
-  -numresolution     <int>        E..V.... (from 0 to INT_MAX) (default 0)
-  -numlayers         <int>        E..V.... (from 1 to 10) (default 1)
+  -numresolution     <int>        E..V.... (from 0 to 33) (default 6)
+  -irreversible      <int>        E..V.... (from 0 to 1) (default 0)
   -disto_alloc       <int>        E..V.... (from 0 to 1) (default 1)
-  -fixed_alloc       <int>        E..V.... (from 0 to 1) (default 0)
   -fixed_quality     <int>        E..V.... (from 0 to 1) (default 0)
 
 libopenjpeg AVOptions:
@@ -2661,6 +2660,8 @@ h264_cuvid AVOptions:
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
+  -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
+  -resize            <string>     .D.V.... Resize (width)x(height)
 
 h264_nvenc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -3019,6 +3020,8 @@ hevc_cuvid AVOptions:
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
+  -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
+  -resize            <string>     .D.V.... Resize (width)x(height)
 
 hevc_nvenc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -3135,6 +3138,8 @@ mjpeg_cuvid AVOptions:
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
+  -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
+  -resize            <string>     .D.V.... Resize (width)x(height)
 
 mpeg1_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3144,6 +3149,8 @@ mpeg1_cuvid AVOptions:
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
+  -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
+  -resize            <string>     .D.V.... Resize (width)x(height)
 
 mpeg2_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3153,6 +3160,8 @@ mpeg2_cuvid AVOptions:
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
+  -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
+  -resize            <string>     .D.V.... Resize (width)x(height)
 
 mpeg2_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -3191,6 +3200,8 @@ mpeg4_cuvid AVOptions:
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
+  -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
+  -resize            <string>     .D.V.... Resize (width)x(height)
 
 vc1_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3200,6 +3211,8 @@ vc1_cuvid AVOptions:
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
+  -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
+  -resize            <string>     .D.V.... Resize (width)x(height)
 
 vp8_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3209,6 +3222,8 @@ vp8_cuvid AVOptions:
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
+  -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
+  -resize            <string>     .D.V.... Resize (width)x(height)
 
 vp9_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3218,6 +3233,8 @@ vp9_cuvid AVOptions:
   -gpu               <string>     .D.V.... GPU to be used for decoding
   -surfaces          <int>        .D.V.... Maximum surfaces to be used for decoding (from 0 to INT_MAX) (default 25)
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
+  -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
+  -resize            <string>     .D.V.... Resize (width)x(height)
 
 AVFormatContext AVOptions:
   -avioflags         <flags>      ED...... (default 0)
@@ -3346,8 +3363,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.102")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.102")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.104")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.104")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3374,8 +3391,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.102")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.102")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.104")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.104")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -4002,7 +4019,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.104")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4422,6 +4439,24 @@ tiff demuxer AVOptions:
      ns                           .D...... nano second precision
 
 webp demuxer AVOptions:
+  -framerate         <video_rate> .D...... set the video framerate (default "25")
+  -loop              <boolean>    .D...... force loop over input file sequence (default false)
+  -pattern_type      <int>        .D...... set pattern type (from 0 to INT_MAX) (default 4)
+     glob_sequence                .D...... select glob/sequence pattern type
+     glob                         .D...... select glob pattern type
+     sequence                     .D...... select sequence pattern type
+     none                         .D...... disable pattern matching
+  -pixel_format      <string>     .D...... set video pixel format
+  -start_number      <int>        .D...... set first number in the sequence (from INT_MIN to INT_MAX) (default 0)
+  -start_number_range <int>        .D...... set range for looking at the first sequence number (from 1 to INT_MAX) (default 5)
+  -video_size        <image_size> .D...... set video size
+  -frame_size        <int>        .D...... force frame size in bytes (from 0 to INT_MAX) (default 0)
+  -ts_from_file      <int>        .D...... set frame timestamp from file's one (from 0 to 2) (default none)
+     none                         .D...... none
+     sec                          .D...... second precision
+     ns                           .D...... nano second precision
+
+xpm demuxer AVOptions:
   -framerate         <video_rate> .D...... set the video framerate (default "25")
   -loop              <boolean>    .D...... force loop over input file sequence (default false)
   -pattern_type      <int>        .D...... set pattern type (from 0 to INT_MAX) (default 4)
@@ -5084,7 +5119,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.104")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -7105,6 +7140,8 @@ deflate AVOptions:
   threshold2        <int>        ..FV.... set threshold for 3rd plane (from 0 to 65535) (default 65535)
   threshold3        <int>        ..FV.... set threshold for 4th plane (from 0 to 65535) (default 65535)
 
+deinterlace_qsv AVOptions:
+
 dejudder AVOptions:
   cycle             <int>        ..FV.... set the length of the cycle to use for dejuddering (from 2 to 240) (default 4)
 
@@ -8175,6 +8212,11 @@ nppscale AVOptions:
      cubic2p_b05c03               ..FV.... 2-parameter cubic (B=1/2, C=3/10)
      super                        ..FV.... supersampling
      lanczos                      ..FV.... Lanczos
+
+qsvscale AVOptions:
+  -w                 <string>     ...V.... Output video width (default "iw")
+  -h                 <string>     ...V.... Output video height (default "ih")
+  -format            <string>     ...V.... Output pixel format (default "same")
 
 scale2ref AVOptions:
   w                 <string>     ..FV.... Output video width
@@ -9731,6 +9773,8 @@ showwavespic AVOptions:
   scale             <int>        ..FV.... set amplitude scale (from 0 to 3) (default lin)
      lin                          ..FV.... linear
      log                          ..FV.... logarithmic
+     sqrt                         ..FV.... square root
+     cbrt                         ..FV.... cubic root
 
 spectrumsynth AVOptions:
   sample_rate       <int>        ..F.A... set sample rate (from 15 to INT_MAX) (default 44100)
@@ -10044,6 +10088,7 @@ Decoders:
  V....D cdxl                 Commodore CDXL video
  VF...D cfhd                 Cineform HD
  V....D cinepak              Cinepak
+ V....D clearvideo           Iterated Systems ClearVideo
  V....D cljr                 Cirrus Logic AccuPak
  V....D cllc                 Canopus Lossless Codec
  V....D eacmv                Electronic Arts CMV video (codec cmv)
@@ -10241,6 +10286,7 @@ Decoders:
  V....D xbin                 eXtended BINary text
  V....D xbm                  XBM (X BitMap) image
  V..... xface                X-face image
+ V....D xpm                  XPM (X PixMap) image
  V....D xwd                  XWD (X Window Dump) image
  V....D y41p                 Uncompressed YUV 4:1:1 12-bit
  VF...D ylc                  YUY2 Lossless Codec
@@ -10494,6 +10540,7 @@ Codecs:
  D.VIL. cdxl                 Commodore CDXL video
  D.V.L. cfhd                 Cineform HD
  DEV.L. cinepak              Cinepak
+ D.V.L. clearvideo           Iterated Systems ClearVideo
  DEVIL. cljr                 Cirrus Logic AccuPak
  D.VI.S cllc                 Canopus Lossless Codec
  D.V.L. cmv                  Electronic Arts CMV video (decoders: eacmv )
@@ -10675,6 +10722,7 @@ Codecs:
  D.VI.. xbin                 eXtended BINary text
  DEVI.S xbm                  XBM (X BitMap) image
  DEVIL. xface                X-face image
+ D.VI.S xpm                  XPM (X PixMap) image
  DEVI.S xwd                  XWD (X Window Dump) image
  DEVI.. y41p                 Uncompressed YUV 4:1:1 12-bit
  D.VI.S ylc                  YUY2 Lossless Codec
@@ -11403,6 +11451,7 @@ File formats:
  D  xa              Maxis XA
  D  xbin            eXtended BINary text (XBIN)
  D  xmv             Microsoft XMV
+ D  xpm_pipe        piped xpm sequence
  D  xvag            Sony PS3 XVAG
  D  xwma            Microsoft xWMA
  D  yop             Psygnosis YOP
@@ -11841,6 +11890,7 @@ File formats:
  D  xa              Maxis XA
  D  xbin            eXtended BINary text (XBIN)
  D  xmv             Microsoft XMV
+ D  xpm_pipe        piped xpm sequence
  D  xvag            Sony PS3 XVAG
  D  xwma            Microsoft xWMA
  D  yop             Psygnosis YOP
@@ -11978,6 +12028,7 @@ Filters:
  TS. deband            V->V       Debands video.
  ... decimate          N->V       Decimate frames (post field matching filter).
  T.. deflate           V->V       Apply deflate effect.
+ ... deinterlace_qsv   V->V       QuickSync video deinterlacing
  ... dejudder          V->V       Remove judder produced by pullup.
  T.. delogo            V->V       Remove logo from input video.
  ... deshake           V->V       Stabilize shaky video.
@@ -12079,6 +12130,7 @@ Filters:
  T.. sab               V->V       Apply shape adaptive blur.
  ..C scale             V->V       Scale the input video size and/or convert the image format.
  ... scale_npp         V->V       NVIDIA Performance Primitives video scaling and format conversion
+ ... scale_qsv         V->V       QuickSync video scaling and format conversion
  ..C scale2ref         VV->VV     Scale the input video size and/or convert the image format to the given reference.
  ... select            V->N       Select video frames to pass in output.
  TS. selectivecolor    V->V       Apply CMYK adjustments to specific color ranges.
