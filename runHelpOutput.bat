@@ -8,3 +8,15 @@ ffmpeg -muxers >> ffmpegHelpOutput.txt
 ffmpeg -demuxers >> ffmpegHelpOutput.txt
 ffmpeg -hwaccels >> ffmpegHelpOutput.txt
 ffmpeg -filters >> ffmpegHelpOutput.txt
+ffmpeg -h encoder=nvenc_h264 >> ffmpegHelpOutput.txt
+ffmpeg -h encoder=nvenc_hevc >> ffmpegHelpOutput.txt
+ffmpeg -h decoder=h264_cuvid >> ffmpegHelpOutput.txt
+ffmpeg -h decoder=hevc_cuvid >> ffmpegHelpOutput.txt
+ffmpeg -h decoder=mjpeg_cuvid >> ffmpegHelpOutput.txt
+ffmpeg -h decoder=mpeg1video_cuvid >> ffmpegHelpOutput.txt
+ffmpeg -h decoder=mpeg2video_cuvid >> ffmpegHelpOutput.txt
+ffmpeg -h decoder=mpeg4_cuvid >> ffmpegHelpOutput.txt
+ffmpeg -h decoder=vc1_cuvid >> ffmpegHelpOutput.txt
+ffmpeg -h decoder=vp8_cuvid >> ffmpegHelpOutput.txt
+ffmpeg -h decoder=vp9_cuvid >> ffmpegHelpOutput.txt
+ffmpeg -h filter=scale_npp >> ffmpegHelpOutput.txt
