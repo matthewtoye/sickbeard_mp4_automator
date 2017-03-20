@@ -703,19 +703,18 @@ class MkvtoMp4:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
 
         nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "mpeg4", "vc1", "vp8", "hevc", "vp9" }
-
         use_yuv420p = False
-        if self.dxva2_decoder: # Generally, dxva2 tends to be more consistent in handling decoding, and it uses the GPU as well. 
+        if self.dxva2_decoder: # Generally, dxva2 tends to be more consistent in handling decoding, and it uses the GPU as well. TODO: Check if this is still the case.
             options['preopts'].extend(['-hwaccel', 'dxva2' ])
             self.nvenc_cuvid = False
             self.nvenc_hwaccel_enabled = False
             options['video']['nvenc_hwaccel_enabled'] = False
             if '10le' in info.video.pix_fmt or '16le' in info.video.pix_fmt:
-                if 'nvenc_h264' in self.video_codec: #nvenc_h264 seems to require yuv420p output when accepting a 10 bit stream from dxva .
+                if 'nvenc_h264' in self.video_codec: #nvenc_h264 seems to require yuv420p output when accepting a 10/12 bit HEVC stream. nvenc_hevc handles this without issues as of 3/20/2017
                     use_yuv420p = True
         elif info.video.codec.lower() in nvenc_cuvid_codecs and \
         self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
-            if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. 
+            if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. CHECKMELATER - Video SDK 8.0 will support this. 
                 options['preopts'].extend(['-hwaccel', 'cuvid' ])
                 if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
                     if self.nvenc_decoder_hevc_gpu:
@@ -727,7 +726,7 @@ class MkvtoMp4:
                 options['video']['nvenc_hwaccel_enabled'] = True
             else:
                 options['video']['nvenc_hwaccel_enabled'] = False
-                if 'nvenc_h264' in self.video_codec: #nvenc_h264 seems to require yuv420p output when accepting a 10 bit stream that was semi-hardware decoded by cuvid.
+                if 'nvenc_h264' in self.video_codec: #nvenc_h264 does not support 10/12 bit encoding.
                     use_yuv420p = True
             if info.video.codec.lower() == "h264":
                 options['preopts'].extend(['-c:v', 'h264_cuvid'])
@@ -793,7 +792,7 @@ class MkvtoMp4:
                     self.log.info("scale_npp requires the output pix_fmt to be either yuv420p, nv12 or yuv444p. Disabling scale_npp for this file." )
                     options['video']['scale_npp_enabled'] = False
             else:
-                self.log.info("scale_npp requires the pixel format of the input file to be yuv420p, yuv444p or nv12. Disabling scale_npp for this file." )
+                self.log.info("scale_npp requires the pixel format of the input file to be yuv420p, nv12 or yuv444p. Disabling scale_npp for this file." )
                 options['video']['scale_npp_enabled'] = False
             if self.scale_npp_interp_algo:
                 options['video']['scale_npp_interp_algo'] = self.scale_npp_interp_algo
