@@ -77,6 +77,7 @@ class ReadSettings:
                         'video-codec': 'h264, x264',
                         'resolution-bitrate-restriction': '',
                         'video-bitrate': '',
+                        'video-crf': '',
                         'video-max-width': '',
                         'nvenc_profile':'',
                         'nvenc_preset':'',
@@ -365,6 +366,16 @@ class ReadSettings:
                 log.exception("Invalid video bitrate, defaulting to no video bitrate cap.")
                 self.vbitrate = None
 
+        self.vcrf = config.get(section, "video-crf")
+        if self.vcrf == '':
+            self.vcrf = None
+        else:
+            try:
+                self.vcrf = int(self.vcrf)
+            except:
+                log.exception("Invalid CRF setting, defaulting to none.")
+                self.vcrf = None
+
         self.vwidth = config.get(section, "video-max-width")
         if self.vwidth == '':
             self.vwidth = None
@@ -502,13 +513,13 @@ class ReadSettings:
 
         self.preopts = config.get(section, "preopts").lower()
         if self.preopts == '':
-            self.preopts == None
+            self.preopts = None
         else:
             self.preopts = self.preopts.split(',')
 
         self.postopts = config.get(section, "postopts").lower()
         if self.postopts == '':
-            self.postopts == None
+            self.postopts = None
         else:
             self.postopts = self.postopts.split(',')
 

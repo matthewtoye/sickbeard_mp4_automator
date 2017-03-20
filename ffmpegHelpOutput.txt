@@ -4961,7 +4961,7 @@ MPEGTS muxer AVOptions:
   -mpegts_copyts     <boolean>    E....... don't offset dts/pts (default auto)
   -tables_version    <int>        E....... set PAT, PMT and SDT version (from 0 to 31) (default 0)
   -omit_video_pes_length <boolean>    E....... Omit the PES packet length for video packets (default true)
-  -pcr_period        <int>        E....... PCR retransmission time (from 0 to INT_MAX) (default 20)
+  -pcr_period        <int>        E....... PCR retransmission time in milliseconds (from 0 to INT_MAX) (default 20)
   -pat_period        <double>     E....... PAT/PMT retransmission time limit in seconds (from 0 to INT_MAX) (default INT_MAX)
   -sdt_period        <double>     E....... SDT retransmission time limit in seconds (from 0 to INT_MAX) (default INT_MAX)
 
@@ -5445,8 +5445,8 @@ SWResampler AVOptions:
      improved_e_weighted              ....A... select improved-e-weighted noise shaping dither
   -filter_size       <int>        ....A... set swr resampling filter size (from 0 to INT_MAX) (default 32)
   -phase_shift       <int>        ....A... set swr resampling phase shift (from 0 to 24) (default 10)
-  -linear_interp     <boolean>    ....A... enable linear interpolation (default false)
-  -exact_rational    <boolean>    ....A... enable exact rational (default false)
+  -linear_interp     <boolean>    ....A... enable linear interpolation (default true)
+  -exact_rational    <boolean>    ....A... enable exact rational (default true)
   -cutoff            <double>     ....A... set cutoff frequency ratio (from 0 to 1) (default 0)
   -resample_cutoff   <double>     ....A... set cutoff frequency ratio (from 0 to 1) (default 0)
   -resampler         <int>        ....A... set resampling Engine (from 0 to 1) (default swr)
@@ -5889,8 +5889,8 @@ SWResampler AVOptions:
      improved_e_weighted              ....A... select improved-e-weighted noise shaping dither
   -filter_size       <int>        ....A... set swr resampling filter size (from 0 to INT_MAX) (default 32)
   -phase_shift       <int>        ....A... set swr resampling phase shift (from 0 to 24) (default 10)
-  -linear_interp     <boolean>    ....A... enable linear interpolation (default false)
-  -exact_rational    <boolean>    ....A... enable exact rational (default false)
+  -linear_interp     <boolean>    ....A... enable linear interpolation (default true)
+  -exact_rational    <boolean>    ....A... enable exact rational (default true)
   -cutoff            <double>     ....A... set cutoff frequency ratio (from 0 to 1) (default 0)
   -resample_cutoff   <double>     ....A... set cutoff frequency ratio (from 0 to 1) (default 0)
   -resampler         <int>        ....A... set resampling Engine (from 0 to 1) (default swr)
@@ -10522,6 +10522,7 @@ Codecs:
  DEVIL. asv2                 ASUS V2
  D.VIL. aura                 Auravision AURA
  D.VIL. aura2                Auravision Aura 2
+ ..V.L. av1                  Alliance for Open Media AV1
  D.V... avrn                 Avid AVI Codec
  DEVI.. avrp                 Avid 1:1 10-bit RGB Packer
  D.V.L. avs                  AVS (Audio Video Standard) video
