@@ -36,7 +36,6 @@ class MkvtoMp4:
                  nvenc_gpu=None,
                  nvenc_temporal_aq=True,
                  nvenc_rc_lookahead=None,
-                 handle_m2ts_files=True,
                  h264_level=None,
                  qsv_decoder=True,
                  dxva2_decoder=False,
@@ -112,7 +111,6 @@ class MkvtoMp4:
         self.nvenc_rate_control = nvenc_rate_control
         self.nvenc_rc_lookahead = nvenc_rc_lookahead
         self.h264_level = h264_level
-        self.handle_m2ts_files = handle_m2ts_files
         self.qsv_decoder = qsv_decoder
         self.dxva2_decoder = dxva2_decoder
         self.nvenc_cuvid = nvenc_cuvid
@@ -182,7 +180,6 @@ class MkvtoMp4:
         self.nvenc_temporal_aq = settings.nvenc_temporal_aq
         self.nvenc_rate_control = settings.nvenc_rate_control
         self.nvenc_rc_lookahead = settings.nvenc_rc_lookahead
-        self.handle_m2ts_files = settings.handle_m2ts_files
         self.h264_level = settings.h264_level
         self.qsv_decoder = settings.qsv_decoder
         self.dxva2_decoder = settings.dxva2_decoder
@@ -286,9 +283,6 @@ class MkvtoMp4:
     # Determine if a source video file is in a valid format
     def validSource(self, inputfile):
         input_dir, filename, input_extension = self.parseFile(inputfile)
-        if input_extension.lower() == "m2ts" and not self.handle_m2ts_files:
-            self.log.debug( "%2 is a m2ts file and handle_m2ts_files is not enabled" % inputfile )
-            return False
         # Make sure the input_extension is some sort of recognized extension, and that the file actually exists
         if (input_extension.lower() in valid_input_extensions or input_extension.lower() in valid_output_extensions):
             if (os.path.isfile(inputfile)):

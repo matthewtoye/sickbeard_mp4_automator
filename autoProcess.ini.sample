@@ -82,7 +82,6 @@ permissions = 0777
 post-process = False
 pix-fmt =
 aac_adtstoasc = False
-handle_m2ts_files = True
 
 [CouchPotato]
 host = localhost

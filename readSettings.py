@@ -97,7 +97,6 @@ class ReadSettings:
                         'nvenc_hevc_decoder_gpu':'',
                         'scale_npp_enabled':'False',
                         'scale_npp_interp_algo':'',
-                        'handle_m2ts_files':'True',
                         'h264-max-level': '',
                         'aac_adtstoasc': 'False',
                         'use-qsv-decoder-with-encoder': 'True',
@@ -396,7 +395,6 @@ class ReadSettings:
                 log.exception("Invalid h264 level, defaulting to none.")
                 self.h264_level = None
 
-        self.handle_m2ts_files = config.getboolean( section, "handle_m2ts_files" )
         self.qsv_decoder = config.getboolean(section, "use-qsv-decoder-with-encoder")  # Use Intel QuickSync Decoder when using QuickSync Encoder
         self.dxva2_decoder = config.getboolean( section, "enable_dxva2_gpu_decode" )
         self.nvenc_hwaccel_enabled = False
