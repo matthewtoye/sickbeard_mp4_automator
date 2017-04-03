@@ -286,7 +286,7 @@ class MkvtoMp4:
     # Determine if a source video file is in a valid format
     def validSource(self, inputfile):
         input_dir, filename, input_extension = self.parseFile(inputfile)
-        if input_extension.lower() == "m2ts" and not handle_m2ts_files:
+        if input_extension.lower() == "m2ts" and not self.handle_m2ts_files:
             self.log.debug( "%2 is a m2ts file and handle_m2ts_files is not enabled" % inputfile )
             return False
         # Make sure the input_extension is some sort of recognized extension, and that the file actually exists

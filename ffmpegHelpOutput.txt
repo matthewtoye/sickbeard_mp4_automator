@@ -598,7 +598,7 @@ AVCodecContext AVOptions:
   -rc_max_vbv_use    <float>      E..V.... (from 0 to FLT_MAX) (default 0)
   -rc_min_vbv_use    <float>      E..V.... (from 0 to FLT_MAX) (default 3)
   -ticks_per_frame   <int>        ED.VA... (from 1 to INT_MAX) (default 1)
-  -color_primaries   <int>        ED.V.... color primaries (from 1 to 12) (default unknown)
+  -color_primaries   <int>        ED.V.... color primaries (from 1 to 22) (default unknown)
      bt709                        ED.V.... BT.709
      unknown                      ED.V.... Unspecified
      bt470m                       ED.V.... BT.470 M
@@ -611,6 +611,7 @@ AVCodecContext AVOptions:
      smpte428_1                   ED.V.... SMPTE 428-1
      smpte431                     ED.V.... SMPTE 431-2
      smpte432                     ED.V.... SMPTE 422-1
+     jedec-p22                    ED.V.... JEDEC P22
      unspecified                  ED.V.... Unspecified
   -color_trc         <int>        ED.V.... color transfer characteristics (from 1 to 18) (default unknown)
      bt709                        ED.V.... BT.709
@@ -647,11 +648,12 @@ AVCodecContext AVOptions:
      bt470bg                      ED.V.... BT.470 BG
      smpte170m                    ED.V.... SMPTE 170 M
      smpte240m                    ED.V.... SMPTE 240 M
-     ycocg                        ED.V.... YCOCG
+     ycgco                        ED.V.... YCGCO
      bt2020nc                     ED.V.... BT.2020 NCL
      bt2020c                      ED.V.... BT.2020 CL
      smpte2085                    ED.V.... SMPTE 2085
      unspecified                  ED.V.... Unspecified
+     ycocg                        ED.V.... YCGCO
      bt2020_ncl                   ED.V.... BT.2020 NCL
      bt2020_cl                    ED.V.... BT.2020 CL
   -color_range       <int>        ED.V.... color range (from 0 to 2) (default unknown)
@@ -2737,6 +2739,7 @@ h264_nvenc AVOptions:
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
+  -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
 
 h264_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -2863,6 +2866,7 @@ nvenc AVOptions:
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
+  -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
 
 nvenc_h264 AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -2938,6 +2942,7 @@ nvenc_h264 AVOptions:
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
+  -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
 
 nvenc_hevc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -3011,6 +3016,7 @@ nvenc_hevc AVOptions:
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
+  -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
 
 hevc_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3095,6 +3101,7 @@ hevc_nvenc AVOptions:
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
+  -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
 
 hevc_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -3224,6 +3231,9 @@ vp8_cuvid AVOptions:
   -drop_second_field <boolean>    .D.V.... Drop second field when deinterlacing (default false)
   -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
   -resize            <string>     .D.V.... Resize (width)x(height)
+
+vp8_qsv AVOptions:
+  -async_depth       <int>        .D.V.... Internal parallelization depth, the higher the value the higher the latency. (from 0 to INT_MAX) (default 4)
 
 vp9_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3363,8 +3373,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.104")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.104")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.70.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.70.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3391,8 +3401,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.104")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.66.104")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.70.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.70.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3602,6 +3612,7 @@ librtmpte protocol AVOptions:
 Blackmagic DeckLink demuxer AVOptions:
   -list_devices      <int>        .D...... list available devices (from 0 to 1) (default 0)
   -list_formats      <int>        .D...... list supported formats (from 0 to 1) (default 0)
+  -format_code       <string>     .D...... set format by fourcc
   -bm_v210           <int>        .D...... v210 10 bit per channel (from 0 to 1) (default 0)
   -teletext_lines    <int64>      .D...... teletext lines bitmask (from 0 to 3.43597e+010) (default 0)
      standard                     .D......
@@ -3693,7 +3704,7 @@ Artworx Data Format demuxer AVOptions:
 
 APNG demuxer AVOptions:
   -ignore_loop       <boolean>    .D...... ignore loop setting (default true)
-  -max_fps           <int>        .D...... maximum framerate (0 is no limit) (from 0 to INT_MAX) (default 15)
+  -max_fps           <int>        .D...... maximum framerate (0 is no limit) (from 0 to INT_MAX) (default 0)
   -default_fps       <int>        .D...... default framerate (0 is as fast as possible) (from 0 to INT_MAX) (default 15)
 
 aqtdec AVOptions:
@@ -3867,7 +3878,8 @@ mjpeg_2000 demuxer AVOptions:
 mov,mp4,m4a,3gp,3g2,mj2 AVOptions:
   -use_absolute_path <boolean>    .D.V.... allow using absolute path when opening alias, this is a possible security issue (default false)
   -seek_streams_individually <boolean>    .D.V.... Seek each stream individually to the to the closest point (default true)
-  -ignore_editlist   <boolean>    .D.V....  (default false)
+  -ignore_editlist   <boolean>    .D.V.... Ignore the edit list atom. (default false)
+  -advanced_editlist <boolean>    .D.V.... Modify the AVIndex according to the editlists. Use this option to decode in the order specified by the edits. (default true)
   -ignore_chapters   <boolean>    .D.V....  (default false)
   -use_mfra_for      <int>        .D.V.... use mfra for fragment timestamps (from -1 to 2) (default auto)
      auto                         .D.V.... auto
@@ -4019,7 +4031,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.104")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.70.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -5119,7 +5131,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.66.104")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.70.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -5974,12 +5986,6 @@ astats AVOptions:
 astreamselect AVOptions:
   inputs            <int>        ..FVA... number of input streams (from 2 to INT_MAX) (default 2)
   map               <string>     ..FVA... input indexes to remap to outputs
-
-asyncts AVOptions:
-  compensate        <boolean>    ..F.A... Stretch/squeeze the data to make it match the timestamps (default false)
-  min_delta         <float>      ..F.A... Minimum difference between timestamps and audio data (in seconds) to trigger padding/trimmin the data. (from 0 to INT_MAX) (default 0.1)
-  max_comp          <int>        ..F.A... Maximum compensation in samples per second. (from 0 to INT_MAX) (default 500)
-  first_pts         <int64>      ..F.A... Assume the first pts should be this value. (from I64_MIN to I64_MAX) (default I64_MIN)
 
 atempo AVOptions:
   tempo             <double>     ..F.A... set tempo scale factor (from 0.5 to 2) (default 1)
@@ -6940,7 +6946,7 @@ colorspace AVOptions:
      mpeg                         ..FV.... 
      pc                           ..FV.... 
      jpeg                         ..FV.... 
-  primaries         <int>        ..FV.... Output color primaries (from 0 to 12) (default 2)
+  primaries         <int>        ..FV.... Output color primaries (from 0 to 22) (default 2)
      bt709                        ..FV.... 
      bt470m                       ..FV.... 
      bt470bg                      ..FV.... 
@@ -6991,7 +6997,7 @@ colorspace AVOptions:
      smpte170m                    ..FV.... 
      smpte240m                    ..FV.... 
      bt2020                       ..FV.... 
-  ispace            <int>        ..FV.... Input colorspace (from 0 to 12) (default 2)
+  ispace            <int>        ..FV.... Input colorspace (from 0 to 22) (default 2)
      bt709                        ..FV.... 
      fcc                          ..FV.... 
      bt470bg                      ..FV.... 
@@ -7004,7 +7010,7 @@ colorspace AVOptions:
      mpeg                         ..FV.... 
      pc                           ..FV.... 
      jpeg                         ..FV.... 
-  iprimaries        <int>        ..FV.... Input color primaries (from 0 to 12) (default 2)
+  iprimaries        <int>        ..FV.... Input color primaries (from 0 to 22) (default 2)
      bt709                        ..FV.... 
      bt470m                       ..FV.... 
      bt470bg                      ..FV.... 
@@ -7552,6 +7558,13 @@ hue AVOptions:
   s                 <string>     ..FV.... set the saturation expression (default "1")
   H                 <string>     ..FV.... set the hue angle radians expression
   b                 <string>     ..FV.... set the brightness expression (default "0")
+
+hwmap AVOptions:
+  mode              <flags>      ..FV.... Frame mapping mode (default read+write)
+     read                         ..FV.... Mapping should be readable
+     write                        ..FV.... Mapping should be writeable
+     overwrite                    ..FV.... Mapping will always overwrite the entire frame
+     direct                       ..FV.... Mapping should not involve any copying
 
 cudaupload AVOptions:
   device            <int>        ..FV.... Number of the device to use (from 0 to INT_MAX) (default 0)
@@ -8214,9 +8227,9 @@ nppscale AVOptions:
      lanczos                      ..FV.... Lanczos
 
 qsvscale AVOptions:
-  -w                 <string>     ...V.... Output video width (default "iw")
-  -h                 <string>     ...V.... Output video height (default "ih")
-  -format            <string>     ...V.... Output pixel format (default "same")
+  w                 <string>     ..FV.... Output video width (default "iw")
+  h                 <string>     ..FV.... Output video height (default "ih")
+  format            <string>     ..FV.... Output pixel format (default "same")
 
 scale2ref AVOptions:
   w                 <string>     ..FV.... Output video width
@@ -8398,6 +8411,22 @@ signalstats AVOptions:
      brng                         ..FV.... highlight pixels that are outside of broadcast range
   c                 <color>      ..FV.... set highlight color (default "yellow")
   color             <color>      ..FV.... set highlight color (default "yellow")
+
+signature AVOptions:
+  detectmode        <int>        ..FV.... set the detectmode (from 0 to 2) (default off)
+     off                          ..FV....
+     full                         ..FV....
+     fast                         ..FV....
+  nb_inputs         <int>        ..FV.... number of inputs (from 1 to INT_MAX) (default 1)
+  filename          <string>     ..FV.... filename for output files (default "")
+  format            <int>        ..FV.... set output format (from 0 to 1) (default binary)
+     binary                       ..FV....
+     xml                          ..FV....
+  th_d              <int>        ..FV.... threshold to detect one word as similar (from 1 to INT_MAX) (default 9000)
+  th_dc             <int>        ..FV.... threshold to detect all words as similar (from 1 to INT_MAX) (default 60000)
+  th_xh             <int>        ..FV.... threshold to detect frames as similar (from 1 to INT_MAX) (default 116)
+  th_di             <int>        ..FV.... minimum length of matching sequence in frames (from 0 to INT_MAX) (default 0)
+  th_it             <double>     ..FV.... threshold for relation of good to all frames (from 0 to 1) (default 0.5)
 
 smartblur AVOptions:
   luma_radius       <float>      ..FV.... set luma radius (from 0.1 to 5) (default 1)
@@ -10271,6 +10300,7 @@ Decoders:
  VFS..D vp8                  On2 VP8
  V....D libvpx               libvpx VP8 (codec vp8)
  V..... vp8_cuvid            Nvidia CUVID VP8 decoder (codec vp8)
+ V....D vp8_qsv              VP8 video (Intel Quick Sync Video acceleration) (codec vp8)
  VF...D vp9                  Google VP9
  V....D libvpx-vp9           libvpx VP9 (codec vp9)
  V..... vp9_cuvid            Nvidia CUVID VP9 decoder (codec vp9)
@@ -10570,7 +10600,7 @@ Codecs:
  D.V..S flic                 Autodesk Animator Flic video
  DEV.L. flv1                 FLV / Sorenson Spark / Sorenson H.263 (Flash Video) (decoders: flv ) (encoders: flv )
  D.V..S fmvc                 FM Screen Capture Codec
- D.V..S fraps                Fraps
+ D.VI.S fraps                Fraps
  D.VI.S frwu                 Forward Uncompressed
  D.V.L. g2m                  Go2Meeting
  DEV..S gif                  GIF (Graphics Interchange Format)
@@ -10708,7 +10738,7 @@ Codecs:
  D.V.L. vp6a                 On2 VP6 (Flash version, with alpha channel)
  D.V.L. vp6f                 On2 VP6 (Flash version)
  D.V.L. vp7                  On2 VP7
- DEV.L. vp8                  On2 VP8 (decoders: vp8 libvpx vp8_cuvid ) (encoders: libvpx )
+ DEV.L. vp8                  On2 VP8 (decoders: vp8 libvpx vp8_cuvid vp8_qsv ) (encoders: libvpx )
  DEV.L. vp9                  Google VP9 (decoders: vp9 libvpx-vp9 vp9_cuvid ) (encoders: libvpx-vp9 )
  DEVILS webp                 WebP (encoders: libwebp )
  DEV.L. wmv1                 Windows Media Video 7
@@ -11948,7 +11978,6 @@ Filters:
  ... asplit            A->N       Pass on the audio input to N audio outputs.
  ... astats            A->A       Show time domain statistics about audio frames.
  ..C astreamselect     N->N       Select audio streams
- ... asyncts           A->A       Sync audio data to timestamps.
  ..C atempo            A->A       Adjust audio tempo.
  ... atrim             A->A       Pick one continuous section from the input, drop the rest.
  ... bandpass          A->A       Apply a two-pole Butterworth band-pass filter.
@@ -12071,6 +12100,7 @@ Filters:
  ... hstack            N->V       Stack video inputs horizontally.
  T.C hue               V->V       Adjust the hue and saturation of the input video.
  ... hwdownload        V->V       Download a hardware frame to a normal frame
+ ... hwmap             V->V       Map hardware frames
  ... hwupload          V->V       Upload a normal frame to a hardware frame
  ... hwupload_cuda     V->V       Upload a system memory frame to a CUDA device.
  T.. hysteresis        VV->V      Grow first stream into second stream by connecting components.
@@ -12148,6 +12178,7 @@ Filters:
  ... shuffleplanes     V->V       Shuffle video planes.
  T.. sidedata          V->V       Manipulate video frame side data.
  .S. signalstats       V->V       Generate statistics from video analysis.
+ ... signature         N->V       Calculate the MPEG-7 video signature
  T.. smartblur         V->V       Blur the input video without impacting the outlines.
  TS. sobel             V->V       Apply sobel operator.
  ... split             V->N       Pass on the input to N video outputs.
@@ -12300,6 +12331,7 @@ nvenc_h264 AVOptions:
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
+  -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
 
 Encoder nvenc_hevc [NVIDIA NVENC hevc encoder]:
     General capabilities: delay 
@@ -12377,6 +12409,7 @@ nvenc_hevc AVOptions:
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
+  -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
 
 Decoder h264_cuvid [Nvidia CUVID H264 decoder]:
     General capabilities: delay 
