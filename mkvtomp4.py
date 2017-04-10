@@ -271,14 +271,15 @@ class MkvtoMp4:
                 else:
                     self.log.debug("Unable to delete subtitle %s." % subfile)
 
-        dim = self.getDimensions(outputfile)
+        #dim = self.getDimensions(outputfile)
 
         return {'input': inputfile,
                 'output': outputfile,
                 'options': options,
-                'input_deleted': deleted,
-                'x': dim['x'],
-                'y': dim['y']}
+                'input_deleted': deleted
+                #'x': dim['x'],
+                #'y': dim['y']
+                }
 
     # Determine if a source video file is in a valid format
     def validSource(self, inputfile):
