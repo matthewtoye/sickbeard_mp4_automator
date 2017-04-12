@@ -598,7 +598,7 @@ AVCodecContext AVOptions:
   -rc_max_vbv_use    <float>      E..V.... (from 0 to FLT_MAX) (default 0)
   -rc_min_vbv_use    <float>      E..V.... (from 0 to FLT_MAX) (default 3)
   -ticks_per_frame   <int>        ED.VA... (from 1 to INT_MAX) (default 1)
-  -color_primaries   <int>        ED.V.... color primaries (from 1 to INT_MAX) (default unknown)
+  -color_primaries   <int>        ED.V.... color primaries (from 1 to 22) (default unknown)
      bt709                        ED.V.... BT.709
      unknown                      ED.V.... Unspecified
      bt470m                       ED.V.... BT.470 M
@@ -613,7 +613,7 @@ AVCodecContext AVOptions:
      smpte432                     ED.V.... SMPTE 422-1
      jedec-p22                    ED.V.... JEDEC P22
      unspecified                  ED.V.... Unspecified
-  -color_trc         <int>        ED.V.... color transfer characteristics (from 1 to INT_MAX) (default unknown)
+  -color_trc         <int>        ED.V.... color transfer characteristics (from 1 to 18) (default unknown)
      bt709                        ED.V.... BT.709
      unknown                      ED.V.... Unspecified
      gamma22                      ED.V.... BT.470 M
@@ -640,7 +640,7 @@ AVCodecContext AVOptions:
      bt2020_10bit                 ED.V.... BT.2020 - 10 bit
      bt2020_12bit                 ED.V.... BT.2020 - 12 bit
      smpte428_1                   ED.V.... SMPTE 428-1
-  -colorspace        <int>        ED.V.... color space (from 0 to INT_MAX) (default unknown)
+  -colorspace        <int>        ED.V.... color space (from 0 to 11) (default unknown)
      rgb                          ED.V.... RGB
      bt709                        ED.V.... BT.709
      unknown                      ED.V.... Unspecified
@@ -656,14 +656,14 @@ AVCodecContext AVOptions:
      ycocg                        ED.V.... YCGCO
      bt2020_ncl                   ED.V.... BT.2020 NCL
      bt2020_cl                    ED.V.... BT.2020 CL
-  -color_range       <int>        ED.V.... color range (from 0 to INT_MAX) (default unknown)
+  -color_range       <int>        ED.V.... color range (from 0 to 2) (default unknown)
      unknown                      ED.V.... Unspecified
      tv                           ED.V.... MPEG (219*2^(n-8))
      pc                           ED.V.... JPEG (2^n-1)
      unspecified                  ED.V.... Unspecified
      mpeg                         ED.V.... MPEG (219*2^(n-8))
      jpeg                         ED.V.... JPEG (2^n-1)
-  -chroma_sample_location <int>        ED.V.... chroma sample location (from 0 to INT_MAX) (default unknown)
+  -chroma_sample_location <int>        ED.V.... chroma sample location (from 0 to 6) (default unknown)
      unknown                      ED.V.... Unspecified
      left                         ED.V.... Left
      center                       ED.V.... Center
@@ -771,7 +771,7 @@ amv encoder AVOptions:
      left                         E..V....
      plane                        E..V....
      median                       E..V....
-  -huffman           <int>        E..V.... Huffman table strategy (from 0 to 1) (default optimal)
+  -huffman           <int>        E..V.... Huffman table strategy (from 0 to 1) (default default)
      default                      E..V....
      optimal                      E..V....
 
@@ -1228,7 +1228,7 @@ mjpeg encoder AVOptions:
      left                         E..V....
      plane                        E..V....
      median                       E..V....
-  -huffman           <int>        E..V.... Huffman table strategy (from 0 to 1) (default optimal)
+  -huffman           <int>        E..V.... Huffman table strategy (from 0 to 1) (default default)
      default                      E..V....
      optimal                      E..V....
 
@@ -3373,8 +3373,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.70.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.70.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3401,8 +3401,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.70.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.70.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -4031,7 +4031,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.72.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.70.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -5131,7 +5131,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.72.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.70.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -5784,7 +5784,7 @@ ametadata AVOptions:
   file              <string>     ..F.A... set file where to print metadata information
 
 amix AVOptions:
-  inputs            <int>        ..F.A... Number of inputs. (from 1 to 1024) (default 2)
+  inputs            <int>        ..F.A... Number of inputs. (from 1 to 32) (default 2)
   duration          <int>        ..F.A... How to determine the end-of-stream. (from 0 to 2) (default longest)
      longest                      ..F.A... Duration of longest input.
      shortest                     ..F.A... Duration of shortest input.
@@ -7962,7 +7962,6 @@ pad AVOptions:
   eval              <int>        ..FV.... specify when to evaluate expressions (from 0 to 1) (default init)
      init                         ..FV.... eval expressions once during initialization
      frame                        ..FV.... eval expressions during initialization and per-frame
-  aspect            <rational>   ..FV.... pad to fit an aspect instead of a resolution (from 0 to DBL_MAX) (default 0/1)
 
 palettegen AVOptions:
   max_colors        <int>        ..FV.... set the maximum number of colors to use in the palette (from 4 to 256) (default 256)
@@ -9569,7 +9568,6 @@ showcqt AVOptions:
   bar_t             <float>      ..FV.... set bar transparency (from 0 to 1) (default 1)
   timeclamp         <double>     ..FV.... set timeclamp (from 0.002 to 1) (default 0.17)
   tc                <double>     ..FV.... set timeclamp (from 0.002 to 1) (default 0.17)
-  attack            <double>     ..FV.... set attack time (from 0 to 1) (default 0)
   basefreq          <double>     ..FV.... set base frequency (from 10 to 100000) (default 20.0152)
   endfreq           <double>     ..FV.... set end frequency (from 10 to 100000) (default 20495.6)
   coeffclamp        <float>      ..FV.... set coeffclamp (from 0.1 to 10) (default 1)
@@ -10110,7 +10108,6 @@ Decoders:
  V....D bfi                  Brute Force & Ignorance
  V....D binkvideo            Bink video
  V....D bintext              Binary text
- V..X.. bitpacked            Bitpacked
  V....D bmp                  BMP (Windows and OS/2 bitmap)
  V....D bmv_video            Discworld II BMV video
  V....D brender_pix          BRender PIX image
@@ -10122,7 +10119,7 @@ Decoders:
  V....D cinepak              Cinepak
  V....D clearvideo           Iterated Systems ClearVideo
  V....D cljr                 Cirrus Logic AccuPak
- VF...D cllc                 Canopus Lossless Codec
+ V....D cllc                 Canopus Lossless Codec
  V....D eacmv                Electronic Arts CMV video (codec cmv)
  V....D cpia                 CPiA video format
  V....D camstudio            CamStudio (codec cscd)
@@ -10167,7 +10164,7 @@ Decoders:
  V..... hevc_cuvid           Nvidia CUVID HEVC decoder (codec hevc)
  V....D hnm4video            HNM 4 video
  V....D hq_hqa               Canopus HQ/HQA
- VFS..D hqx                  Canopus HQX
+ V.S..D hqx                  Canopus HQX
  VF..BD huffyuv              Huffyuv / HuffYUV
  V....D idcinvideo           id Quake II CIN video (codec idcin)
  V....D idf                  iCEDraw text
@@ -10565,7 +10562,6 @@ Codecs:
  D.V.L. bfi                  Brute Force & Ignorance
  D.V.L. binkvideo            Bink video
  D.VI.. bintext              Binary text
- D.VI.S bitpacked            Bitpacked
  DEVI.S bmp                  BMP (Windows and OS/2 bitmap)
  D.V..S bmv_video            Discworld II BMV video
  D.VI.S brender_pix          BRender PIX image
@@ -10813,7 +10809,7 @@ Codecs:
  D.A.L. adpcm_vima           LucasArts VIMA audio
  D.A.L. adpcm_xa             ADPCM CDROM XA
  DEA.L. adpcm_yamaha         ADPCM Yamaha
- DEAI.S alac                 ALAC (Apple Lossless Audio Codec)
+ DEA..S alac                 ALAC (Apple Lossless Audio Codec)
  DEA.L. amr_nb               AMR-NB (Adaptive Multi-Rate NarrowBand) (decoders: amrnb libopencore_amrnb ) (encoders: libopencore_amrnb )
  DEA.L. amr_wb               AMR-WB (Adaptive Multi-Rate WideBand) (decoders: amrwb libopencore_amrwb ) (encoders: libvo_amrwbenc )
  D.A..S ape                  Monkey's Audio
@@ -10840,7 +10836,7 @@ Codecs:
  D.A.L. dvaudio              DV audio
  DEA.L. eac3                 ATSC A/52B (AC-3, E-AC-3)
  D.A.L. evrc                 EVRC (Enhanced Variable Rate Codec)
- DEAI.S flac                 FLAC (Free Lossless Audio Codec)
+ DEA..S flac                 FLAC (Free Lossless Audio Codec)
  DEA.L. g723_1               G.723.1
  D.A.L. g729                 G.729
  DEA.L. gsm                  GSM (decoders: gsm libgsm ) (encoders: libgsm )
@@ -10916,16 +10912,16 @@ Codecs:
  DEA... sonic                Sonic
  .EA... sonicls              Sonic lossless
  DEA.L. speex                Speex (decoders: libspeex ) (encoders: libspeex )
- D.AI.S tak                  TAK (Tom's lossless Audio Kompressor)
+ D.A..S tak                  TAK (Tom's lossless Audio Kompressor)
  DEA..S truehd               TrueHD
  D.A.L. truespeech           DSP Group TrueSpeech
- DEAI.S tta                  TTA (True Audio)
+ DEA..S tta                  TTA (True Audio)
  D.A.L. twinvq               VQF TwinVQ
  D.A.L. vmdaudio             Sierra VMD audio
  DEA.L. vorbis               Vorbis (decoders: vorbis libvorbis ) (encoders: vorbis libvorbis )
  ..A.L. voxware              Voxware RT29 Metasound
  D.A... wavesynth            Wave synthesis pseudo-codec
- DEAILS wavpack              WavPack (encoders: wavpack libwavpack )
+ DEA.LS wavpack              WavPack (encoders: wavpack libwavpack )
  D.A.L. westwood_snd1        Westwood Audio (SND1) (decoders: ws_snd1 )
  D.A..S wmalossless          Windows Media Audio Lossless
  D.A.L. wmapro               Windows Media Audio 9 Professional
