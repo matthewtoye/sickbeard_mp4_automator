@@ -69,6 +69,7 @@ class MkvtoMp4:
                  permissions=int("777", 8),
                  pix_fmt=None,
                  logger=None,
+                 threads='auto',
                  preopts=None,
                  postopts=None):
         # Setup Logging
@@ -80,6 +81,7 @@ class MkvtoMp4:
         # Settings
         self.FFMPEG_PATH = FFMPEG_PATH
         self.FFPROBE_PATH = FFPROBE_PATH
+        self.threads = threads
         self.delete = delete
         self.output_extension = output_extension
         self.output_format = output_format
@@ -150,6 +152,7 @@ class MkvtoMp4:
     def importSettings(self, settings):
         self.FFMPEG_PATH = settings.ffmpeg
         self.FFPROBE_PATH = settings.ffprobe
+        self.threads = settings.threads
         self.delete = settings.delete
         self.output_extension = settings.output_extension
         self.output_format = settings.output_format
@@ -675,7 +678,8 @@ class MkvtoMp4:
             },
             'audio': audio_settings,
             'subtitle': subtitle_settings,
-            'preopts': [],
+            'preopts': ['-fix_sub_duration'],
+            'postopts': ['-threads', self.threads]
         }
 
         # If a CRF option is set, override the determine bitrate
@@ -824,7 +828,7 @@ class MkvtoMp4:
                     i += i
                 self.log.debug("Unable to rename inputfile. Setting output file name to %s." % outputfile)
 
-        conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, timeout=None, preopts=options['preopts'])
+        conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, timeout=None, preopts=options['preopts'], postopts=options['postopts'])
 
         try:
             for timecode in conv:
