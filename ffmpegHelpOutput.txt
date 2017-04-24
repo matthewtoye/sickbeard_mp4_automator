@@ -3373,8 +3373,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.101")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.101")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3401,8 +3401,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.101")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.101")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -4031,7 +4031,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.72.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.72.101")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4082,6 +4082,7 @@ WAV demuxer AVOptions:
 
 WebM DASH Manifest demuxer AVOptions:
   -live              <boolean>    .D...... flag indicating that the input is a live file that only has the headers. (default false)
+  -bandwidth         <int>        .D...... bandwidth of this stream to be specified in the DASH manifest. (from 0 to INT_MAX) (default 0)
 
 WebVTT demuxer AVOptions:
 
@@ -4677,6 +4678,10 @@ hls muxer AVOptions:
   -hls_segment_filename <string>     E....... filename template for segment files
   -hls_segment_size  <int>        E....... maximum size per segment file, (in bytes) (from 0 to INT_MAX) (default 0)
   -hls_key_info_file <string>     E....... file with key URI and key file path
+  -hls_enc           <boolean>    E....... enable AES128 encryption support (default false)
+  -hls_enc_key       <string>     E....... hex-coded 16 byte key to encrypt the segments
+  -hls_enc_key_url   <string>     E....... url to access the key to decrypt the segments
+  -hls_enc_iv        <string>     E....... hex-coded 16 byte initialization vector
   -hls_subtitle_path <string>     E....... set path of hls subtitles
   -hls_flags         <flags>      E....... set flags affecting HLS playlist and media file generation (default 0)
      single_file                  E....... generate a single media file indexed with byte ranges
@@ -5131,7 +5136,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.72.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.72.101")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -7146,6 +7151,26 @@ deflate AVOptions:
   threshold2        <int>        ..FV.... set threshold for 3rd plane (from 0 to 65535) (default 65535)
   threshold3        <int>        ..FV.... set threshold for 4th plane (from 0 to 65535) (default 65535)
 
+deflicker AVOptions:
+  size              <int>        ..FV.... set how many frames to use (from 2 to 129) (default 5)
+  s                 <int>        ..FV.... set how many frames to use (from 2 to 129) (default 5)
+  mode              <int>        ..FV.... set how to smooth luminance (from 0 to 6) (default am)
+     am                           ..FV.... arithmetic mean
+     gm                           ..FV.... geometric mean
+     hm                           ..FV.... harmonic mean
+     qm                           ..FV.... quadratic mean
+     cm                           ..FV.... cubic mean
+     pm                           ..FV.... power mean
+     median                       ..FV.... median
+  m                 <int>        ..FV.... set how to smooth luminance (from 0 to 6) (default am)
+     am                           ..FV.... arithmetic mean
+     gm                           ..FV.... geometric mean
+     hm                           ..FV.... harmonic mean
+     qm                           ..FV.... quadratic mean
+     cm                           ..FV.... cubic mean
+     pm                           ..FV.... power mean
+     median                       ..FV.... median
+
 deinterlace_qsv AVOptions:
 
 dejudder AVOptions:
@@ -7263,7 +7288,7 @@ drawtext AVOptions:
   box               <boolean>    ..FV.... set box (default false)
   boxborderw        <int>        ..FV.... set box border width (from INT_MIN to INT_MAX) (default 0)
   line_spacing      <int>        ..FV.... set line spacing in pixels (from INT_MIN to INT_MAX) (default 0)
-  fontsize          <int>        ..FV.... set font size (from 0 to INT_MAX) (default 0)
+  fontsize          <string>     ..FV.... set font size
   x                 <string>     ..FV.... set x expression (default "0")
   y                 <string>     ..FV.... set y expression (default "0")
   shadowx           <int>        ..FV.... set shadow x offset (from INT_MIN to INT_MAX) (default 0)
@@ -10204,6 +10229,7 @@ Decoders:
  VF..BD mpeg4                MPEG-4 part 2
  V..... mpeg4_cuvid          Nvidia CUVID MPEG4 decoder (codec mpeg4)
  V....D msa1                 MS ATC Screen
+ V....D mscc                 Mandsoft Screen Capture Codec
  V...BD msmpeg4v1            MPEG-4 part 2 Microsoft variant version 1
  V...BD msmpeg4v2            MPEG-4 part 2 Microsoft variant version 2
  V...BD msmpeg4              MPEG-4 part 2 Microsoft variant version 3 (codec msmpeg4v3)
@@ -10257,6 +10283,7 @@ Decoders:
  V....D snow                 Snow
  V....D sp5x                 Sunplus JPEG (SP5X)
  V....D speedhq              NewTek SpeedHQ
+ V....D srgc                 Screen Recorder Gold Codec
  V....D sunrast              Sun Rasterfile image
  V....D svq1                 Sorenson Vector Quantizer 1 / Sorenson Video 1 / SVQ1
  V...BD svq3                 Sorenson Vector Quantizer 3 / Sorenson Video 3 / SVQ3
@@ -10649,6 +10676,7 @@ Codecs:
  DEV.L. mpeg4                MPEG-4 part 2 (decoders: mpeg4 mpeg4_cuvid ) (encoders: mpeg4 libxvid )
  ..V.L. mpegvideo_xvmc       MPEG-1/2 video XvMC (X-Video Motion Compensation)
  D.V.L. msa1                 MS ATC Screen
+ D.VI.S mscc                 Mandsoft Screen Capture Codec
  D.V.L. msmpeg4v1            MPEG-4 part 2 Microsoft variant version 1
  DEV.L. msmpeg4v2            MPEG-4 part 2 Microsoft variant version 2
  DEV.L. msmpeg4v3            MPEG-4 part 2 Microsoft variant version 3 (decoders: msmpeg4 ) (encoders: msmpeg4 )
@@ -10701,6 +10729,7 @@ Codecs:
  DEV.LS snow                 Snow
  D.VIL. sp5x                 Sunplus JPEG (SP5X)
  D.VIL. speedhq              NewTek SpeedHQ
+ D.VI.S srgc                 Screen Recorder Gold Codec
  DEVI.S sunrast              Sun Rasterfile image
  DEV.L. svq1                 Sorenson Vector Quantizer 1 / Sorenson Video 1 / SVQ1
  D.V.L. svq3                 Sorenson Vector Quantizer 3 / Sorenson Video 3 / SVQ3
@@ -12062,6 +12091,7 @@ Filters:
  TS. deband            V->V       Debands video.
  ... decimate          N->V       Decimate frames (post field matching filter).
  T.. deflate           V->V       Apply deflate effect.
+ ... deflicker         V->V       Remove temporal frame luminance variations.
  ... deinterlace_qsv   V->V       QuickSync video deinterlacing
  ... dejudder          V->V       Remove judder produced by pullup.
  T.. delogo            V->V       Remove logo from input video.
