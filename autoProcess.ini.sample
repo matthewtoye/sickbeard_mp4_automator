@@ -123,6 +123,7 @@ port = 58846
 sickrage-label = sickrage
 couchpotato-label = couchpotato
 output_directory =
+remove = false
 
 [SABNZBD]
 convert = True
