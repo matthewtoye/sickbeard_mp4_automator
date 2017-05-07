@@ -2404,11 +2404,12 @@ libvpx-vp9 encoder AVOptions:
   -tile-columns      <int>        E..V.... Number of tile columns to use, log2 (from -1 to 6) (default -1)
   -tile-rows         <int>        E..V.... Number of tile rows to use, log2 (from -1 to 2) (default -1)
   -frame-parallel    <boolean>    E..V.... Enable frame parallel decodability features (default auto)
-  -aq-mode           <int>        E..V.... adaptive quantization mode (from -1 to 3) (default -1)
+  -aq-mode           <int>        E..V.... adaptive quantization mode (from -1 to 4) (default -1)
      none                         E..V.... Aq not used
      variance                     E..V.... Variance based Aq
      complexity                   E..V.... Complexity based Aq
      cyclic                       E..V.... Cyclic Refresh Aq
+     equator360                   E..V.... 360 video Aq
   -level             <float>      E..V.... Specify level (from -1 to 6.2) (default -1)
   -speed             <int>        E..V....  (from -16 to 16) (default 1)
   -quality           <int>        E..V....  (from INT_MIN to INT_MAX) (default good)
@@ -2716,8 +2717,8 @@ h264_nvenc AVOptions:
      ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
      ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
      vbr_2pass                    E..V.... Multi-pass variable bitrate mode
-  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from -1 to INT_MAX) (default -1)
-  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 32)
+  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
+  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
   -2pass             <boolean>    E..V.... Use 2pass encoding mode (default auto)
   -gpu               <int>        E..V.... Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any)
@@ -2843,8 +2844,8 @@ nvenc AVOptions:
      ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
      ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
      vbr_2pass                    E..V.... Multi-pass variable bitrate mode
-  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from -1 to INT_MAX) (default -1)
-  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 32)
+  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
+  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
   -2pass             <boolean>    E..V.... Use 2pass encoding mode (default auto)
   -gpu               <int>        E..V.... Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any)
@@ -2919,8 +2920,8 @@ nvenc_h264 AVOptions:
      ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
      ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
      vbr_2pass                    E..V.... Multi-pass variable bitrate mode
-  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from -1 to INT_MAX) (default -1)
-  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 32)
+  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
+  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
   -2pass             <boolean>    E..V.... Use 2pass encoding mode (default auto)
   -gpu               <int>        E..V.... Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any)
@@ -2994,8 +2995,8 @@ nvenc_hevc AVOptions:
      ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
      ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
      vbr_2pass                    E..V.... Multi-pass variable bitrate mode
-  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from -1 to INT_MAX) (default -1)
-  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 32)
+  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
+  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
   -2pass             <boolean>    E..V.... Use 2pass encoding mode (default auto)
   -gpu               <int>        E..V.... Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any)
@@ -3079,8 +3080,8 @@ hevc_nvenc AVOptions:
      ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
      ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
      vbr_2pass                    E..V.... Multi-pass variable bitrate mode
-  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from -1 to INT_MAX) (default -1)
-  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 32)
+  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
+  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
   -2pass             <boolean>    E..V.... Use 2pass encoding mode (default auto)
   -gpu               <int>        E..V.... Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any)
@@ -5760,6 +5761,8 @@ allpass AVOptions:
      s                            ..F.A... slope
   width             <double>     ..F.A... set filter-width (from 0 to 99999) (default 707.1)
   w                 <double>     ..F.A... set filter-width (from 0 to 99999) (default 707.1)
+  channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 aloop AVOptions:
   loop              <int>        ..F.A... number of loops (from -1 to INT_MAX) (default 0)
@@ -6018,6 +6021,8 @@ bandpass AVOptions:
   width             <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
   w                 <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
   csg               <boolean>    ..F.A... use constant skirt gain (default false)
+  channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 bandreject AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
@@ -6029,6 +6034,8 @@ bandreject AVOptions:
      s                            ..F.A... slope
   width             <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
   w                 <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
+  channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 bass AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 100)
@@ -6042,6 +6049,8 @@ bass AVOptions:
   w                 <double>     ..F.A... set shelf transition steep (from 0 to 99999) (default 0.5)
   gain              <double>     ..F.A... set gain (from -900 to 900) (default 0)
   g                 <double>     ..F.A... set gain (from -900 to 900) (default 0)
+  channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 biquad AVOptions:
   a0                <double>     ..F.A... (from -32768 to 32767) (default 1)
@@ -6050,6 +6059,8 @@ biquad AVOptions:
   b0                <double>     ..F.A... (from -32768 to 32767) (default 1)
   b1                <double>     ..F.A... (from -32768 to 32767) (default 1)
   b2                <double>     ..F.A... (from -32768 to 32767) (default 1)
+  channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 channelmap AVOptions:
   map               <string>     ..F.A... A comma-separated list of input channel numbers in output order.
@@ -6129,6 +6140,8 @@ equalizer AVOptions:
   w                 <double>     ..F.A... set band-width (from 0 to 999) (default 1)
   gain              <double>     ..F.A... set gain (from -900 to 900) (default 0)
   g                 <double>     ..F.A... set gain (from -900 to 900) (default 0)
+  channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 extrastereo AVOptions:
   m                 <float>      ..F.A... set the difference coefficient (from -10 to 10) (default 2.5)
@@ -6210,6 +6223,8 @@ highpass AVOptions:
   w                 <double>     ..F.A... set width (from 0 to 99999) (default 0.707)
   poles             <int>        ..F.A... set number of poles (from 1 to 2) (default 2)
   p                 <int>        ..F.A... set number of poles (from 1 to 2) (default 2)
+  channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 join AVOptions:
   inputs            <int>        ..F.A... Number of input streams. (from 1 to INT_MAX) (default 2)
@@ -6250,6 +6265,8 @@ lowpass AVOptions:
   w                 <double>     ..F.A... set width (from 0 to 99999) (default 0.707)
   poles             <int>        ..F.A... set number of poles (from 1 to 2) (default 2)
   p                 <int>        ..F.A... set number of poles (from 1 to 2) (default 2)
+  channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 pan AVOptions:
   args              <string>     ..F.A...
@@ -6443,6 +6460,8 @@ treble AVOptions:
   w                 <double>     ..F.A... set shelf transition steep (from 0 to 99999) (default 0.5)
   gain              <double>     ..F.A... set gain (from -900 to 900) (default 0)
   g                 <double>     ..F.A... set gain (from -900 to 900) (default 0)
+  channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 tremolo AVOptions:
   f                 <double>     ..F.A... set frequency in hertz (from 0.1 to 20000) (default 5)
@@ -7227,6 +7246,13 @@ displace AVOptions:
      smear                        ..FV.... 
      wrap                         ..FV.... 
 
+doubleweave AVOptions:
+  first_field       <int>        ..FV.... set first field (from 0 to 1) (default top)
+     top                          ..FV.... set top field first
+     t                            ..FV.... set top field first
+     bottom                       ..FV.... set bottom field first
+     b                            ..FV.... set bottom field first
+
 drawbox AVOptions:
   x                 <string>     ..FV.... set horizontal position of the left box edge (default "0")
   y                 <string>     ..FV.... set vertical position of the top box edge (default "0")
@@ -7659,7 +7685,10 @@ interlace AVOptions:
   scan              <int>        ..FV.... scanning mode (from 0 to 1) (default tff)
      tff                          ..FV.... top field first
      bff                          ..FV.... bottom field first
-  lowpass           <boolean>    ..FV.... set vertical low-pass filter (default true)
+  lowpass           <int>        ..FV.... set vertical low-pass filter (from 0 to 2) (default linear)
+     off                          ..FV.... disable vertical low-pass filter
+     linear                       ..FV.... linear vertical low-pass filter
+     complex                      ..FV.... complex vertical low-pass filter
 
 interleave AVOptions:
   nb_inputs         <int>        ..FV.... set number of inputs (from 1 to INT_MAX) (default 2)
@@ -7682,6 +7711,11 @@ loop AVOptions:
   loop              <int>        ..FV.... number of loops (from -1 to INT_MAX) (default 0)
   size              <int64>      ..FV.... max number of frames to loop (from 0 to 32767) (default 0)
   start             <int64>      ..FV.... set the loop start frame (from 0 to I64_MAX) (default 0)
+
+lumakey AVOptions:
+  threshold         <int>        ..FV.... set the threshold value (from 0 to 65535) (default 0)
+  tolerance         <int>        ..FV.... set the tolerance value (from 0 to 65535) (default 1)
+  softness          <int>        ..FV.... set the softness value (from 0 to 65535) (default 0)
 
 lut AVOptions:
   c0                <string>     ..FV.... set component #0 expression (default "clipval")
@@ -7736,8 +7770,8 @@ lutyuv AVOptions:
   a                 <string>     ..FV.... set A expression (default "clipval")
 
 maskedclamp AVOptions:
-  undershoot        <int>        ..FV.... set undershoot (from 0 to INT_MAX) (default 0)
-  overshoot         <int>        ..FV.... set overshoot (from 0 to INT_MAX) (default 0)
+  undershoot        <int>        ..FV.... set undershoot (from 0 to 65535) (default 0)
+  overshoot         <int>        ..FV.... set overshoot (from 0 to 65535) (default 0)
   planes            <int>        ..FV.... set planes (from 0 to 15) (default 15)
 
 maskedmerge AVOptions:
@@ -7949,6 +7983,21 @@ noise AVOptions:
      t                            ..FV.... temporal noise
      u                            ..FV.... uniform noise
 
+oscilloscope AVOptions:
+  x                 <float>      ..FV.... set scope x position (from 0 to 1) (default 0.5)
+  y                 <float>      ..FV.... set scope y position (from 0 to 1) (default 0.5)
+  s                 <float>      ..FV.... set scope size (from 0 to 1) (default 0.8)
+  t                 <float>      ..FV.... set scope tilt (from 0 to 1) (default 0.5)
+  o                 <float>      ..FV.... set trace opacity (from 0 to 1) (default 0.8)
+  tx                <float>      ..FV.... set trace x position (from 0 to 1) (default 0.5)
+  ty                <float>      ..FV.... set trace y position (from 0 to 1) (default 0.9)
+  tw                <float>      ..FV.... set trace width (from 0.1 to 1) (default 0.8)
+  th                <float>      ..FV.... set trace height (from 0.1 to 1) (default 0.3)
+  c                 <int>        ..FV.... set components to trace (from 0 to 15) (default 7)
+  g                 <boolean>    ..FV.... draw trace grid (default true)
+  st                <boolean>    ..FV.... draw statistics (default true)
+  sc                <boolean>    ..FV.... draw scope (default true)
+
 overlay AVOptions:
   x                 <string>     ..FV.... set the x expression (default "0")
   y                 <string>     ..FV.... set the y expression (default "0")
@@ -8056,6 +8105,13 @@ phase AVOptions:
      a                            ..FV.... auto
      A                            ..FV.... auto analyze
 
+pixscope AVOptions:
+  x                 <float>      ..FV.... set scope x offset (from 0 to 1) (default 0.5)
+  y                 <float>      ..FV.... set scope y offset (from 0 to 1) (default 0.5)
+  w                 <int>        ..FV.... set scope width (from 1 to 80) (default 7)
+  h                 <int>        ..FV.... set scope height (from 1 to 80) (default 7)
+  o                 <float>      ..FV.... set window opacity (from 0 to 1) (default 0.5)
+
 pp AVOptions:
   subfilters        <string>     ..FV.... set postprocess subfilters (default "de")
 
@@ -8067,6 +8123,7 @@ pp7 AVOptions:
      medium                       ..FV.... medium thresholding
 
 premultiply AVOptions:
+  planes            <int>        ..FV.... set planes (from 0 to 15) (default 15)
 
 prewitt AVOptions:
   planes            <int>        ..FV.... set planes to filter (from 0 to 15) (default 15)
@@ -12099,6 +12156,7 @@ Filters:
  ... detelecine        V->V       Apply an inverse telecine pattern.
  T.. dilation          V->V       Apply dilation effect.
  T.. displace          VVV->V     Displace pixels.
+ ... doubleweave       V->V       Weave input video fields into double number of frames.
  T.. drawbox           V->V       Draw a colored box on the input video.
  ... drawgraph         V->V       Draw a graph using input video metadata.
  T.. drawgrid          V->V       Draw a colored grid on the input video.
@@ -12146,6 +12204,7 @@ Filters:
  ... kerndeint         V->V       Apply kernel deinterlacing to the input.
  .S. lenscorrection    V->V       Rectify the image by correcting for lens distortion.
  ... loop              V->V       Loop video frames.
+ TS. lumakey           V->V       Turns a certain luma into transparency.
  T.. lut               V->V       Compute and apply a lookup table to the RGB/YUV input video.
  T.. lut2              VV->V      Compute and apply a lookup table from two video inputs.
  TS. lut3d             V->V       Adjust colors using a 3D LUT.
@@ -12166,6 +12225,7 @@ Filters:
  ... noformat          V->V       Force libavfilter not to use any of the specified pixel formats for the input to the next filter.
  TS. noise             V->V       Add noise.
  ... null              V->V       Pass the source unchanged to the output.
+ ... oscilloscope      V->V       2D Video Oscilloscope.
  T.C overlay           VV->V      Overlay a video source on top of the input.
  T.. owdenoise         V->V       Denoise using wavelets.
  ... pad               V->V       Pad the input video.
@@ -12175,6 +12235,7 @@ Filters:
  TS. perspective       V->V       Correct the perspective of video.
  T.. phase             V->V       Phase shift fields.
  ... pixdesctest       V->V       Test pixel format definitions.
+ ... pixscope          V->V       Pixel data analysis.
  T.C pp                V->V       Filter video using libpostproc.
  T.. pp7               V->V       Apply Postprocessing 7 filter.
  T.. premultiply       VV->V      PreMultiply first stream with first plane of second stream.
@@ -12342,8 +12403,8 @@ nvenc_h264 AVOptions:
      ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
      ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
      vbr_2pass                    E..V.... Multi-pass variable bitrate mode
-  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from -1 to INT_MAX) (default -1)
-  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 32)
+  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
+  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
   -2pass             <boolean>    E..V.... Use 2pass encoding mode (default auto)
   -gpu               <int>        E..V.... Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any)
@@ -12421,8 +12482,8 @@ nvenc_hevc AVOptions:
      ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
      ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
      vbr_2pass                    E..V.... Multi-pass variable bitrate mode
-  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from -1 to INT_MAX) (default -1)
-  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 32)
+  -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
+  -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
   -2pass             <boolean>    E..V.... Use 2pass encoding mode (default auto)
   -gpu               <int>        E..V.... Selects which NVENC capable GPU to use. First GPU is 0, second is 1, and so on. (from -2 to INT_MAX) (default any)

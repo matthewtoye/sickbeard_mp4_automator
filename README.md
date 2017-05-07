@@ -12,6 +12,7 @@ Cuvid/NVDEC also only support pixel formats with 420 chroma, so it will not work
 
 Brief explanation of added settings:
 
+- 'handle_m2ts_files' = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the m2ts file to mp4. Default is enabled. 
 - 'resolution-bitrate-restriction' = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
   Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 
   That line will restrict 1280x720 to a bitrate of 6000, 1920x1080 to a bitrate of 10000 and 4k to a bitrate of 40000
