@@ -64,6 +64,7 @@ class MkvtoMp4:
                  subencoding='utf-8',
                  downloadsubs=True,
                  processMP4=False,
+                 forceConvert=False,
                  copyto=None,
                  moveto=None,
                  embedsubs=True,
@@ -90,6 +91,7 @@ class MkvtoMp4:
         self.output_dir = output_dir
         self.relocate_moov = relocate_moov
         self.processMP4 = processMP4
+        self.forceConvert = forceConvert
         self.copyto = copyto
         self.moveto = moveto
         self.relocate_moov = relocate_moov
@@ -163,6 +165,7 @@ class MkvtoMp4:
         self.output_dir = settings.output_dir
         self.relocate_moov = settings.relocate_moov
         self.processMP4 = settings.processMP4
+        self.forceConvert = settings.forceConvert
         self.copyto = settings.copyto
         self.moveto = settings.moveto
         self.relocate_moov = settings.relocate_moov
@@ -364,7 +367,7 @@ class MkvtoMp4:
                 break
             count+=2
 
-        if info.video.codec.lower() in self.video_codec:
+        if info.video.codec.lower() in self.video_codec and self.forceConvert is False:
             vcodec = 'copy'
         else:
             vcodec = self.video_codec[0]

@@ -309,6 +309,7 @@ def main():
     parser.add_argument('-cmp4', '--convertmp4', action='store_true', help="Overrides convert-mp4 setting in autoProcess.ini enabling the reprocessing of mp4 files")
     parser.add_argument('-mp', '--maxproc', help="Specify the max amount of concurrent scripts can happen. Passmark score of your CPU / 2000 is a good baseline.")
     parser.add_argument('-m', '--moveto', help="Override move-to value setting in autoProcess.ini changing the final destination of the file")
+    parser.add_argument('-fc', '--forceConvert', action='store_true', help="Override video copying and force encoding, useful for files that have timescale issues.") 
 
     args = vars(parser.parse_args())
 
@@ -355,6 +356,9 @@ def main():
     if (args['nopost']):
         settings.postprocess = False
         print("No post processing enabled")
+    if (args['forceConvert']):
+        settings.forceConvert = True
+        
 
     # Establish the path we will be working with
     if (args['input']):

@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
+from inspect import getsourcefile
+from os.path import abspath
 import os.path
 import os
 import re
 import signal
+import subprocess
 from subprocess import Popen, PIPE
 import logging
 import locale
@@ -486,7 +489,7 @@ class FFMpeg(object):
             if timeout:
                 signal.alarm(timeout)
 
-            ret = p.stderr.read(10)
+            ret = p.stderr.read(30)
 
             if timeout:
                 signal.alarm(0)
@@ -508,7 +511,22 @@ class FFMpeg(object):
 
             total_output += ret
             buf += ret
-            
+
+            # If the audio is being converted but the video is not, sometimes ffmpeg will spam warnings about 
+            # how there is a "non-monotonous dts in output stream" -- This basically means that the sound is going
+            # to be out of sync with the video and the only way to fix this it to re-encode the video along with the sound.
+            # I don't feel like reorganizing everything to support sending the same file back through ffmpeg with different commands
+            # Instead, we're going to close the current ffmpeg instance, and pipe the file through manual.py with a 
+            # new option to force re-encoding.
+            # The script will wait here until the subprocess is finished, in which it then exits this function and
+            # pretends that everything is a-okay so that sabn/nzbget/etc scripts will properly autoimport the file. 
+            if 'Non-monotonous DTS' in ret: #engage kludge
+                p.terminate() 
+                os.chdir( os.path.dirname( abspath(getsourcefile(lambda:0)) ) ) #ugh, path problems.
+                os.chdir( '..' )
+                subprocess.call(["python", "manual.py", "-a", "-i", infile, "--forceConvert" ])
+                return
+
             if '\r' in buf:
                 line, buf = buf.split('\r', 1)
 

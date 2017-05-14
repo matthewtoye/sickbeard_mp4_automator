@@ -109,6 +109,7 @@ class ReadSettings:
                         'subtitle-default-language': '',
                         'subtitle-encoding': '',
                         'convert-mp4': 'False',
+                        'forceConvert':'False',
                         'fullpathguess': 'True',
                         'tagfile': 'True',
                         'tag-language': 'en',
@@ -405,7 +406,7 @@ class ReadSettings:
             except:
                 log.exception("Invalid h264 level, defaulting to none.")
                 self.h264_level = None
-
+        self.forceConvert = False
         self.handle_m2ts_files = config.getboolean( section, "handle_m2ts_files" )
         self.qsv_decoder = config.getboolean(section, "use-qsv-decoder-with-encoder")  # Use Intel QuickSync Decoder when using QuickSync Encoder
         self.dxva2_decoder = config.getboolean( section, "enable_dxva2_gpu_decode" )
