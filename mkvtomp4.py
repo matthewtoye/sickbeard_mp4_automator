@@ -34,9 +34,10 @@ class MkvtoMp4:
                  minrate=None,
                  bufsize=None,
                  nvenc_gpu=None,
-                 nvenc_temporal_aq=True,
+                 nvenc_temporal_aq=False,
+                 nvenc_weighted_prediction=False,
                  nvenc_rc_lookahead=None,
-                 handle_m2ts_files=True,
+                 handle_m2ts_files=False,
                  h264_level=None,
                  qsv_decoder=True,
                  dxva2_decoder=False,
@@ -111,6 +112,7 @@ class MkvtoMp4:
         self.bufsize = bufsize
         self.nvenc_gpu = nvenc_gpu
         self.nvenc_temporal_aq = nvenc_temporal_aq
+        self.nvenc_weighted_prediction = nvenc_weighted_prediction
         self.nvenc_rate_control = nvenc_rate_control
         self.nvenc_rc_lookahead = nvenc_rc_lookahead
         self.h264_level = h264_level
@@ -183,6 +185,7 @@ class MkvtoMp4:
         self.bufsize = settings.bufsize
         self.nvenc_gpu = settings.nvenc_gpu
         self.nvenc_temporal_aq = settings.nvenc_temporal_aq
+        self.nvenc_weighted_prediction = settings.nvenc_weighted_prediction
         self.nvenc_rate_control = settings.nvenc_rate_control
         self.nvenc_rc_lookahead = settings.nvenc_rc_lookahead
         self.handle_m2ts_files = settings.handle_m2ts_files
@@ -782,6 +785,8 @@ class MkvtoMp4:
             options['video']['nvenc_gpu'] = self.nvenc_gpu
         if self.nvenc_temporal_aq:
             options['video']['nvenc_temporal_aq'] = self.nvenc_temporal_aq
+        if self.nvenc_weighted_prediction:
+            options['video']['nvenc_weighted_prediction'] = self.nvenc_weighted_prediction
         if self.nvenc_rc_lookahead:
             options['video']['nvenc_rc_lookahead'] = self.nvenc_rc_lookahead
         if self.scale_npp_enabled and vcodec != "copy":

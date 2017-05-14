@@ -12,7 +12,7 @@ Cuvid/NVDEC also only support pixel formats with 420 chroma, so it will not work
 
 Brief explanation of added settings:
 
-- 'handle_m2ts_files' = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the m2ts file to mp4. Default is enabled. 
+- 'handle_m2ts_files' = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the remaining m2ts file to mp4. Default is disabled. 
 - 'resolution-bitrate-restriction' = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
   Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 
   That line will restrict 1280x720 to a bitrate of 6000, 1920x1080 to a bitrate of 10000 and 4k to a bitrate of 40000
@@ -21,15 +21,16 @@ Brief explanation of added settings:
   **After much testing, I would recommend using dxva2 over cuvid/nvenc decoding. It still uses the GPU, is generally more stable and doesn't randomly drop frames (so far).**
 - 'qmin' = minimum video quantizer scale (VBR) (from -1 to 69) (default 2) - Must be set when nvenc_rate_control is vbr_2pass or vbr_minqp.
 - 'qmax' = maximum video quantizer scale (VBR) (from -1 to 1024) (default 31)
-- 'global_quality' = Must be set when nvenc_rate_control is constqp
+- 'global_quality' = Must be set when nvenc_rate_control is constqp, interally this uses the -qp flag when nvenc is enabled
 - 'maxrate' = maximum bitrate (in kb/s). Used for VBV together with bufsize. (from 0 to INT_MAX) (default 0)
 - 'minrate' = minimum bitrate (in kb/s). Most useful in setting up a CBR encode. It is of little use otherwise. (from INT_MIN to INT_MAX) (default 0)
 - 'bufsize' = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0) - I usually set this to 5*average bitrate, but mileage will vary.
 - 'nvenc_encoder_gpu' = Selects which NVENC capable GPU to use for encoding. First GPU is 0, second is 1, and so on. Default is any
 - 'nvenc_profile' = h264 options include: baseline, main, high, high444p - default is main
 - 'nvenc_preset' = Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
-- 'nvenc_rate_control' = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass - default is constqp
-- 'nvenc_temporal_aq' = (true/false) Improves output quality slightly, adds 2-5% extra processing time - default off
+- 'nvenc_rate_control' = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass, cbr_ld_hq, cbr_hq, vbr_hq - default constqp
+- 'nvenc_temporal_aq' = (true/false) Improves output quality slightly, adds 2-5% extra processing time - default false
+- 'nvenc_weighted_prediction' = (true/false) Reduces bitrate needed for scenes that fade to black - default false
 - 'nvenc_rc_lookahead' = Number of frames to look ahead for rate-control (from -1 to INT_MAX) - default -1
 - 'enable_nvenc_decoder' = (true/false) Enable NVDEC gpu decoding. Default is false
 - 'enable_nvenc_hevc_decoder' = (true/false) Enable NVDEC gpu decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false

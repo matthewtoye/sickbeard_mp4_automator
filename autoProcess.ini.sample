@@ -51,7 +51,8 @@ nvenc_encoder_gpu =
 nvenc_profile =
 nvenc_preset =
 nvenc_rate_control =
-nvenc_temporal_aq =
+nvenc_temporal_aq = False
+nvenc_weighted_prediction = False
 nvenc_rc_lookahead =
 enable_nvenc_decoder = False
 enable_nvenc_hevc_decoder = False
@@ -83,7 +84,7 @@ permissions = 0777
 post-process = False
 pix-fmt =
 aac_adtstoasc = False
-handle_m2ts_files = True
+handle_m2ts_files = False
 
 [CouchPotato]
 host = localhost

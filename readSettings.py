@@ -89,7 +89,8 @@ class ReadSettings:
                         'minrate':'',
                         'bufsize':'',
                         'nvenc_encoder_gpu':'',
-                        'nvenc_temporal_aq':'',
+                        'nvenc_temporal_aq':'False',
+                        'nvenc_weighted_prediction':'False',
                         'nvenc_rc_lookahead':'',
                         'nvenc_rate_control':'',
                         'enable_nvenc_decoder':'False',
@@ -98,7 +99,7 @@ class ReadSettings:
                         'nvenc_hevc_decoder_gpu':'',
                         'scale_npp_enabled':'False',
                         'scale_npp_interp_algo':'',
-                        'handle_m2ts_files':'True',
+                        'handle_m2ts_files':'False',
                         'h264-max-level': '',
                         'aac_adtstoasc': 'False',
                         'use-qsv-decoder-with-encoder': 'True',
@@ -419,6 +420,7 @@ class ReadSettings:
         self.bufsize = config.get(section, "bufsize")
         self.nvenc_gpu = config.get(section, "nvenc_encoder_gpu")
         self.nvenc_temporal_aq = config.getboolean(section, "nvenc_temporal_aq")
+        self.nvenc_weighted_prediction = config.getboolean( section, "nvenc_weighted_prediction" )
         self.nvenc_rate_control = config.get( section, "nvenc_rate_control")
         self.nvenc_rc_lookahead = config.get( section, "nvenc_rc_lookahead")
         self.nvenc_cuvid = config.getboolean(section, "enable_nvenc_decoder") 

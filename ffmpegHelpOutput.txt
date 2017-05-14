@@ -140,6 +140,7 @@ Advanced per-file options:
 -muxdelay seconds   set the maximum demux-decode delay
 -muxpreload seconds  set the initial demux-decode delay
 -time_base ratio    set the desired time base hint for output stream (1:24, 1:48000 or 0.04166, 2.0833e-5)
+-enc_time_base ratio  set the desired time base for the encoder (1:24, 1:48000 or 0.04166, 2.0833e-5). two special values are defined - 0 = use frame rate (video) or sample rate (audio),-1 = match source time base
 -bsf bitstream_filters  A comma-separated list of bitstream filters
 -fpre filename      set options from indicated preset file
 -max_muxing_queue_size packets  maximum number of packets that can be buffered while waiting for all streams to initialize
@@ -697,6 +698,7 @@ AVCodecContext AVOptions:
      ass_with_timings              .D...S..
   -refcounted_frames <boolean>    .D.VA... (default false)
   -side_data_only_packets <boolean>    E..VA... (default true)
+  -apply_cropping    <boolean>    .D.V.... (default true)
   -skip_alpha        <boolean>    .D.V.... Skip processing alpha (default false)
   -field_order       <int>        ED.V.... Field order (from 0 to 5) (default 0)
      progressive                  ED.V....
@@ -2089,6 +2091,9 @@ APE decoder AVOptions:
   -max_samples       <int>        .D..A... maximum number of samples decoded per call (from 1 to INT_MAX) (default 4608)
      all                          .D..A... no maximum. decode all samples for each packet at once
 
+DCA (DTS Coherent Acoustics) AVOptions:
+  -dca_adpcm         <boolean>    E...A... Use ADPCM encoding (default false)
+
 DCA decoder AVOptions:
   -core_only         <boolean>    .D..A... Decode core only without extensions (default false)
 
@@ -2713,10 +2718,13 @@ h264_nvenc AVOptions:
      constqp                      E..V.... Constant QP mode
      vbr                          E..V.... Variable bitrate mode
      cbr                          E..V.... Constant bitrate mode
-     vbr_minqp                    E..V.... Variable bitrate mode with MinQP
-     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
-     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
-     vbr_2pass                    E..V.... Multi-pass variable bitrate mode
+     vbr_minqp                    E..V.... Variable bitrate mode with MinQP (deprecated)
+     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (deprecated)
+     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (deprecated)
+     vbr_2pass                    E..V.... Multi-pass variable bitrate mode (deprecated)
+     cbr_ld_hq                    E..V.... Constant bitrate low delay high quality mode
+     cbr_hq                       E..V.... Constant bitrate high quality mode
+     vbr_hq                       E..V.... Variable bitrate high quality mode
   -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
   -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
@@ -2734,13 +2742,14 @@ h264_nvenc AVOptions:
   -nonref_p          <boolean>    E..V.... Set this to 1 to enable automatic insertion of non-reference P-frames (default false)
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
-  -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -cq                <float>      E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
+  -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
 
 h264_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -2840,10 +2849,13 @@ nvenc AVOptions:
      constqp                      E..V.... Constant QP mode
      vbr                          E..V.... Variable bitrate mode
      cbr                          E..V.... Constant bitrate mode
-     vbr_minqp                    E..V.... Variable bitrate mode with MinQP
-     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
-     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
-     vbr_2pass                    E..V.... Multi-pass variable bitrate mode
+     vbr_minqp                    E..V.... Variable bitrate mode with MinQP (deprecated)
+     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (deprecated)
+     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (deprecated)
+     vbr_2pass                    E..V.... Multi-pass variable bitrate mode (deprecated)
+     cbr_ld_hq                    E..V.... Constant bitrate low delay high quality mode
+     cbr_hq                       E..V.... Constant bitrate high quality mode
+     vbr_hq                       E..V.... Variable bitrate high quality mode
   -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
   -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
@@ -2861,13 +2873,14 @@ nvenc AVOptions:
   -nonref_p          <boolean>    E..V.... Set this to 1 to enable automatic insertion of non-reference P-frames (default false)
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
-  -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -cq                <float>      E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
+  -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
 
 nvenc_h264 AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -2916,10 +2929,13 @@ nvenc_h264 AVOptions:
      constqp                      E..V.... Constant QP mode
      vbr                          E..V.... Variable bitrate mode
      cbr                          E..V.... Constant bitrate mode
-     vbr_minqp                    E..V.... Variable bitrate mode with MinQP
-     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
-     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
-     vbr_2pass                    E..V.... Multi-pass variable bitrate mode
+     vbr_minqp                    E..V.... Variable bitrate mode with MinQP (deprecated)
+     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (deprecated)
+     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (deprecated)
+     vbr_2pass                    E..V.... Multi-pass variable bitrate mode (deprecated)
+     cbr_ld_hq                    E..V.... Constant bitrate low delay high quality mode
+     cbr_hq                       E..V.... Constant bitrate high quality mode
+     vbr_hq                       E..V.... Variable bitrate high quality mode
   -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
   -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
@@ -2937,13 +2953,14 @@ nvenc_h264 AVOptions:
   -nonref_p          <boolean>    E..V.... Set this to 1 to enable automatic insertion of non-reference P-frames (default false)
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
-  -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -cq                <float>      E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
+  -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
 
 nvenc_hevc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -2991,10 +3008,13 @@ nvenc_hevc AVOptions:
      constqp                      E..V.... Constant QP mode
      vbr                          E..V.... Variable bitrate mode
      cbr                          E..V.... Constant bitrate mode
-     vbr_minqp                    E..V.... Variable bitrate mode with MinQP
-     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
-     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
-     vbr_2pass                    E..V.... Multi-pass variable bitrate mode
+     vbr_minqp                    E..V.... Variable bitrate mode with MinQP (deprecated)
+     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (deprecated)
+     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (deprecated)
+     vbr_2pass                    E..V.... Multi-pass variable bitrate mode (deprecated)
+     cbr_ld_hq                    E..V.... Constant bitrate low delay high quality mode
+     cbr_hq                       E..V.... Constant bitrate high quality mode
+     vbr_hq                       E..V.... Variable bitrate high quality mode
   -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
   -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
@@ -3011,13 +3031,14 @@ nvenc_hevc AVOptions:
   -nonref_p          <boolean>    E..V.... Set this to 1 to enable automatic insertion of non-reference P-frames (default false)
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
-  -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -cq                <float>      E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
+  -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
 
 hevc_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
@@ -3076,10 +3097,13 @@ hevc_nvenc AVOptions:
      constqp                      E..V.... Constant QP mode
      vbr                          E..V.... Variable bitrate mode
      cbr                          E..V.... Constant bitrate mode
-     vbr_minqp                    E..V.... Variable bitrate mode with MinQP
-     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
-     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
-     vbr_2pass                    E..V.... Multi-pass variable bitrate mode
+     vbr_minqp                    E..V.... Variable bitrate mode with MinQP (deprecated)
+     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (deprecated)
+     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (deprecated)
+     vbr_2pass                    E..V.... Multi-pass variable bitrate mode (deprecated)
+     cbr_ld_hq                    E..V.... Constant bitrate low delay high quality mode
+     cbr_hq                       E..V.... Constant bitrate high quality mode
+     vbr_hq                       E..V.... Variable bitrate high quality mode
   -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
   -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
@@ -3096,13 +3120,14 @@ hevc_nvenc AVOptions:
   -nonref_p          <boolean>    E..V.... Set this to 1 to enable automatic insertion of non-reference P-frames (default false)
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
-  -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -cq                <float>      E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
+  -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
 
 hevc_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -5715,6 +5740,12 @@ afftfilt AVOptions:
      sine                         ..F.A... Sine
   overlap           <float>      ..F.A... set window overlap (from 0 to 1) (default 0.75)
 
+afir AVOptions:
+  dry               <float>      ..F.A... set dry gain (from 0 to 1) (default 1)
+  wet               <float>      ..F.A... set wet gain (from 0 to 1) (default 1)
+  length            <float>      ..F.A... set IR length (from 0 to 1) (default 1)
+  again             <boolean>    ..F.A... enable auto gain (default true)
+
 aformat AVOptions:
   sample_fmts       <string>     ..F.A... A '|'-separated list of sample formats.
   sample_rates      <string>     ..F.A... A '|'-separated list of sample rates.
@@ -7572,12 +7603,14 @@ histeq AVOptions:
 histogram AVOptions:
   level_height      <int>        ..FV.... set level height (from 50 to 2048) (default 200)
   scale_height      <int>        ..FV.... set scale height (from 0 to 40) (default 12)
-  display_mode      <int>        ..FV.... set display mode (from 0 to 1) (default parade)
-     parade                       ..FV....
+  display_mode      <int>        ..FV.... set display mode (from 0 to 2) (default stack)
      overlay                      ..FV....
-  d                 <int>        ..FV.... set display mode (from 0 to 1) (default parade)
      parade                       ..FV....
+     stack                        ..FV....
+  d                 <int>        ..FV.... set display mode (from 0 to 2) (default stack)
      overlay                      ..FV....
+     parade                       ..FV....
+     stack                        ..FV....
   levels_mode       <int>        ..FV.... set levels mode (from 0 to 1) (default linear)
      linear                       ..FV....
      logarithmic                  ..FV....
@@ -12031,6 +12064,7 @@ Filters:
   | = Source or sink filter
  ... abench            A->A       Benchmark part of a filtergraph.
  ... acompressor       A->A       Audio compressor.
+ ... acopy             A->A       Copy the input audio unchanged to the output.
  ... acrossfade        AA->A      Cross fade two input audio streams.
  ... acrusher          A->A       Reduce audio bit resolution.
  T.. adelay            A->A       Delay one or more audio channels.
@@ -12039,6 +12073,7 @@ Filters:
  ... aeval             A->A       Filter audio signal according to a specified expression.
  T.. afade             A->A       Fade in/out input audio.
  ... afftfilt          A->A       Apply arbitrary expressions to samples in frequency domain.
+ .S. afir              AA->A      Apply Finite Impulse Response filter with supplied coefficients in 2nd stream.
  ... aformat           A->A       Convert the input audio to one of the specified formats.
  ... agate             A->A       Audio gate.
  ... ainterleave       N->A       Temporally interleave audio inputs.
@@ -12399,10 +12434,13 @@ nvenc_h264 AVOptions:
      constqp                      E..V.... Constant QP mode
      vbr                          E..V.... Variable bitrate mode
      cbr                          E..V.... Constant bitrate mode
-     vbr_minqp                    E..V.... Variable bitrate mode with MinQP
-     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
-     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
-     vbr_2pass                    E..V.... Multi-pass variable bitrate mode
+     vbr_minqp                    E..V.... Variable bitrate mode with MinQP (deprecated)
+     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (deprecated)
+     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (deprecated)
+     vbr_2pass                    E..V.... Multi-pass variable bitrate mode (deprecated)
+     cbr_ld_hq                    E..V.... Constant bitrate low delay high quality mode
+     cbr_hq                       E..V.... Constant bitrate high quality mode
+     vbr_hq                       E..V.... Variable bitrate high quality mode
   -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
   -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
@@ -12420,13 +12458,14 @@ nvenc_h264 AVOptions:
   -nonref_p          <boolean>    E..V.... Set this to 1 to enable automatic insertion of non-reference P-frames (default false)
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
-  -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -cq                <float>      E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
+  -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
 
 Encoder nvenc_hevc [NVIDIA NVENC hevc encoder]:
     General capabilities: delay 
@@ -12478,10 +12517,13 @@ nvenc_hevc AVOptions:
      constqp                      E..V.... Constant QP mode
      vbr                          E..V.... Variable bitrate mode
      cbr                          E..V.... Constant bitrate mode
-     vbr_minqp                    E..V.... Variable bitrate mode with MinQP
-     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (only for low-latency presets)
-     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (only for low-latency presets)
-     vbr_2pass                    E..V.... Multi-pass variable bitrate mode
+     vbr_minqp                    E..V.... Variable bitrate mode with MinQP (deprecated)
+     ll_2pass_quality              E..V.... Multi-pass optimized for image quality (deprecated)
+     ll_2pass_size                E..V.... Multi-pass optimized for constant frame size (deprecated)
+     vbr_2pass                    E..V.... Multi-pass variable bitrate mode (deprecated)
+     cbr_ld_hq                    E..V.... Constant bitrate low delay high quality mode
+     cbr_hq                       E..V.... Constant bitrate high quality mode
+     vbr_hq                       E..V.... Variable bitrate high quality mode
   -rc-lookahead      <int>        E..V.... Number of frames to look ahead for rate-control (from 0 to INT_MAX) (default 0)
   -surfaces          <int>        E..V.... Number of concurrent surfaces (from 0 to 64) (default 0)
   -cbr               <boolean>    E..V.... Use cbr encoding mode (default false)
@@ -12498,13 +12540,14 @@ nvenc_hevc AVOptions:
   -nonref_p          <boolean>    E..V.... Set this to 1 to enable automatic insertion of non-reference P-frames (default false)
   -strict_gop        <boolean>    E..V.... Set 1 to minimize GOP-to-GOP rate fluctuations (default false)
   -aq-strength       <int>        E..V.... When Spatial AQ is enabled, this field is used to specify AQ strength. AQ strength scale is from 1 (low) - 15 (aggressive) (from 1 to 15) (default 8)
-  -cq                <int>        E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
+  -cq                <float>      E..V.... Set target quality level (0 to 51, 0 means automatic) for constant quality mode in VBR rate control (from 0 to 51) (default 0)
   -aud               <boolean>    E..V.... Use access unit delimiters (default false)
   -bluray-compat     <boolean>    E..V.... Bluray compatibility workarounds (default false)
   -init_qpP          <int>        E..V.... Initial QP value for P frame (from -1 to 51) (default -1)
   -init_qpB          <int>        E..V.... Initial QP value for B frame (from -1 to 51) (default -1)
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
+  -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
 
 Decoder h264_cuvid [Nvidia CUVID H264 decoder]:
     General capabilities: delay 
