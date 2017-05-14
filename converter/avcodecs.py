@@ -781,7 +781,7 @@ class NVEncH264(H264Codec):
     })
 
     def parse_options(self, opt, stream=0):
-        if 'global_quality' in safe:
+        if 'global_quality' in opt:
             opt['qp'] = opt['global_quality']
             del(opt['global_quality'])
         if opt['scale_npp_enabled'] == True:
@@ -819,7 +819,7 @@ class NVEncH264(H264Codec):
         if 'nvenc_temporal_aq' in safe:
             optlist.extend(['-temporal-aq', str(safe['nvenc_temporal_aq'])])
         if 'nvenc_weighted_prediction' in safe:
-            optlist.extend(['-nvenc_weighted_prediction', str(safe['nvenc_weighted_prediction'])])
+            optlist.extend(['-weighted_pred', str(safe['nvenc_weighted_prediction'])])
         if 'nvenc_rc_lookahead' in safe:
             optlist.extend(['-rc-lookahead', str(safe['nvenc_rc_lookahead'])])
         if 'scale_npp_enabled' in safe and safe['scale_npp_enabled'] == True:
@@ -941,7 +941,7 @@ class NVEncH265(H265Codec):
     })
 
     def parse_options(self, opt, stream=0):
-        if 'global_quality' in safe:
+        if 'global_quality' in opt:
             opt['qp'] = opt['global_quality']
             del(opt['global_quality'])
         if opt['scale_npp_enabled'] == True:
@@ -981,7 +981,7 @@ class NVEncH265(H265Codec):
         if 'qp' in safe:
             optlist.extend(['-qp', str(safe['qp'])])
         if 'nvenc_weighted_prediction' in safe:
-            optlist.extend(['-nvenc_weighted_prediction', str(safe['nvenc_weighted_prediction'])])
+            optlist.extend(['-weighted_pred', str(safe['nvenc_weighted_prediction'])])
         if 'scale_npp_enabled' in safe and safe['scale_npp_enabled'] == True:
             if safe['nvenc_hwaccel_enabled'] == False:
                 if 'scale_npp_wscale' in safe and 'scale_npp_hscale' in safe:
