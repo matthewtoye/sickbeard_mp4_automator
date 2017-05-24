@@ -4441,6 +4441,24 @@ sgi demuxer AVOptions:
      sec                          .D...... second precision
      ns                           .D...... nano second precision
 
+svg demuxer AVOptions:
+  -framerate         <video_rate> .D...... set the video framerate (default "25")
+  -loop              <boolean>    .D...... force loop over input file sequence (default false)
+  -pattern_type      <int>        .D...... set pattern type (from 0 to INT_MAX) (default 4)
+     glob_sequence                .D...... select glob/sequence pattern type
+     glob                         .D...... select glob pattern type
+     sequence                     .D...... select sequence pattern type
+     none                         .D...... disable pattern matching
+  -pixel_format      <string>     .D...... set video pixel format
+  -start_number      <int>        .D...... set first number in the sequence (from INT_MIN to INT_MAX) (default 0)
+  -start_number_range <int>        .D...... set range for looking at the first sequence number (from 1 to INT_MAX) (default 5)
+  -video_size        <image_size> .D...... set video size
+  -frame_size        <int>        .D...... force frame size in bytes (from 0 to INT_MAX) (default 0)
+  -ts_from_file      <int>        .D...... set frame timestamp from file's one (from 0 to 2) (default none)
+     none                         .D...... none
+     sec                          .D...... second precision
+     ns                           .D...... nano second precision
+
 sunrast demuxer AVOptions:
   -framerate         <video_rate> .D...... set the video framerate (default "25")
   -loop              <boolean>    .D...... force loop over input file sequence (default false)
@@ -4599,6 +4617,7 @@ dash muxer AVOptions:
   -single_file_name  <string>     E....... DASH-templated name to be used for baseURL. Implies storing all segments in one file, accessed using byte ranges
   -init_seg_name     <string>     E....... DASH-templated name to used for the initialization segment (default "init-stream$RepresentationID$.m4s")
   -media_seg_name    <string>     E....... DASH-templated name to used for the media segments (default "chunk-stream$RepresentationID$-$Number%05d$.m4s")
+  -utc_timing_url    <string>     E....... URL of the page that will return the UTC timestamp in ISO format
 
 f4v muxer AVOptions:
   -movflags          <flags>      E....... MOV muxer flags (default 0)
@@ -5530,7 +5549,7 @@ acompressor AVOptions:
   ratio             <double>     ..F.A... set ratio (from 1 to 20) (default 2)
   attack            <double>     ..F.A... set attack (from 0.01 to 2000) (default 20)
   release           <double>     ..F.A... set release (from 0.01 to 9000) (default 250)
-  makeup            <double>     ..F.A... set make up gain (from 1 to 64) (default 2)
+  makeup            <double>     ..F.A... set make up gain (from 1 to 64) (default 1)
   knee              <double>     ..F.A... set knee (from 1 to 8) (default 2.82843)
   link              <int>        ..F.A... set link type (from 0 to 1) (default average)
      average                      ..F.A...
@@ -5672,8 +5691,8 @@ afade AVOptions:
      out                          ..F.A... fade-out
   start_sample      <int64>      ..F.A... set number of first sample to start fading (from 0 to I64_MAX) (default 0)
   ss                <int64>      ..F.A... set number of first sample to start fading (from 0 to I64_MAX) (default 0)
-  nb_samples        <int>        ..F.A... set number of samples for fade duration (from 1 to INT_MAX) (default 44100)
-  ns                <int>        ..F.A... set number of samples for fade duration (from 1 to INT_MAX) (default 44100)
+  nb_samples        <int64>      ..F.A... set number of samples for fade duration (from 1 to I64_MAX) (default 44100)
+  ns                <int64>      ..F.A... set number of samples for fade duration (from 1 to I64_MAX) (default 44100)
   start_time        <duration>   ..F.A... set time to start fading (default 0)
   st                <duration>   ..F.A... set time to start fading (default 0)
   duration          <duration>   ..F.A... set fade duration (default 0)
@@ -6093,6 +6112,14 @@ biquad AVOptions:
   channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
   c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
+bs2b AVOptions:
+  profile           <int>        ..F.A... Apply a pre-defined crossfeed level (from 0 to INT_MAX) (default default)
+     default                      ..F.A... default profile
+     cmoy                         ..F.A... Chu Moy circuit
+     jmeier                       ..F.A... Jan Meier circuit
+  fcut              <int>        ..F.A... Set cut frequency (in Hz) (from 0 to 2000) (default 0)
+  feed              <int>        ..F.A... Set feed level (in Hz) (from 0 to 150) (default 0)
+
 channelmap AVOptions:
   map               <string>     ..F.A... A comma-separated list of input channel numbers in output order.
   channel_layout    <string>     ..F.A... Output channel layout.
@@ -6109,9 +6136,9 @@ chorus AVOptions:
   depths            <string>     ..F.A... set depths
 
 compand AVOptions:
-  attacks           <string>     ..F.A... set time over which increase of volume is determined (default "0.3")
+  attacks           <string>     ..F.A... set time over which increase of volume is determined (default "0")
   decays            <string>     ..F.A... set time over which decrease of volume is determined (default "0.8")
-  points            <string>     ..F.A... set points of transfer function (default "-70/-70|-60/-20")
+  points            <string>     ..F.A... set points of transfer function (default "-70/-70|-60/-20|1/0")
   soft-knee         <double>     ..F.A... set soft-knee (from 0.01 to 900) (default 0.01)
   gain              <double>     ..F.A... set output gain (from -900 to 900) (default 0)
   volume            <double>     ..F.A... set initial volume (from -900 to 0) (default 0)
@@ -6124,6 +6151,12 @@ compensationdelay AVOptions:
   dry               <double>     ..F.A... set dry amount (from 0 to 1) (default 0)
   wet               <double>     ..F.A... set wet amount (from 0 to 1) (default 1)
   temp              <int>        ..F.A... set temperature °C (from -50 to 50) (default 20)
+
+crossfeed AVOptions:
+  strength          <double>     ..F.A... set crossfeed strength (from 0 to 1) (default 0.2)
+  range             <double>     ..F.A... set soundstage wideness (from 0 to 1) (default 0.5)
+  level_in          <double>     ..F.A... set level in (from 0 to 1) (default 0.9)
+  level_out         <double>     ..F.A... set level out (from 0 to 1) (default 1)
 
 crystalizer AVOptions:
   i                 <float>      ..F.A... set intensity (from 0 to 10) (default 2)
@@ -6388,7 +6421,7 @@ sidechaincompress AVOptions:
   ratio             <double>     ..F.A... set ratio (from 1 to 20) (default 2)
   attack            <double>     ..F.A... set attack (from 0.01 to 2000) (default 20)
   release           <double>     ..F.A... set release (from 0.01 to 9000) (default 250)
-  makeup            <double>     ..F.A... set make up gain (from 1 to 64) (default 2)
+  makeup            <double>     ..F.A... set make up gain (from 1 to 64) (default 1)
   knee              <double>     ..F.A... set knee (from 1 to 8) (default 2.82843)
   link              <int>        ..F.A... set link type (from 0 to 1) (default average)
      average                      ..F.A...
@@ -6445,6 +6478,7 @@ sofalizer AVOptions:
      time                         ..F.A... time domain
      freq                         ..F.A... frequency domain
   speakers          <string>     ..F.A... set speaker custom positions
+  lfegain           <float>      ..F.A... set lfe gain (from -9 to 9) (default 0)
 
 stereotools AVOptions:
   level_in          <double>     ..F.A... set level in (from 0.015625 to 64) (default 1)
@@ -6472,6 +6506,14 @@ stereotools AVOptions:
   delay             <double>     ..F.A... set delay (from -20 to 20) (default 0)
   sclevel           <double>     ..F.A... set S/C level (from 1 to 100) (default 1)
   phase             <double>     ..F.A... set stereo phase (from 0 to 360) (default 0)
+  bmode_in          <int>        ..F.A... set balance in mode (from 0 to 2) (default balance)
+     balance                      ..F.A...
+     amplitude                    ..F.A...
+     power                        ..F.A...
+  bmode_out         <int>        ..F.A... set balance out mode (from 0 to 2) (default balance)
+     balance                      ..F.A...
+     amplitude                    ..F.A...
+     power                        ..F.A...
 
 stereowiden AVOptions:
   delay             <float>      ..F.A... set delay time (from 1 to 100) (default 20)
@@ -7220,6 +7262,7 @@ deflicker AVOptions:
      cm                           ..FV.... cubic mean
      pm                           ..FV.... power mean
      median                       ..FV.... median
+  bypass            <boolean>    ..FV.... leave frames unchanged (default false)
 
 deinterlace_qsv AVOptions:
 
@@ -8327,20 +8370,6 @@ SWScaler AVOptions:
      none                         E..V.... ignore alpha
      uniform_color                E..V.... blend onto a uniform color
      checkerboard                 E..V.... blend onto a checkerboard
-
-nppscale AVOptions:
-  w                 <string>     ..FV.... Output video width (default "iw")
-  h                 <string>     ..FV.... Output video height (default "ih")
-  format            <string>     ..FV.... Output pixel format (default "same")
-  interp_algo       <int>        ..FV.... Interpolation algorithm used for resizing (from 0 to INT_MAX) (default cubic)
-     nn                           ..FV.... nearest neighbour
-     linear                       ..FV.... linear
-     cubic                        ..FV.... cubic
-     cubic2p_bspline              ..FV.... 2-parameter cubic (B=1, C=0)
-     cubic2p_catmullrom              ..FV.... 2-parameter cubic (B=0, C=1/2)
-     cubic2p_b05c03               ..FV.... 2-parameter cubic (B=1/2, C=3/10)
-     super                        ..FV.... supersampling
-     lanczos                      ..FV.... Lanczos
 
 qsvscale AVOptions:
   w                 <string>     ..FV.... Output video width (default "iw")
@@ -10821,6 +10850,7 @@ Codecs:
  D.VIL. speedhq              NewTek SpeedHQ
  D.VI.S srgc                 Screen Recorder Gold Codec
  DEVI.S sunrast              Sun Rasterfile image
+ ..V..S svg                  Scalable Vector Graphics
  DEV.L. svq1                 Sorenson Vector Quantizer 1 / Sorenson Video 1 / SVQ1
  D.V.L. svq3                 Sorenson Vector Quantizer 3 / Sorenson Video 3 / SVQ3
  DEVI.S targa                Truevision Targa image
@@ -11552,6 +11582,7 @@ File formats:
  D  sup             raw HDMV Presentation Graphic Stream subtitles
  D  svag            Konami PS2 SVAG
   E svcd            MPEG-2 PS (SVCD)
+ D  svg_pipe        piped svg sequence
  DE swf             SWF (ShockWave Flash)
  D  tak             raw TAK
  D  tedcaptions     TED Talks captions
@@ -11998,6 +12029,7 @@ File formats:
  D  sunrast_pipe    piped sunrast sequence
  D  sup             raw HDMV Presentation Graphic Stream subtitles
  D  svag            Konami PS2 SVAG
+ D  svg_pipe        piped svg sequence
  D  swf             SWF (ShockWave Flash)
  D  tak             raw TAK
  D  tedcaptions     TED Talks captions
@@ -12109,11 +12141,13 @@ Filters:
  ... bandreject        A->A       Apply a two-pole Butterworth band-reject filter.
  ... bass              A->A       Boost or cut lower frequencies.
  ... biquad            A->A       Apply a biquad IIR filter with the given coefficients.
+ ... bs2b              A->A       Bauer stereo-to-binaural filter.
  ... channelmap        A->A       Remap audio channels.
  ... channelsplit      A->N       Split audio into per-channel streams.
  ... chorus            A->A       Add a chorus effect to the audio.
  ... compand           A->A       Compress or expand audio dynamic range.
  ... compensationdelay A->A       Audio Compensation Delay Line.
+ ... crossfeed         A->A       Apply headphone crossfeed filter.
  ... crystalizer       A->A       Simple expand audio dynamic range filter.
  T.. dcshift           A->A       Apply a DC shift to the audio.
  ... dynaudnorm        A->A       Dynamic Audio Normalizer.
@@ -12290,7 +12324,6 @@ Filters:
  TSC rotate            V->V       Rotate the input image.
  T.. sab               V->V       Apply shape adaptive blur.
  ..C scale             V->V       Scale the input video size and/or convert the image format.
- ... scale_npp         V->V       NVIDIA Performance Primitives video scaling and format conversion
  ... scale_qsv         V->V       QuickSync video scaling and format conversion
  ..C scale2ref         VV->VV     Scale the input video size and/or convert the image format to the given reference.
  ... select            V->N       Select video frames to pass in output.
@@ -12684,23 +12717,4 @@ vp9_cuvid AVOptions:
   -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
   -resize            <string>     .D.V.... Resize (width)x(height)
 
-Filter scale_npp
-  NVIDIA Performance Primitives video scaling and format conversion
-    Inputs:
-       #0: default (video)
-    Outputs:
-       #0: default (video)
-nppscale AVOptions:
-  w                 <string>     ..FV.... Output video width (default "iw")
-  h                 <string>     ..FV.... Output video height (default "ih")
-  format            <string>     ..FV.... Output pixel format (default "same")
-  interp_algo       <int>        ..FV.... Interpolation algorithm used for resizing (from 0 to INT_MAX) (default cubic)
-     nn                           ..FV.... nearest neighbour
-     linear                       ..FV.... linear
-     cubic                        ..FV.... cubic
-     cubic2p_bspline              ..FV.... 2-parameter cubic (B=1, C=0)
-     cubic2p_catmullrom              ..FV.... 2-parameter cubic (B=0, C=1/2)
-     cubic2p_b05c03               ..FV.... 2-parameter cubic (B=1/2, C=3/10)
-     super                        ..FV.... supersampling
-     lanczos                      ..FV.... Lanczos
-
+Unknown filter 'scale_npp'.

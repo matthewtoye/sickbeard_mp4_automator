@@ -73,6 +73,7 @@ class MkvtoMp4:
                  pix_fmt=None,
                  logger=None,
                  threads='auto',
+                 vsync='-1',
                  preopts=None,
                  postopts=None):
         # Setup Logging
@@ -85,6 +86,7 @@ class MkvtoMp4:
         self.FFMPEG_PATH = FFMPEG_PATH
         self.FFPROBE_PATH = FFPROBE_PATH
         self.threads = threads
+        self.vsync = vsync
         self.delete = delete
         self.output_extension = output_extension
         self.output_format = output_format
@@ -159,6 +161,7 @@ class MkvtoMp4:
         self.FFMPEG_PATH = settings.ffmpeg
         self.FFPROBE_PATH = settings.ffprobe
         self.threads = settings.threads
+        self.vsync = settings.vsync
         self.delete = settings.delete
         self.output_extension = settings.output_extension
         self.output_format = settings.output_format
@@ -686,7 +689,8 @@ class MkvtoMp4:
                 'global_quality': self.global_quality,
                 'maxrate': self.maxrate,
                 'minrate': self.minrate,
-                'bufsize': self.bufsize
+                'bufsize': self.bufsize,
+                'vsync': self.vsync
             },
             'audio': audio_settings,
             'subtitle': subtitle_settings,
@@ -711,6 +715,8 @@ class MkvtoMp4:
         # If using h264qsv, add the codec in front of the input for decoding
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
+
+        options['preopts'].extend(['-vsync', self.vsync ])
 
         nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "mpeg4", "vc1", "vp8", "hevc", "vp9" }
         use_yuv420p = False

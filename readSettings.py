@@ -58,7 +58,8 @@ class ReadSettings:
         # Default MP4 conversion settings
         mp4_defaults = {'ffmpeg': 'ffmpeg.exe',
                         'ffprobe': 'ffprobe.exe',
-                        'threads': 'auto',
+                        'threads': '0',
+                        'vsync': '-1',
                         'output_directory': '',
                         'copy_to': '',
                         'move_to': '',
@@ -232,9 +233,11 @@ class ReadSettings:
         self.threads = config.get(section, "threads")  # Number of FFMPEG threads
         try:
             if int(self.threads) < 1:
-                self.threads = "auto"
+                self.threads = "0"
         except:
-            self.threads = "auto"
+            self.threads = "0"
+
+        self.vsync = config.get( section, "vsync")
 
         self.output_dir = config.get(section, "output_directory")
         if self.output_dir == '':
