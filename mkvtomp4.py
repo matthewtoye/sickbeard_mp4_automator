@@ -432,96 +432,96 @@ class MkvtoMp4:
             if self.adl is not None and a.metadata['language'] == 'und':
                 self.log.debug("Undefined language detected, defaulting to [%s]." % self.adl)
                 a.metadata['language'] = self.adl
-            if not a.codec == "truehd": # ffmpeg cannot decode truehd streams, so we need to skip these to avoid crashing.
+
             # Proceed if no whitelist is set, or if the language is in the whitelist
-                if self.awl is None or a.metadata['language'].lower() in self.awl:
+            if self.awl is None or a.metadata['language'].lower() in self.awl:
                 # Create iOS friendly audio stream if the default audio stream has too many channels (iOS only likes AAC stereo)
-                    if self.iOS and a.audio_channels > 2:
-                        iOSbitrate = 256 if (self.audio_bitrate * 2) > 256 else (self.audio_bitrate * 2)
-                        self.log.info("Creating audio stream %s from source audio stream %s [iOS-audio]." % (str(l), a.index))
-                        self.log.debug("Audio codec: %s." % self.iOS[0])
-                        self.log.debug("Channels: 2.")
-                        self.log.debug("Filter: %s." % self.iOS_filter)
-                        self.log.debug("Bitrate: %s." % iOSbitrate)
-                        self.log.debug("Language: %s." % a.metadata['language'])
-                        if l == 0:
-                            disposition = 'default'
-                            self.log.info("Audio track is number %s setting disposition to %s" % (str(l), disposition))
-                        else:
-                            disposition = 'none'
-                            self.log.info("Audio track is number %s setting disposition to %s" % (str(l), disposition))
-                        audio_settings.update({l: {
-                            'map': a.index,
-                            'codec': self.iOS[0],
-                            'channels': 2,
-                            'bitrate': iOSbitrate,
-                            'filter': self.iOS_filter,
-                            'language': a.metadata['language'],
-                            'disposition': disposition,
-                        }})
-                        l += 1
-                    # If the iOS audio option is enabled and the source audio channel is only stereo, the additional iOS channel will be skipped and a single AAC 2.0 channel will be made regardless of codec preference to avoid multiple stereo channels
-                    self.log.info("Creating audio stream %s from source stream %s." % (str(l), a.index))
-                    if self.iOS and a.audio_channels <= 2:
-                        self.log.debug("Overriding default channel settings because iOS audio is enabled but the source is stereo [iOS-audio].")
-                        acodec = 'copy' if a.codec in self.iOS else self.iOS[0]
-                        audio_channels = a.audio_channels
-                        afilter = self.iOS_filter
-                        abitrate = a.audio_channels * 128 if (a.audio_channels * self.audio_bitrate) > (a.audio_channels * 128) else (a.audio_channels * self.audio_bitrate)
-                    else:
-                        # If desired codec is the same as the source codec, copy to avoid quality loss
-                        acodec = 'copy' if a.codec.lower() in self.audio_codec else self.audio_codec[0]
-                        # Audio channel adjustments
-                        if self.maxchannels and a.audio_channels > self.maxchannels:
-                            audio_channels = self.maxchannels
-                            if acodec == 'copy':
-                                acodec = self.audio_codec[0]
-                            abitrate = self.maxchannels * self.audio_bitrate
-                        else:
-                            audio_channels = a.audio_channels
-                            abitrate = a.audio_channels * self.audio_bitrate
-                        # Bitrate calculations/overrides
-                        if self.audio_bitrate is 0:
-                            self.log.debug("Attempting to set bitrate based on source stream bitrate.")
-                            try:
-                                abitrate = a.bitrate / 1000
-                            except:
-                                self.log.warning("Unable to determine audio bitrate from source stream %s, defaulting to 256 per channel." % a.index)
-                                abitrate = a.audio_channels * 256
-                        afilter = self.audio_filter
-
-                    self.log.debug("Audio codec: %s." % acodec)
-                    self.log.debug("Channels: %s." % audio_channels)
-                    self.log.debug("Bitrate: %s." % abitrate)
-                    self.log.debug("Language: %s" % a.metadata['language'])
-                    self.log.debug("Filter: %s" % afilter)
-
-                    # If the iOSFirst option is enabled, disable the iOS option after the first audio stream is processed
-                    if self.iOS and self.iOSFirst:
-                        self.log.debug("Not creating any additional iOS audio streams.")
-                        self.iOS = False
-
-                    # Set first track as default disposition
+                if self.iOS and a.audio_channels > 2:
+                    iOSbitrate = 256 if (self.audio_bitrate * 2) > 256 else (self.audio_bitrate * 2)
+                    self.log.info("Creating audio stream %s from source audio stream %s [iOS-audio]." % (str(l), a.index))
+                    self.log.debug("Audio codec: %s." % self.iOS[0])
+                    self.log.debug("Channels: 2.")
+                    self.log.debug("Filter: %s." % self.iOS_filter)
+                    self.log.debug("Bitrate: %s." % iOSbitrate)
+                    self.log.debug("Language: %s." % a.metadata['language'])
                     if l == 0:
                         disposition = 'default'
-                        self.log.info("Audio Track is number %s setting disposition to %s" % (a.index, disposition))
+                        self.log.info("Audio track is number %s setting disposition to %s" % (str(l), disposition))
                     else:
                         disposition = 'none'
-                        self.log.info("Audio Track is number %s setting disposition to %s" % (a.index, disposition))
-
+                        self.log.info("Audio track is number %s setting disposition to %s" % (str(l), disposition))
                     audio_settings.update({l: {
                         'map': a.index,
-                        'codec': acodec,
-                        'channels': audio_channels,
-                        'bitrate': abitrate,
-                        'filter': afilter,
+                        'codec': self.iOS[0],
+                        'channels': 2,
+                        'bitrate': iOSbitrate,
+                        'filter': self.iOS_filter,
                         'language': a.metadata['language'],
                         'disposition': disposition,
                     }})
+                    l += 1
+                # If the iOS audio option is enabled and the source audio channel is only stereo, the additional iOS channel will be skipped and a single AAC 2.0 channel will be made regardless of codec preference to avoid multiple stereo channels
+                self.log.info("Creating audio stream %s from source stream %s." % (str(l), a.index))
+                if self.iOS and a.audio_channels <= 2:
+                    self.log.debug("Overriding default channel settings because iOS audio is enabled but the source is stereo [iOS-audio].")
+                    acodec = 'copy' if a.codec in self.iOS else self.iOS[0]
+                    audio_channels = a.audio_channels
+                    afilter = self.iOS_filter
+                    abitrate = a.audio_channels * 128 if (a.audio_channels * self.audio_bitrate) > (a.audio_channels * 128) else (a.audio_channels * self.audio_bitrate)
+                else:
+                    # If desired codec is the same as the source codec, copy to avoid quality loss
+                    acodec = 'copy' if a.codec.lower() in self.audio_codec else self.audio_codec[0]
+                    # Audio channel adjustments
+                    if self.maxchannels and a.audio_channels > self.maxchannels:
+                        audio_channels = self.maxchannels
+                        if acodec == 'copy':
+                            acodec = self.audio_codec[0]
+                        abitrate = self.maxchannels * self.audio_bitrate
+                    else:
+                        audio_channels = a.audio_channels
+                        abitrate = a.audio_channels * self.audio_bitrate
+                    # Bitrate calculations/overrides
+                    if self.audio_bitrate is 0:
+                        self.log.debug("Attempting to set bitrate based on source stream bitrate.")
+                        try:
+                            abitrate = a.bitrate / 1000
+                        except:
+                            self.log.warning("Unable to determine audio bitrate from source stream %s, defaulting to 256 per channel." % a.index)
+                            abitrate = a.audio_channels * 256
+                    afilter = self.audio_filter
 
-                    if acodec == 'copy' and a.codec == 'aac' and self.aac_adtstoasc:
-                        audio_settings[l]['bsf'] = 'aac_adtstoasc'
-                    l = l + 1
+                self.log.debug("Audio codec: %s." % acodec)
+                self.log.debug("Channels: %s." % audio_channels)
+                self.log.debug("Bitrate: %s." % abitrate)
+                self.log.debug("Language: %s" % a.metadata['language'])
+                self.log.debug("Filter: %s" % afilter)
+
+                # If the iOSFirst option is enabled, disable the iOS option after the first audio stream is processed
+                if self.iOS and self.iOSFirst:
+                    self.log.debug("Not creating any additional iOS audio streams.")
+                    self.iOS = False
+
+                # Set first track as default disposition
+                if l == 0:
+                    disposition = 'default'
+                    self.log.info("Audio Track is number %s setting disposition to %s" % (a.index, disposition))
+                else:
+                    disposition = 'none'
+                    self.log.info("Audio Track is number %s setting disposition to %s" % (a.index, disposition))
+
+                audio_settings.update({l: {
+                    'map': a.index,
+                    'codec': acodec,
+                    'channels': audio_channels,
+                    'bitrate': abitrate,
+                    'filter': afilter,
+                    'language': a.metadata['language'],
+                    'disposition': disposition,
+                }})
+
+                if acodec == 'copy' and a.codec == 'aac' and self.aac_adtstoasc:
+                    audio_settings[l]['bsf'] = 'aac_adtstoasc'
+                l = l + 1
 
         # Subtitle streams
         subtitle_settings = {}
