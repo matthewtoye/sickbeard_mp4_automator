@@ -373,6 +373,7 @@ def main():
     else:
         path = getValue("Enter path to file")
 
+    tvdbid = None
     if os.path.isdir(path):
         tvdbid = int(args['tvdbid']) if args['tvdbid'] else None
         walkDir(path, silent, tvdbid=tvdbid, preserveRelative=args['preserveRelative'], tag=settings.tagfile)

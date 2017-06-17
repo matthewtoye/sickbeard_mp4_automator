@@ -3396,8 +3396,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.101")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.101")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.73.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.73.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3424,8 +3424,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.101")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.72.101")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.73.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.73.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -4055,7 +4055,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.72.101")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.73.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -5179,7 +5179,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.72.101")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.73.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -6273,6 +6273,14 @@ hdcd AVOptions:
      20                           ..F.A... 20-bit (in s32)
      24                           ..F.A... 24-bit (in s32)
 
+headphone AVOptions:
+  map               <string>     ..F.A... set channels convolution mappings
+  gain              <float>      ..F.A... set gain in dB (from -20 to 40) (default 0)
+  lfe               <float>      ..F.A... set lfe gain in dB (from -20 to 40) (default 0)
+  type              <int>        ..F.A... set processing (from 0 to 1) (default freq)
+     time                         ..F.A... time domain
+     freq                         ..F.A... frequency domain
+
 highpass AVOptions:
   frequency         <double>     ..F.A... set frequency (from 0 to 999999) (default 3000)
   f                 <double>     ..F.A... set frequency (from 0 to 999999) (default 3000)
@@ -6465,18 +6473,6 @@ silenceremove AVOptions:
      peak                         ..F.A...
      rms                          ..F.A...
   window            <double>     ..F.A... (from 0 to 10) (default 0.02)
-
-sofalizer AVOptions:
-  sofa              <string>     ..F.A... sofa filename
-  gain              <float>      ..F.A... set gain in dB (from -20 to 40) (default 0)
-  rotation          <float>      ..F.A... set rotation (from -360 to 360) (default 0)
-  elevation         <float>      ..F.A... set elevation (from -90 to 90) (default 0)
-  radius            <float>      ..F.A... set radius (from 0 to 3) (default 1)
-  type              <int>        ..F.A... set processing (from 0 to 1) (default freq)
-     time                         ..F.A... time domain
-     freq                         ..F.A... frequency domain
-  speakers          <string>     ..F.A... set speaker custom positions
-  lfegain           <float>      ..F.A... set lfe gain (from -9 to 9) (default 0)
 
 stereotools AVOptions:
   level_in          <double>     ..F.A... set level in (from 0.015625 to 64) (default 1)
@@ -7044,6 +7040,8 @@ colorspace AVOptions:
      smpte170m                    ..FV.... 
      smpte240m                    ..FV.... 
      ycgco                        ..FV.... 
+     gbr                          ..FV.... 
+     bt2020nc                     ..FV.... 
      bt2020ncl                    ..FV.... 
   range             <int>        ..FV.... Output color range (from 0 to 2) (default 0)
      tv                           ..FV.... 
@@ -7056,10 +7054,12 @@ colorspace AVOptions:
      bt470bg                      ..FV.... 
      smpte170m                    ..FV.... 
      smpte240m                    ..FV.... 
+     smpte428                     ..FV.... 
      film                         ..FV.... 
      smpte431                     ..FV.... 
      smpte432                     ..FV.... 
      bt2020                       ..FV.... 
+     jedec-p22                    ..FV.... 
   trc               <int>        ..FV.... Output transfer characteristics (from 0 to 18) (default 2)
      bt709                        ..FV.... 
      bt470m                       ..FV.... 
@@ -7108,6 +7108,8 @@ colorspace AVOptions:
      smpte170m                    ..FV.... 
      smpte240m                    ..FV.... 
      ycgco                        ..FV.... 
+     gbr                          ..FV.... 
+     bt2020nc                     ..FV.... 
      bt2020ncl                    ..FV.... 
   irange            <int>        ..FV.... Input color range (from 0 to 2) (default 0)
      tv                           ..FV.... 
@@ -7120,10 +7122,12 @@ colorspace AVOptions:
      bt470bg                      ..FV.... 
      smpte170m                    ..FV.... 
      smpte240m                    ..FV.... 
+     smpte428                     ..FV.... 
      film                         ..FV.... 
      smpte431                     ..FV.... 
      smpte432                     ..FV.... 
      bt2020                       ..FV.... 
+     jedec-p22                    ..FV.... 
   itrc              <int>        ..FV.... Input transfer characteristics (from 0 to 18) (default 2)
      bt709                        ..FV.... 
      bt470m                       ..FV.... 
@@ -10409,6 +10413,7 @@ Decoders:
  VF...D fraps                Fraps
  V....D frwu                 Forward Uncompressed
  V....D g2m                  Go2Meeting
+ V....D gdv                  Gremlin Digital Video
  V....D gif                  GIF (Graphics Interchange Format)
  V....D h261                 H.261
  V...BD h263                 H.263 / H.263-1996, H.263+ / H.263-1998 / H.263 version 2
@@ -10667,6 +10672,7 @@ Decoders:
  AF...D flac                 FLAC (Free Lossless Audio Codec)
  A....D g723_1               G.723.1
  A....D g729                 G.729
+ A....D gremlin_dpcm         DPCM Gremlin
  A....D gsm                  GSM
  A....D libgsm               libgsm GSM (codec gsm)
  A....D gsm_ms               GSM Microsoft variant
@@ -10866,6 +10872,7 @@ Codecs:
  D.VI.S fraps                Fraps
  D.VI.S frwu                 Forward Uncompressed
  D.V.L. g2m                  Go2Meeting
+ D.V.L. gdv                  Gremlin Digital Video
  DEV..S gif                  GIF (Graphics Interchange Format)
  DEV.L. h261                 H.261
  DEV.L. h263                 H.263 / H.263-1996, H.263+ / H.263-1998 / H.263 version 2
@@ -11105,6 +11112,7 @@ Codecs:
  DEAI.S flac                 FLAC (Free Lossless Audio Codec)
  DEA.L. g723_1               G.723.1
  D.A.L. g729                 G.729
+ D.A.L. gremlin_dpcm         DPCM Gremlin
  DEA.L. gsm                  GSM (decoders: gsm libgsm ) (encoders: libgsm )
  DEA.L. gsm_ms               GSM Microsoft variant (decoders: gsm_ms libgsm_ms ) (encoders: libgsm_ms )
  D.A.L. iac                  IAC (Indeo Audio Coder)
@@ -11529,6 +11537,7 @@ File formats:
  DE g723_1          raw G.723.1
  D  g729            G.729 raw format demuxer
  D  gdigrab         GDI API Windows frame grabber
+ D  gdv             Gremlin Digital Video
  D  genh            GENeric Header
  DE gif             GIF Animation
  DE gsm             raw GSM
@@ -12005,6 +12014,7 @@ File formats:
  D  g723_1          G.723.1
  D  g729            G.729 raw format demuxer
  D  gdigrab         GDI API Windows frame grabber
+ D  gdv             Gremlin Digital Video
  D  genh            GENeric Header
  D  gif             CompuServe Graphics Interchange Format (GIF)
  D  gsm             raw GSM
@@ -12271,6 +12281,7 @@ Filters:
  ..C firequalizer      A->A       Finite Impulse Response Equalizer.
  ... flanger           A->A       Apply a flanging effect to the audio.
  ... hdcd              A->A       Apply High Definition Compatible Digital (HDCD) decoding.
+ .S. headphone         N->A       Apply headphone binaural spatialization with HRTFs in additional streams.
  ... highpass          A->A       Apply a high-pass filter with 3dB point frequency.
  ... join              N->A       Join multiple audio streams into multi-channel output.
  ... loudnorm          A->A       EBU R128 loudness normalization
@@ -12283,7 +12294,6 @@ Filters:
  ... sidechaingate     AA->A      Audio sidechain gate.
  ... silencedetect     A->A       Detect silence.
  ... silenceremove     A->A       Remove silence.
- .S. sofalizer         A->A       SOFAlizer (Spatially Oriented Format for Acoustics).
  ... stereotools       A->A       Apply various stereo tools.
  ... stereowiden       A->A       Apply stereo widening effect.
  .S. surround          A->A       Apply audio surround upmix filter.
