@@ -12,6 +12,7 @@ Cuvid/NVDEC also only support pixel formats with 420 chroma, so it will not work
 
 Brief explanation of added settings:
 
+- 'sample_rate' = By default ffmpeg will resample to 96000 KHz with some audio filters. Internet explorer/Firefox/edge will not play any video with 96000 KHz audio, so this will allow you to set it to something lower like 48000.
 - 'handle_m2ts_files' = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the remaining m2ts file to mp4. Default is disabled. 
 - 'resolution-bitrate-restriction' = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
   Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 

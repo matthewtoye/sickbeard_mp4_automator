@@ -521,7 +521,8 @@ class FFMpeg(object):
             # The script will wait here until the subprocess is finished, in which it then exits this function and
             # pretends that everything is a-okay so that sabn/nzbget/etc scripts will properly autoimport the file. 
             if 'Non-monotonous DTS' in ret: #engage kludge
-                p.terminate() 
+                p.terminate()
+                self.removeFile(outfile)
                 os.chdir( os.path.dirname( abspath(getsourcefile(lambda:0)) ) ) #ugh, path problems.
                 os.chdir( '..' )
                 subprocess.call(["python", "manual.py", "-a", "-i", infile, "--forceConvert", "--nodelete" ])

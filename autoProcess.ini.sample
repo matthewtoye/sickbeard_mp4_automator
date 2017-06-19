@@ -85,6 +85,7 @@ post-process = False
 pix-fmt =
 aac_adtstoasc = False
 handle_m2ts_files = False
+sample_rate = 
 
 [CouchPotato]
 host = localhost

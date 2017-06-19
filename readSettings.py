@@ -103,6 +103,7 @@ class ReadSettings:
                         'handle_m2ts_files':'False',
                         'h264-max-level': '',
                         'aac_adtstoasc': 'False',
+                        'sample_rate': '',
                         'use-qsv-decoder-with-encoder': 'True',
                         'enable_dxva2_gpu_decode': 'False',
                         'subtitle-codec': 'mov_text',
@@ -313,6 +314,17 @@ class ReadSettings:
         self.iOSfilter = config.get(section, "ios-audio-filter").lower().strip()  # iOS audio filter
         if self.iOSfilter == '':
             self.iOSfilter = None
+
+        self.sample_rate = config.get(section, "sample_rate")
+        try:
+            self.sample_rate = int(self.sample_rate)
+        except:
+            self.sample_rate = 48000
+            log.warning("Sample rate was invalid, defaulting to 48000 KHz.")
+        if self.sample_rate > 48000:
+            log.warning("Some browsers (Firefox, Internet Explorer, Edge) may have issues with playing audio over 48000 KHz.")
+        if self.sample_rate == '':
+            self.sample_rate = None
 
         self.downloadsubs = config.getboolean(section, "download-subs")  # Enables downloading of subtitles from the internet sources using subliminal
         if self.downloadsubs:

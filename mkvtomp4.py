@@ -56,6 +56,7 @@ class MkvtoMp4:
                  iOS_filter=None,
                  maxchannels=None,
                  aac_adtstoasc=False,
+                 sample_rate=None,
                  awl=None,
                  swl=None,
                  adl=None,
@@ -142,6 +143,7 @@ class MkvtoMp4:
         self.awl = awl
         self.adl = adl
         self.aac_adtstoasc = aac_adtstoasc
+        self.sample_rate = sample_rate
         # Subtitle settings
         self.scodec = scodec
         self.swl = swl
@@ -217,6 +219,7 @@ class MkvtoMp4:
         self.awl = settings.awl
         self.adl = settings.adl
         self.aac_adtstoasc = settings.aac_adtstoasc
+        self.sample_rate = settings.sample_rate
         # Subtitle settings
         self.scodec = settings.scodec
         self.swl = settings.swl
@@ -433,6 +436,12 @@ class MkvtoMp4:
                 self.log.debug("Undefined language detected, defaulting to [%s]." % self.adl)
                 a.metadata['language'] = self.adl
 
+            if self.sample_rate is None:
+                try:
+                    self.sample_rate = a.audio_samplerate
+                except:
+                    self.sample_rate = 48000
+
             # Proceed if no whitelist is set, or if the language is in the whitelist
             if self.awl is None or a.metadata['language'].lower() in self.awl:
                 # Create iOS friendly audio stream if the default audio stream has too many channels (iOS only likes AAC stereo)
@@ -455,6 +464,7 @@ class MkvtoMp4:
                         'codec': self.iOS[0],
                         'channels': 2,
                         'bitrate': iOSbitrate,
+                        'samplerate': self.sample_rate,
                         'filter': self.iOS_filter,
                         'language': a.metadata['language'],
                         'disposition': disposition,
@@ -515,6 +525,7 @@ class MkvtoMp4:
                     'channels': audio_channels,
                     'bitrate': abitrate,
                     'filter': afilter,
+                    'samplerate': self.sample_rate,
                     'language': a.metadata['language'],
                     'disposition': disposition,
                 }})
