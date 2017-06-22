@@ -91,6 +91,8 @@ Advanced global options:
 -override_ffserver   override the options from ffserver
 -sdp_file file      specify a file in which to print sdp information
 -qsv_device device  set QSV hardware device (DirectX adapter index, DRM path or X11 display name)
+-init_hw_device args  initialise hardware device
+-filter_hw_device device  set hardware device used when filtering
 
 Per-file main options:
 -f fmt              force format
@@ -5807,6 +5809,11 @@ allpass AVOptions:
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default h)
+     h                            ..F.A... Hz
+     q                            ..F.A... Q-Factor
+     o                            ..F.A... octave
+     s                            ..F.A... slope
   width             <double>     ..F.A... set filter-width (from 0 to 99999) (default 707.1)
   w                 <double>     ..F.A... set filter-width (from 0 to 99999) (default 707.1)
   channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
@@ -6066,6 +6073,11 @@ bandpass AVOptions:
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     h                            ..F.A... Hz
+     q                            ..F.A... Q-Factor
+     o                            ..F.A... octave
+     s                            ..F.A... slope
   width             <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
   w                 <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
   csg               <boolean>    ..F.A... use constant skirt gain (default false)
@@ -6080,6 +6092,11 @@ bandreject AVOptions:
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     h                            ..F.A... Hz
+     q                            ..F.A... Q-Factor
+     o                            ..F.A... octave
+     s                            ..F.A... slope
   width             <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
   w                 <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
   channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
@@ -6089,6 +6106,11 @@ bass AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 100)
   f                 <double>     ..F.A... set central frequency (from 0 to 999999) (default 100)
   width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     h                            ..F.A... Hz
+     q                            ..F.A... Q-Factor
+     o                            ..F.A... octave
+     s                            ..F.A... slope
+  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
@@ -6198,6 +6220,11 @@ equalizer AVOptions:
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     h                            ..F.A... Hz
+     q                            ..F.A... Q-Factor
+     o                            ..F.A... octave
+     s                            ..F.A... slope
   width             <double>     ..F.A... set band-width (from 0 to 999) (default 1)
   w                 <double>     ..F.A... set band-width (from 0 to 999) (default 1)
   gain              <double>     ..F.A... set gain (from -900 to 900) (default 0)
@@ -6289,6 +6316,11 @@ highpass AVOptions:
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     h                            ..F.A... Hz
+     q                            ..F.A... Q-Factor
+     o                            ..F.A... octave
+     s                            ..F.A... slope
   width             <double>     ..F.A... set width (from 0 to 99999) (default 0.707)
   w                 <double>     ..F.A... set width (from 0 to 99999) (default 0.707)
   poles             <int>        ..F.A... set number of poles (from 1 to 2) (default 2)
@@ -6327,6 +6359,11 @@ lowpass AVOptions:
   frequency         <double>     ..F.A... set frequency (from 0 to 999999) (default 500)
   f                 <double>     ..F.A... set frequency (from 0 to 999999) (default 500)
   width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     h                            ..F.A... Hz
+     q                            ..F.A... Q-Factor
+     o                            ..F.A... octave
+     s                            ..F.A... slope
+  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
@@ -6484,7 +6521,7 @@ stereotools AVOptions:
   muter             <boolean>    ..F.A... mute R (default false)
   phasel            <boolean>    ..F.A... phase L (default false)
   phaser            <boolean>    ..F.A... phase R (default false)
-  mode              <int>        ..F.A... set stereo mode (from 0 to 6) (default lr>lr)
+  mode              <int>        ..F.A... set stereo mode (from 0 to 8) (default lr>lr)
      lr>lr                        ..F.A...
      lr>ms                        ..F.A...
      ms>lr                        ..F.A...
@@ -6492,6 +6529,8 @@ stereotools AVOptions:
      lr>rr                        ..F.A...
      lr>l+r                       ..F.A...
      lr>rl                        ..F.A...
+     ms>ll                        ..F.A...
+     ms>rr                        ..F.A...
   slev              <double>     ..F.A... set side level (from 0.015625 to 64) (default 1)
   sbal              <double>     ..F.A... set side balance (from -1 to 1) (default 0)
   mlev              <double>     ..F.A... set middle level (from 0.015625 to 64) (default 1)
@@ -6515,6 +6554,26 @@ stereowiden AVOptions:
   crossfeed         <float>      ..F.A... set cross feed (from 0 to 0.8) (default 0.3)
   drymix            <float>      ..F.A... set dry-mix (from 0 to 1) (default 0.8)
 
+superequalizer AVOptions:
+  1b                <float>      ..F.A... set 65Hz band gain (from 0 to 20) (default 1)
+  2b                <float>      ..F.A... set 92Hz band gain (from 0 to 20) (default 1)
+  3b                <float>      ..F.A... set 131Hz band gain (from 0 to 20) (default 1)
+  4b                <float>      ..F.A... set 185Hz band gain (from 0 to 20) (default 1)
+  5b                <float>      ..F.A... set 262Hz band gain (from 0 to 20) (default 1)
+  6b                <float>      ..F.A... set 370Hz band gain (from 0 to 20) (default 1)
+  7b                <float>      ..F.A... set 523Hz band gain (from 0 to 20) (default 1)
+  8b                <float>      ..F.A... set 740Hz band gain (from 0 to 20) (default 1)
+  9b                <float>      ..F.A... set 1047Hz band gain (from 0 to 20) (default 1)
+  10b               <float>      ..F.A... set 1480Hz band gain (from 0 to 20) (default 1)
+  11b               <float>      ..F.A... set 2093Hz band gain (from 0 to 20) (default 1)
+  12b               <float>      ..F.A... set 2960Hz band gain (from 0 to 20) (default 1)
+  13b               <float>      ..F.A... set 4186Hz band gain (from 0 to 20) (default 1)
+  14b               <float>      ..F.A... set 5920Hz band gain (from 0 to 20) (default 1)
+  15b               <float>      ..F.A... set 8372Hz band gain (from 0 to 20) (default 1)
+  16b               <float>      ..F.A... set 11840Hz band gain (from 0 to 20) (default 1)
+  17b               <float>      ..F.A... set 16744Hz band gain (from 0 to 20) (default 1)
+  18b               <float>      ..F.A... set 20000Hz band gain (from 0 to 20) (default 1)
+
 surround AVOptions:
   chl_out           <string>     ..F.A... set output channel layout (default "5.1")
   chl_in            <string>     ..F.A... set input channel layout (default "stereo")
@@ -6528,6 +6587,11 @@ treble AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
   f                 <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
   width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     h                            ..F.A... Hz
+     q                            ..F.A... Q-Factor
+     o                            ..F.A... octave
+     s                            ..F.A... slope
+  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
@@ -7703,6 +7767,8 @@ hwmap AVOptions:
      write                        ..FV.... Mapping should be writeable
      overwrite                    ..FV.... Mapping will always overwrite the entire frame
      direct                       ..FV.... Mapping should not involve any copying
+  derive_device     <string>     ..FV.... Derive a new device of this type
+  reverse           <int>        ..FV.... Map in reverse (create and allocate in the sink) (from 0 to 1) (default 0)
 
 cudaupload AVOptions:
   device            <int>        ..FV.... Number of the device to use (from 0 to INT_MAX) (default 0)
@@ -8273,6 +8339,11 @@ removegrain AVOptions:
 removelogo AVOptions:
   filename          <string>     ..FV.... set bitmap filename
   f                 <string>     ..FV.... set bitmap filename
+
+roberts AVOptions:
+  planes            <int>        ..FV.... set planes to filter (from 0 to 15) (default 15)
+  scale             <float>      ..FV.... set scale (from 0 to 65535) (default 1)
+  delta             <float>      ..FV.... set delta (from -65535 to 65535) (default 0)
 
 rotate AVOptions:
   angle             <string>     ..FV.... set angle (in radians) (default "0")
@@ -12296,6 +12367,7 @@ Filters:
  ... silenceremove     A->A       Remove silence.
  ... stereotools       A->A       Apply various stereo tools.
  ... stereowiden       A->A       Apply stereo widening effect.
+ ... superequalizer    A->A       Apply 18 band equalization filter.
  .S. surround          A->A       Apply audio surround upmix filter.
  ... treble            A->A       Boost or cut upper frequencies.
  ... tremolo           A->A       Apply tremolo effect.
@@ -12445,6 +12517,7 @@ Filters:
  T.. removelogo        V->V       Remove a TV logo based on a mask image.
  ... repeatfields      V->V       Hard repeat fields based on MPEG repeat field flag.
  ... reverse           V->V       Reverse a clip.
+ TS. roberts           V->V       Apply roberts cross operator.
  TSC rotate            V->V       Rotate the input image.
  T.. sab               V->V       Apply shape adaptive blur.
  ..C scale             V->V       Scale the input video size and/or convert the image format.
