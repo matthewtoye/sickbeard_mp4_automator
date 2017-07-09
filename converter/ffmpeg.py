@@ -7,10 +7,12 @@ import os
 import re
 import signal
 import subprocess
+import sys
 from subprocess import Popen, PIPE
 import logging
 import locale
 import time
+from sys import platform
 
 logger = logging.getLogger(__name__)
 
@@ -206,10 +208,12 @@ class MediaStreamInfo(object):
                 self.pix_fmt = val
 
         if self.type == 'subtitle':
-            if key == 'disposition:forced':
+            if key == 'DISPOSITION:forced':
                 self.sub_forced = self.parse_int(val)
-            if key == 'disposition:default':
+            if key == 'DISPOSITION:default':
                 self.sub_default = self.parse_int(val)
+            if key == 'title' and val == 'Forced':
+                self.sub_forced = 1
 
     def __repr__(self):
         d = ''
@@ -377,8 +381,17 @@ class FFMpeg(object):
         except:
             logger.exception("There was an error making all command line parameters a string")
         logger.debug('Spawning ffmpeg with command: ' + ' '.join(cmds))
-        return Popen(cmds, shell=False, stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                     close_fds=(os.name != 'nt'), startupinfo=None)
+        kwargs = {}
+        if sys.platform == 'win32':
+        # from msdn [1]
+            CREATE_NEW_PROCESS_GROUP = 0x00000200  # note: could get it from subprocess
+            DETACHED_PROCESS = 0x00000008          # 0x8 | 0x200 == 0x208
+            kwargs.update(creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)  
+        elif sys.version_info < (3, 2):  # assume posix
+            kwargs.update(preexec_fn=os.setsid)
+        else:  # Python 3.2+ and Unix
+            kwargs.update(start_new_session=True)
+        return subprocess.Popen( cmds, stdin=PIPE, stdout=PIPE, stderr=PIPE, **kwargs )
 
     def probe(self, fname, posters_as_video=True):
         """
@@ -452,6 +465,7 @@ class FFMpeg(object):
         if preopts:
             cmds.extend(preopts)
         cmds.extend(['-i', infile])
+        cmds.extend(['-movflags', 'faststart'])
 
         # Move additional inputs to the front of the line
         for ind, command in enumerate(opts):
@@ -536,8 +550,11 @@ class FFMpeg(object):
                 if len(tmpframe) == 1 and frame != 0 and frame == int( tmpframe[0] ):
                     if starttime == lastframetime:
                         lastframetime = time.time()
-                    elif ( time.time() - lastframetime ) > 60.0:
-                        raise FFMpegError('Forcing ffmpeg to close due to taking more than 60 seconds to render a single frame. Source file may be corrupt.')
+                    elif ( time.time() - lastframetime ) > 30.0:
+                        cmd = ' '.join(cmds)
+                        p.terminate()
+                        raise FFMpegConvertError('Forcing ffmpeg to close due to taking more than 30 seconds to render a single frame. Source file may be corrupt.', cmd, total_output,
+                            "", pid=p.pid)
                 else:
                     starttime = time.time()
                     lastframetime = starttime

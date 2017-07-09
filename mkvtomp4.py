@@ -354,6 +354,8 @@ class MkvtoMp4:
     def generateOptions(self, inputfile, original=None):
         # Get path information from the input file
         input_dir, filename, input_extension = self.parseFile(inputfile)
+        drive_letter, directory = os.path.splitdrive( input_dir )
+        drive_letter_no_colon = drive_letter.replace( ":", "" )
 
         info = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).probe(inputfile)
 
@@ -538,15 +540,21 @@ class MkvtoMp4:
         subtitle_settings = {}
         l = 0
         self.log.info("Reading subtitle streams.")
+        forced_sub = 0
         for s in info.subtitle:
+            if s.sub_forced == 1:
+                forced_sub = s.index
+        for s in info.subtitle:
+            if forced_sub > 0 and s.index != forced_sub:
+                continue
             try:
                 if s.metadata['language'].strip() == "" or s.metadata['language'] is None:
                     s.metadata['language'] = 'und'
             except KeyError:
                 s.metadata['language'] = 'und'
-
+            if s.sub_forced and vcodec == 'copy':
+                vcodec = self.video_codec[0]
             self.log.info("Subtitle detected for stream #%s: %s [%s]." % (s.index, s.codec, s.metadata['language']))
-
             # Set undefined language to default language if specified
             if self.sdl is not None and s.metadata['language'] == 'und':
                 self.log.debug("Undefined language detected, defaulting to [%s]." % self.sdl)
@@ -561,8 +569,9 @@ class MkvtoMp4:
                         'codec': self.scodec[0],
                         'language': s.metadata['language'],
                         'encoding': self.subencoding,
-                        # 'forced': s.sub_forced,
-                        # 'default': s.sub_default
+                        'forced': s.sub_forced,
+                        'default': s.sub_default,
+                        'subtitle_burn': drive_letter_no_colon + "\\\:/" + directory + "/" + filename + "." + input_extension #FFmpeg requires a very specific string of letters for -vf subtitles=
                     }})
                     self.log.info("Creating subtitle stream %s from source stream %s." % (l, s.index))
                     l = l + 1
@@ -742,16 +751,16 @@ class MkvtoMp4:
         elif info.video.codec.lower() in nvenc_cuvid_codecs and \
         self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
             if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. CHECKMELATER - Video SDK 8.0 will support this. 
-                options['preopts'].extend(['-hwaccel', 'cuvid' ])
-                if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
-                    if self.nvenc_decoder_hevc_gpu:
-                        options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_hevc_gpu )])
-                        self.nvenc_decoder_hevc_gpu = None
-                elif self.nvenc_decoder_gpu:
-                    options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_gpu )])
-                    self.nvenc_decoder_gpu = None
-                options['video']['nvenc_hwaccel_enabled'] = True
-            else:
+                #options['preopts'].extend(['-hwaccel', 'cuvid' ])
+                #if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
+                #    if self.nvenc_decoder_hevc_gpu:
+                #        options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_hevc_gpu )])
+                #        self.nvenc_decoder_hevc_gpu = None
+                #elif self.nvenc_decoder_gpu:
+                #    options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_gpu )])
+                #    self.nvenc_decoder_gpu = None
+                #options['video']['nvenc_hwaccel_enabled'] = True
+            #else:
                 options['video']['nvenc_hwaccel_enabled'] = False
                 if 'nvenc_h264' in self.video_codec: #nvenc_h264 does not support 10/12 bit encoding.
                     use_yuv420p = True
