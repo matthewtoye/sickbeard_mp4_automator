@@ -189,7 +189,9 @@ class SubtitleCodec(BaseCodec):
         optlist.extend(['-c:s:' + stream, self.ffmpeg_codec_name])
         stream = str(stream)
         if 'forced' in safe:
-            optlist.extend(['-vf', "subtitles=" + str(safe['subtitle_burn']) + ":si=" + stream ])
+            subtitles_ = str(safe['subtitle_burn'])
+            subtitles_ = subtitles_.replace("\\", "\\\\");
+            optlist.extend(['-vf', "subtitles=\\'" + subtitles_ + "\\':si=" + stream ])
             optlist.extend(self._codec_specific_produce_ffmpeg_list(safe))
             return optlist
         if 'map' in safe:

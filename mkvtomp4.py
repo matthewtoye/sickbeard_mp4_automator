@@ -571,7 +571,7 @@ class MkvtoMp4:
                         'encoding': self.subencoding,
                         'forced': s.sub_forced,
                         'default': s.sub_default,
-                        'subtitle_burn': drive_letter_no_colon + "\\\:/" + directory + "/" + filename + "." + input_extension #FFmpeg requires a very specific string of letters for -vf subtitles=
+                        'subtitle_burn': drive_letter_no_colon + ":" + directory + "\\" + filename + "." + input_extension #FFmpeg requires a very specific string of letters for -vf subtitles=
                     }})
                     self.log.info("Creating subtitle stream %s from source stream %s." % (l, s.index))
                     l = l + 1
