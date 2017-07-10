@@ -149,7 +149,8 @@ class SubtitleCodec(BaseCodec):
         'source': int,
         'path': str,
         'encoding': str,
-        'subtitle_burn': str
+        'subtitle_burn': str,
+        'burn_in_forced_subs': bool
     }
 
     def parse_options(self, opt, stream=0):
@@ -188,7 +189,7 @@ class SubtitleCodec(BaseCodec):
             optlist.extend(['-sub_charenc', str(safe['encoding'])])
         optlist.extend(['-c:s:' + stream, self.ffmpeg_codec_name])
         stream = str(stream)
-        if 'forced' in safe:
+        if 'forced' in safe and 'burn_in_forced_subs' in safe and safe['burn_in_forced_subs'] == True:
             subtitles_ = str(safe['subtitle_burn'])
             subtitles_ = subtitles_.replace("\\", "\\\\");
             optlist.extend(['-vf', "subtitles=\\'" + subtitles_ + "\\':si=" + stream ])
@@ -200,6 +201,8 @@ class SubtitleCodec(BaseCodec):
             optlist.extend(['-i', str(safe['path'])])
         if 'default' in safe:
             optlist.extend(['-disposition:s:' + stream, "default"])
+        if 'forced' in safe:
+            optlist.extend(['-disposition:s:' + stream, "forced"])
         if 'language' in safe:
             lang = str(safe['language'])
         else:

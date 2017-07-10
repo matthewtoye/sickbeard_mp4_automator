@@ -48,6 +48,7 @@ class MkvtoMp4:
                  nvenc_hwaccel_enabled=False,
                  scale_npp_enabled=False,
                  scale_npp_interp_algo=None,
+                 burn_in_forced_subs=False,
                  audio_codec=['ac3'],
                  audio_bitrate=256,
                  audio_filter=None,
@@ -131,6 +132,7 @@ class MkvtoMp4:
         self.nvenc_hwaccel_enabled = nvenc_hwaccel_enabled
         self.scale_npp_enabled = scale_npp_enabled
         self.scale_npp_interp_algo = scale_npp_interp_algo
+        self.burn_in_forced_subs = burn_in_forced_subs
         self.pix_fmt = pix_fmt
         # Audio settings
         self.audio_codec = audio_codec
@@ -207,6 +209,7 @@ class MkvtoMp4:
         self.nvenc_hwaccel_enabled = settings.nvenc_hwaccel_enabled
         self.scale_npp_enabled = settings.scale_npp_enabled
         self.scale_npp_interp_algo = settings.scale_npp_interp_algo
+        self.burn_in_forced_subs = settings.burn_in_forced_subs
         self.pix_fmt = settings.pix_fmt
         # Audio settings
         self.audio_codec = settings.acodec
@@ -545,14 +548,14 @@ class MkvtoMp4:
             if s.sub_forced == 1:
                 forced_sub = s.index
         for s in info.subtitle:
-            if forced_sub > 0 and s.index != forced_sub:
+            if forced_sub > 0 and s.index != forced_sub and self.burn_in_forced_subs == True:
                 continue
             try:
                 if s.metadata['language'].strip() == "" or s.metadata['language'] is None:
                     s.metadata['language'] = 'und'
             except KeyError:
                 s.metadata['language'] = 'und'
-            if s.sub_forced and vcodec == 'copy':
+            if s.sub_forced and self.burn_in_forced_subs == True and vcodec == 'copy':
                 vcodec = self.video_codec[0]
             self.log.info("Subtitle detected for stream #%s: %s [%s]." % (s.index, s.codec, s.metadata['language']))
             # Set undefined language to default language if specified
@@ -571,6 +574,7 @@ class MkvtoMp4:
                         'encoding': self.subencoding,
                         'forced': s.sub_forced,
                         'default': s.sub_default,
+                        'burn_in_forced_subs': self.burn_in_forced_subs,
                         'subtitle_burn': drive_letter_no_colon + ":" + directory + "\\" + filename + "." + input_extension #FFmpeg requires a very specific string of letters for -vf subtitles=
                     }})
                     self.log.info("Creating subtitle stream %s from source stream %s." % (l, s.index))
@@ -798,7 +802,7 @@ class MkvtoMp4:
         if self.pix_fmt and use_yuv420p == False:
             options['video']['pix_fmt'] = self.pix_fmt[0]
         elif use_yuv420p == True:
-            options['video']['pix_fmt'] = "yuv420p"
+            options['video']['pix_fmt'] = "nv12"
         # Add Nvidia specific options
         if self.nvenc_profile:
             options['video']['nvenc_profile'] = self.nvenc_profile
