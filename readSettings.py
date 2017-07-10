@@ -446,7 +446,7 @@ class ReadSettings:
         self.nvenc_decoder_hevc_gpu = config.get(section, "nvenc_hevc_decoder_gpu")
         self.scale_npp_enabled = config.getboolean( section, "scale_npp_enabled")
         self.scale_npp_interp_algo = config.get( section, "scale_npp_interp_algo" )
-        self.burn_in_forced_subs = config.get( section, "burn_in_forced_subs" )
+        self.burn_in_forced_subs = config.getboolean( section, "burn_in_forced_subs" )
         self.pix_fmt = config.get(section, "pix-fmt").strip().lower()
         if self.pix_fmt == '':
             self.pix_fmt = None

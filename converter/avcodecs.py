@@ -187,14 +187,14 @@ class SubtitleCodec(BaseCodec):
         optlist = []
         if 'encoding' in safe:
             optlist.extend(['-sub_charenc', str(safe['encoding'])])
-        optlist.extend(['-c:s:' + stream, self.ffmpeg_codec_name])
-        stream = str(stream)
         if 'forced' in safe and 'burn_in_forced_subs' in safe and safe['burn_in_forced_subs'] == True:
             subtitles_ = str(safe['subtitle_burn'])
             subtitles_ = subtitles_.replace("\\", "\\\\");
-            optlist.extend(['-vf', "subtitles=\\'" + subtitles_ + "\\':si=" + stream ])
+            optlist.extend(['-vf', "subtitles=\\'" + subtitles_ + "\\':si=" + str(stream) + "\'" ])
             optlist.extend(self._codec_specific_produce_ffmpeg_list(safe))
             return optlist
+        optlist.extend(['-c:s:' + stream, self.ffmpeg_codec_name])
+        stream = str(stream)
         if 'map' in safe:
             optlist.extend(['-map', s + ':' + str(safe['map'])])
         if 'path' in safe:
