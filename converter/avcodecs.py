@@ -387,7 +387,7 @@ class VideoCodec(BaseCodec):
         filters = safe['aspect_filters']
 
         if 'filter_complex' in safe:
-            optlist = ['-filter_complex', safe['filter_complex'] ]
+            optlist = ['-filter_complex', safe['filter_complex'] ] #This must be placed inbetween the input file and the output file options.
             optlist.extend( ['-vcodec', self.ffmpeg_codec_name])
         else:
             optlist = ['-vcodec', self.ffmpeg_codec_name]

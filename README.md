@@ -1,4 +1,6 @@
-Same as the original with better nvidia support, my changes are as follows:
+Same as the original with better nvidia support and some other things to make automation easier, my changes are as follows:
+
+**I have not tested this on a non-windows machine. It should still work, but let me know if it doesn't so I can fix it.**
 
 Nightly builds from https://ffmpeg.zeranoe.com/builds/ will work with all added options except scale_npp.
 
@@ -15,9 +17,10 @@ Brief explanation of added settings:
 - 'burn_in_forced_subs' = This will attempt to find any forced subtitle and encode/"burn" it into the video. This is useful for media players that have trouble auto-selecting embedded forced subtitles from an .mp4. -- Looking at you, Plex. :p
   This looks for the 'forced' flag in the subtitle metadata first, but failing that will go digging through the title metadata where the text may say "forced", "english subs for non-english parts", "non-english parts", or something of that nature. 
   This part uses a whitelist method that only flags a subtitle stream as forced if it matches one of the items on the whitelist.
-  Enabling this option will discard all other subtitle streams at the moment due to a weird problem I'm having on some media where ffmpeg will get stuck on the 2-3rd frame while encoding the video stream, soaking up all the RAM it can find until the computer runs out, and then a crash occurs. 
+  Enabling this option will discard all subtitle streams at the moment due to a weird problem I'm having on some media where ffmpeg will get stuck on the 2-3rd frame while encoding the video stream, soaking up all the RAM it can find until the computer runs out, and then a crash occurs. 
   Disabling the copy/convert process of the other subtitle streams seems to avoid this problem. 
-- 'sample_rate' = By default ffmpeg will resample to 96000 KHz with some audio filters. Internet explorer/Firefox/edge will not play any video with 96000 KHz audio, so this will allow you to set it to something lower like 48000.
+  Unfortunately this will not work in every case, but it seems to get most modern tv shows/movies.
+- 'sample_rate' = By default ffmpeg will resample to 96 KHz with some audio filters. Internet explorer/Firefox/edge will not play any video with 96 KHz audio, so this will allow you to set it to something lower like 48KHz.
 - 'handle_m2ts_files' = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the remaining m2ts file to mp4. Default is disabled. 
 - 'resolution-bitrate-restriction' = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
   Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 
