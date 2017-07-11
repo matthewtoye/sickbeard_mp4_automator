@@ -260,7 +260,8 @@ class VideoCodec(BaseCodec):
         'global_quality': int,
         'maxrate': int,
         'minrate': int,
-        'bufsize': int
+        'bufsize': int,
+        'filter_complex': str
     }
 
     def _aspect_corrections(self, sw, sh, w, h, mode):
@@ -385,7 +386,12 @@ class VideoCodec(BaseCodec):
         h = safe['height']
         filters = safe['aspect_filters']
 
-        optlist = ['-vcodec', self.ffmpeg_codec_name]
+        if 'filter_complex' in safe:
+            optlist = ['-filter_complex', safe['filter_complex'] ]
+            optlist.extend( ['-vcodec', self.ffmpeg_codec_name])
+        else:
+            optlist = ['-vcodec', self.ffmpeg_codec_name]
+        optlist.extend(['-movflags', 'faststart'])
         if 'qmin' in safe:
             optlist.extend(['-qmin', str(safe['qmin'])])
         if 'qmax' in safe:

@@ -1575,13 +1575,14 @@ PNG encoder AVOptions:
 
 ProRes encoder AVOptions:
   -mbs_per_slice     <int>        E..V.... macroblocks per slice (from 1 to 8) (default 8)
-  -profile           <int>        E..V.... (from -1 to 4) (default auto)
+  -profile           <int>        E..V.... (from -1 to 5) (default auto)
      auto                         E..V....
      proxy                        E..V....
      lt                           E..V....
      standard                     E..V....
      hq                           E..V....
      4444                         E..V....
+     4444xq                       E..V....
   -vendor            <string>     E..V.... vendor ID (default "Lavc")
   -bits_per_mb       <int>        E..V.... desired bits per macroblock (from 0 to 8192) (default 0)
   -quant_mat         <int>        E..V.... quantiser matrix (from -1 to 4) (default auto)
@@ -1720,11 +1721,11 @@ rv20 encoder AVOptions:
   -mepre             <int>        E..V.... pre motion estimation (from INT_MIN to INT_MAX) (default 0)
 
 SMPTE 302M Decoder AVOptions:
-  -non_pcm_mode      <int>        .D.V.... Chooses what to do with NON-PCM (from 0 to 3) (default decode_drop)
-     copy                         .D.V.... Pass NON-PCM through unchanged
-     drop                         .D.V.... Drop NON-PCM
-     decode_copy                  .D.V.... Decode if possible else passthrough
-     decode_drop                  .D.V.... Decode if possible else drop
+  -non_pcm_mode      <int>        .D..A... Chooses what to do with NON-PCM (from 0 to 3) (default decode_drop)
+     copy                         .D..A... Pass NON-PCM through unchanged
+     drop                         .D..A... Drop NON-PCM
+     decode_copy                  .D..A... Decode if possible else passthrough
+     decode_drop                  .D..A... Decode if possible else drop
 
 sgi AVOptions:
   -rle               <int>        E..V.... Use run-length compression (from 0 to 1) (default 1)
@@ -4728,6 +4729,10 @@ hls muxer AVOptions:
   -hls_enc_key_url   <string>     E....... url to access the key to decrypt the segments
   -hls_enc_iv        <string>     E....... hex-coded 16 byte initialization vector
   -hls_subtitle_path <string>     E....... set path of hls subtitles
+  -hls_segment_type  <int>        E....... set hls segment files type (from 0 to 1) (default mpegts)
+     mpegts                       E....... make segment file to mpegts files in m3u8
+     fmp4                         E....... make segment file to fragment mp4 files in m3u8
+  -hls_fmp4_init_filename <string>     E....... set fragment mp4 file init filename (default "init.mp4")
   -hls_flags         <flags>      E....... set flags affecting HLS playlist and media file generation (default 0)
      single_file                  E....... generate a single media file indexed with byte ranges
      temp_file                    E....... write segment to temporary file and rename when complete
@@ -6510,18 +6515,6 @@ silenceremove AVOptions:
      peak                         ..F.A...
      rms                          ..F.A...
   window            <double>     ..F.A... (from 0 to 10) (default 0.02)
-
-sofalizer AVOptions:
-  sofa              <string>     ..F.A... sofa filename
-  gain              <float>      ..F.A... set gain in dB (from -20 to 40) (default 0)
-  rotation          <float>      ..F.A... set rotation (from -360 to 360) (default 0)
-  elevation         <float>      ..F.A... set elevation (from -90 to 90) (default 0)
-  radius            <float>      ..F.A... set radius (from 0 to 3) (default 1)
-  type              <int>        ..F.A... set processing (from 0 to 1) (default freq)
-     time                         ..F.A... time domain
-     freq                         ..F.A... frequency domain
-  speakers          <string>     ..F.A... set speaker custom positions
-  lfegain           <float>      ..F.A... set lfe gain (from -9 to 9) (default 0)
 
 stereotools AVOptions:
   level_in          <double>     ..F.A... set level in (from 0.015625 to 64) (default 1)
@@ -11520,6 +11513,7 @@ IO... gray10be               1            10
 IO... gray10le               1            10
 I.... p016le                 3            24
 I.... p016be                 3            24
+..H.. d3d11                  0             0
 File formats:
  D. = Demuxing supported
  .E = Muxing supported
@@ -12298,6 +12292,7 @@ File formats:
  D  yop             Psygnosis YOP
  D  yuv4mpegpipe    YUV4MPEG pipe
 Hardware acceleration methods:
+d3d11va
 dxva2
 qsv
 cuvid
@@ -12387,7 +12382,6 @@ Filters:
  ... sidechaingate     AA->A      Audio sidechain gate.
  ... silencedetect     A->A       Detect silence.
  ... silenceremove     A->A       Remove silence.
- .S. sofalizer         A->A       SOFAlizer (Spatially Oriented Format for Acoustics).
  ... stereotools       A->A       Apply various stereo tools.
  ... stereowiden       A->A       Apply stereo widening effect.
  ... superequalizer    A->A       Apply 18 band equalization filter.

@@ -470,7 +470,6 @@ class FFMpeg(object):
         if preopts:
             cmds.extend(preopts)
         cmds.extend(['-i', infile])
-        cmds.extend(['-movflags', 'faststart'])
 
         # Move additional inputs to the front of the line
         for ind, command in enumerate(opts):

@@ -98,7 +98,6 @@ class MkvtoMp4:
         self.forceConvert = forceConvert
         self.copyto = copyto
         self.moveto = moveto
-        self.relocate_moov = relocate_moov
         self.permissions = permissions
         self.preopts = preopts
         self.postopts = postopts
@@ -175,7 +174,6 @@ class MkvtoMp4:
         self.forceConvert = settings.forceConvert
         self.copyto = settings.copyto
         self.moveto = settings.moveto
-        self.relocate_moov = settings.relocate_moov
         self.permissions = settings.permissions
         self.preopts = settings.preopts
         self.postopts = settings.postopts
@@ -544,6 +542,7 @@ class MkvtoMp4:
         l = 0
         self.log.info("Reading subtitle streams.")
         forced_sub = 0
+        overlay_stream = ""
         for s in info.subtitle:
             if s.sub_forced == 1:
                 forced_sub = s.index
@@ -579,6 +578,8 @@ class MkvtoMp4:
                     }})
                     self.log.info("Creating subtitle stream %s from source stream %s." % (l, s.index))
                     l = l + 1
+            elif s.codec.lower() in bad_subtitle_codecs and self.embedsubs and s.sub_forced == 1 and self.burn_in_forced_subs: # This overlays forced picture subtitles on top of the video stream. Slows down conversion significantly.
+                 overlay_stream = "[0:v][0:%s]overlay" % ( s.index )
             elif s.codec.lower() not in bad_subtitle_codecs and not self.embedsubs:
                 if self.swl is None or s.metadata['language'].lower() in self.swl:
                     for codec in self.scodec:
@@ -727,8 +728,9 @@ class MkvtoMp4:
             del options['video']['bitrate']
             options['video']['crf'] = self.vcrf
 
-        if len(options['subtitle']) > 0:
-            options['preopts'].append('-fix_sub_duration')
+        if len(overlay_stream) > 0:
+            options['preopts'].remove( '-fix_sub_duration' )
+            options['video']['filter_complex'] = overlay_stream
 
         if self.preopts:
             options['preopts'].extend(self.preopts)
