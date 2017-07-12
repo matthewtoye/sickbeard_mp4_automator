@@ -357,6 +357,7 @@ class MkvtoMp4:
         input_dir, filename, input_extension = self.parseFile(inputfile)
         drive_letter, directory = os.path.splitdrive( input_dir )
         drive_letter_no_colon = drive_letter.replace( ":", "" )
+        directory = directory.replace("\\", "\\\\");
 
         info = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).probe(inputfile)
 
@@ -587,7 +588,7 @@ class MkvtoMp4:
                         'forced': s.sub_forced,
                         'default': s.sub_default,
                         'burn_in_forced_subs': self.burn_in_forced_subs,
-                        'subtitle_burn': drive_letter_no_colon + "\:\\" + directory + "\\\\" + filename + "." + input_extension + \
+                        'subtitle_burn': drive_letter_no_colon + r"\:" + directory + "\\\\" + filename + "." + input_extension + \
                             ":si=" + str( subtitle_used ) + "'" #FFmpeg requires a very specific string of letters for -vf subtitles=
                                                                                                                            #TODO: Check if this works on non win32.
                     }})
