@@ -6516,6 +6516,18 @@ silenceremove AVOptions:
      rms                          ..F.A...
   window            <double>     ..F.A... (from 0 to 10) (default 0.02)
 
+sofalizer AVOptions:
+  sofa              <string>     ..F.A... sofa filename
+  gain              <float>      ..F.A... set gain in dB (from -20 to 40) (default 0)
+  rotation          <float>      ..F.A... set rotation (from -360 to 360) (default 0)
+  elevation         <float>      ..F.A... set elevation (from -90 to 90) (default 0)
+  radius            <float>      ..F.A... set radius (from 0 to 3) (default 1)
+  type              <int>        ..F.A... set processing (from 0 to 1) (default freq)
+     time                         ..F.A... time domain
+     freq                         ..F.A... frequency domain
+  speakers          <string>     ..F.A... set speaker custom positions
+  lfegain           <float>      ..F.A... set lfe gain (from -9 to 9) (default 0)
+
 stereotools AVOptions:
   level_in          <double>     ..F.A... set level in (from 0.015625 to 64) (default 1)
   level_out         <double>     ..F.A... set level out (from 0.015625 to 64) (default 1)
@@ -7869,6 +7881,11 @@ lenscorrection AVOptions:
   cy                <double>     ..FV.... set relative center y (from 0 to 1) (default 0.5)
   k1                <double>     ..FV.... set quadratic distortion factor (from -1 to 1) (default 0)
   k2                <double>     ..FV.... set double quadratic distortion factor (from -1 to 1) (default 0)
+
+limiter AVOptions:
+  min               <int>        ..FV.... set min value (from 0 to 65535) (default 0)
+  max               <int>        ..FV.... set max value (from 0 to 65535) (default 65535)
+  planes            <int>        ..FV.... set planes (from 0 to 15) (default 15)
 
 loop AVOptions:
   loop              <int>        ..FV.... number of loops (from -1 to INT_MAX) (default 0)
@@ -12382,6 +12399,7 @@ Filters:
  ... sidechaingate     AA->A      Audio sidechain gate.
  ... silencedetect     A->A       Detect silence.
  ... silenceremove     A->A       Remove silence.
+ .S. sofalizer         A->A       SOFAlizer (Spatially Oriented Format for Acoustics).
  ... stereotools       A->A       Apply various stereo tools.
  ... stereowiden       A->A       Apply stereo widening effect.
  ... superequalizer    A->A       Apply 18 band equalization filter.
@@ -12485,6 +12503,7 @@ Filters:
  ... interleave        N->V       Temporally interleave video inputs.
  ... kerndeint         V->V       Apply kernel deinterlacing to the input.
  .S. lenscorrection    V->V       Rectify the image by correcting for lens distortion.
+ T.. limiter           V->V       Limit pixels components to the specified range.
  ... loop              V->V       Loop video frames.
  TS. lumakey           V->V       Turns a certain luma into transparency.
  T.. lut               V->V       Compute and apply a lookup table to the RGB/YUV input video.

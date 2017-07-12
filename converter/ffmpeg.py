@@ -219,7 +219,7 @@ class MediaStreamInfo(object):
                                                    "foreign parts only", "non english parts", "non english part", "foreign parts" }
                                                    #unfortunately this is not standardized at all, and there are probably 30 other ways that this is labeled
                 newval = val.lower()
-                if newval in possible_ways_of_saying_forced or "forced" in newval:
+                if newval in possible_ways_of_saying_forced or "forced" in newval or "alien only" in newval:
                     self.sub_forced = 1
 
     def __repr__(self):
