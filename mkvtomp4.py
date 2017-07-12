@@ -543,14 +543,22 @@ class MkvtoMp4:
         self.log.info("Reading subtitle streams.")
         forced_sub = 0
         overlay_stream = ""
+        subtitle_number = -1
+        subtitle_used = subtitle_number
         for s in info.subtitle:
+            subtitle_number += 1
+            if s.metadata['language'].lower() not in self.swl:
+                continue
             if s.sub_forced == 2 and s.sub_default == 1: ## Prefer subs that are flagged forced AND default by their disposition
                 forced_sub = s.index
+                subtitle_used = subtitle_number
                 break
             elif s.sub_forced == 2: ## Prefer flagged subs next
                 forced_sub = s.index
+                subtitle_used = subtitle_number
             elif s.sub_forced == 1 and forced_sub == 0: ## Finally, go searching for forced subs that hang out in the title metadata
                 forced_sub = s.index
+                subtitle_used = subtitle_number
         for s in info.subtitle:
             if forced_sub > 0 and s.index != forced_sub and self.burn_in_forced_subs == True:
                 continue
@@ -579,7 +587,8 @@ class MkvtoMp4:
                         'forced': s.sub_forced,
                         'default': s.sub_default,
                         'burn_in_forced_subs': self.burn_in_forced_subs,
-                        'subtitle_burn': drive_letter_no_colon + ":" + directory + "\\" + filename + "." + input_extension #FFmpeg requires a very specific string of letters for -vf subtitles=
+                        'subtitle_burn': drive_letter_no_colon + "\:\\" + directory + "\\\\" + filename + "." + input_extension + \
+                            ":si=" + str( subtitle_used ) + "'" #FFmpeg requires a very specific string of letters for -vf subtitles=
                                                                                                                            #TODO: Check if this works on non win32.
                     }})
                     self.log.info("Creating subtitle stream %s from source stream %s." % (l, s.index))

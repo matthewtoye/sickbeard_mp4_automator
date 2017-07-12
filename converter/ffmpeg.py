@@ -209,7 +209,9 @@ class MediaStreamInfo(object):
 
         if self.type == 'subtitle':
             if key == 'DISPOSITION:forced': # Give higher preference for proper usage of forced tag
-                self.sub_forced = 2
+                self.sub_forced = self.parse_int(val)
+                if self.sub_forced > 0:
+                    self.sub_forced += 1
             if key == 'DISPOSITION:default':
                 self.sub_default = self.parse_int(val)
             if key == 'title': #Some videos just mention in the title if the sub is forced or not. 
