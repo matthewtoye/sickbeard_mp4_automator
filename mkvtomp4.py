@@ -544,7 +544,12 @@ class MkvtoMp4:
         forced_sub = 0
         overlay_stream = ""
         for s in info.subtitle:
-            if s.sub_forced == 1:
+            if s.sub_forced == 2 and s.sub_default == 1: ## Prefer subs that are flagged forced AND default by their disposition
+                forced_sub = s.index
+                break
+            elif s.sub_forced == 2: ## Prefer flagged subs next
+                forced_sub = s.index
+            elif s.sub_forced == 1 and forced_sub == 0: ## Finally, go searching for forced subs that hang out in the title metadata
                 forced_sub = s.index
         for s in info.subtitle:
             if forced_sub > 0 and s.index != forced_sub and self.burn_in_forced_subs == True:
@@ -554,7 +559,7 @@ class MkvtoMp4:
                     s.metadata['language'] = 'und'
             except KeyError:
                 s.metadata['language'] = 'und'
-            if s.sub_forced and self.burn_in_forced_subs == True and vcodec == 'copy':
+            if forced_sub > 0 and self.burn_in_forced_subs == True and vcodec == 'copy':
                 vcodec = self.video_codec[0]
             self.log.info("Subtitle detected for stream #%s: %s [%s]." % (s.index, s.codec, s.metadata['language']))
             # Set undefined language to default language if specified

@@ -208,8 +208,8 @@ class MediaStreamInfo(object):
                 self.pix_fmt = val
 
         if self.type == 'subtitle':
-            if key == 'DISPOSITION:forced':
-                self.sub_forced = self.parse_int(val)
+            if key == 'DISPOSITION:forced': # Give higher preference for proper usage of forced tag
+                self.sub_forced = 2
             if key == 'DISPOSITION:default':
                 self.sub_default = self.parse_int(val)
             if key == 'title': #Some videos just mention in the title if the sub is forced or not. 
@@ -217,7 +217,7 @@ class MediaStreamInfo(object):
                                                    "foreign parts only", "non english parts", "non english part", "foreign parts" }
                                                    #unfortunately this is not standardized at all, and there are probably 30 other ways that this is labeled
                 newval = val.lower()
-                if newval in possible_ways_of_saying_forced:
+                if newval in possible_ways_of_saying_forced or "forced" in newval:
                     self.sub_forced = 1
 
     def __repr__(self):
@@ -540,7 +540,7 @@ class FFMpeg(object):
             # pretends that everything is a-okay so that sabn/nzbget/etc scripts will properly autoimport the file. 
             if 'Non-monotonous DTS' in ret: #engage kludge
                 p.terminate()
-                self.removeFile(outfile)
+                os.removeFile(outfile)
                 os.chdir( os.path.dirname( abspath(getsourcefile(lambda:0)) ) ) #ugh, path problems.
                 os.chdir( '..' )
                 subprocess.call(["python", "manual.py", "-a", "-i", infile, "--forceConvert", "--nodelete" ])
