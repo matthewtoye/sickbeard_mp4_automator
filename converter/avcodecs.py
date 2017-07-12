@@ -160,7 +160,7 @@ class SubtitleCodec(BaseCodec):
 
         if 'forced' in safe:
             f = safe['forced']
-            if f != 1:
+            if f < 1:
                 del safe['forced']
 
         if 'default' in safe:
