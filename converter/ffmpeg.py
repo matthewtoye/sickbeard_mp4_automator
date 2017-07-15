@@ -542,7 +542,7 @@ class FFMpeg(object):
             # pretends that everything is a-okay so that sabn/nzbget/etc scripts will properly autoimport the file. 
             if 'Non-monotonous DTS' in ret: #engage kludge
                 p.terminate()
-                os.removeFile(outfile)
+                os.remove(outfile)
                 os.chdir( os.path.dirname( abspath(getsourcefile(lambda:0)) ) ) #ugh, path problems.
                 os.chdir( '..' )
                 subprocess.call(["python", "manual.py", "-a", "-i", infile, "--forceConvert", "--nodelete" ])

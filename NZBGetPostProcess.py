@@ -207,7 +207,7 @@ if 'NZBOP_SCRIPTDIR' in os.environ and not os.environ['NZBOP_VERSION'][0:5] < '1
                     if MkvtoMp4(settings, logger=log).validSource(inputfile):
                         try:
                             output = converter.process(inputfile)
-                            if output:
+                            if output == True:
                                 log.info("Successfully processed %s." % inputfile)
                             else:
                                 log.exception( "File Processing Failed" )
@@ -221,7 +221,7 @@ if 'NZBOP_SCRIPTDIR' in os.environ and not os.environ['NZBOP_VERSION'][0:5] < '1
                             break
         if converter.output_dir:
             path = converter.output_dir
-    if output is False:
+    if output == False:
         sys.exit( POSTPROCESS_ERROR )
 
     elif (category.lower() == categories[0]):
