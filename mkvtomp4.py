@@ -594,8 +594,8 @@ class MkvtoMp4:
                     }})
                     self.log.info("Creating subtitle stream %s from source stream %s." % (l, s.index))
                     l = l + 1
-            elif s.codec.lower() in bad_subtitle_codecs and self.embedsubs and s.sub_forced == 1 and self.burn_in_forced_subs: # This overlays forced picture subtitles on top of the video stream. Slows down conversion significantly.
-                 overlay_stream = "[0:v][0:%s]overlay" % ( s.index )
+            elif s.codec.lower() in bad_subtitle_codecs and self.embedsubs == True and forced_sub > 0 and self.burn_in_forced_subs == True: # This overlays forced picture subtitles on top of the video stream. Slows down conversion significantly.
+                overlay_stream = "[0:v][0:%s]overlay" % ( s.index )
             elif s.codec.lower() not in bad_subtitle_codecs and not self.embedsubs:
                 if self.swl is None or s.metadata['language'].lower() in self.swl:
                     for codec in self.scodec:
