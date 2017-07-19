@@ -138,6 +138,7 @@ Advanced per-file options:
 -dump_attachment filename  extract an attachment into a file
 -stream_loop loop count  set number of times input stream shall be looped
 -thread_queue_size  set the maximum number of queued packets from the demuxer
+-find_stream_info   read and decode the streams to fill missing information with heuristics
 -autorotate         automatically insert correct rotate filters
 -muxdelay seconds   set the maximum demux-decode delay
 -muxpreload seconds  set the initial demux-decode delay
