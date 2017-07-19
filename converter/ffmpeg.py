@@ -473,8 +473,11 @@ class FFMpeg(object):
             cmds.extend(preopts)
         cmds.extend(['-i', infile])
 
+        alreadykludged = False
         # Move additional inputs to the front of the line
         for ind, command in enumerate(opts):
+            if command == '-vcodec' and opts[ind + 1] != 'copy':
+                alreadykludged = True
             if command == '-i':
                 cmds.extend(['-i', opts[ind + 1]])
                 del opts[ind]
@@ -542,11 +545,12 @@ class FFMpeg(object):
             # pretends that everything is a-okay so that sabn/nzbget/etc scripts will properly autoimport the file. 
             if 'Non-monotonous DTS' in ret: #engage kludge
                 p.terminate()
-                os.remove(outfile)
-                os.chdir( os.path.dirname( abspath(getsourcefile(lambda:0)) ) ) #ugh, path problems.
-                os.chdir( '..' )
-                subprocess.call(["python", "manual.py", "-a", "-i", infile, "--forceConvert", "--nodelete" ])
-                return
+                if alreadykludged == False:
+                    os.remove(outfile)
+                    os.chdir( os.path.dirname( abspath(getsourcefile(lambda:0)) ) ) #ugh, path problems.
+                    os.chdir( '..' )
+                    subprocess.call(["python", "manual.py", "-a", "-i", infile, "--forceConvert", "--nodelete" ])
+                    return
 
             if '\r' in buf:
                 line, buf = buf.split('\r', 1)
@@ -556,11 +560,11 @@ class FFMpeg(object):
                 if len(tmpframe) == 1 and frame != 0 and frame == int( tmpframe[0] ):
                     if starttime == lastframetime:
                         lastframetime = time.time()
-                    elif ( time.time() - lastframetime ) > 30.0:
+                    elif ( time.time() - lastframetime ) > 120.0:
                         cmd = ' '.join(cmds)
-                        p.terminate()
-                        raise FFMpegConvertError('Forcing ffmpeg to close due to taking more than 30 seconds to render a single frame. Source file may be corrupt.', cmd, total_output,
+                        raise FFMpegConvertError('Forcing ffmpeg to close due to taking more than 120 seconds to render a single frame. Source file may be corrupt.', cmd, total_output,
                             "", pid=p.pid)
+                        p.terminate()
                 else:
                     starttime = time.time()
                     lastframetime = starttime
