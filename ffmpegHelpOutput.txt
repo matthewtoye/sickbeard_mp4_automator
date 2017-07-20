@@ -3400,8 +3400,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.75.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.75.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.76.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.76.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3428,8 +3428,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.75.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.75.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.76.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.76.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -4059,7 +4059,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.75.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.76.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -5187,7 +5187,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.75.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.76.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -6664,18 +6664,24 @@ anoisesrc AVOptions:
   a                 <double>     ..F.A... set amplitude (from 0 to 1) (default 1)
   duration          <duration>   ..F.A... set duration (default 0)
   d                 <duration>   ..F.A... set duration (default 0)
-  color             <int>        ..F.A... set noise color (from 0 to 2) (default pink)
+  color             <int>        ..F.A... set noise color (from 0 to 4) (default white)
      white                        ..F.A...
      pink                         ..F.A...
      brown                        ..F.A...
-  colour            <int>        ..F.A... set noise color (from 0 to 2) (default pink)
+     blue                         ..F.A...
+     violet                       ..F.A...
+  colour            <int>        ..F.A... set noise color (from 0 to 4) (default white)
      white                        ..F.A...
      pink                         ..F.A...
      brown                        ..F.A...
-  c                 <int>        ..F.A... set noise color (from 0 to 2) (default white)
+     blue                         ..F.A...
+     violet                       ..F.A...
+  c                 <int>        ..F.A... set noise color (from 0 to 4) (default white)
      white                        ..F.A...
      pink                         ..F.A...
      brown                        ..F.A...
+     blue                         ..F.A...
+     violet                       ..F.A...
   seed              <int64>      ..F.A... set random seed (from -1 to UINT32_MAX) (default -1)
   s                 <int64>      ..F.A... set random seed (from -1 to UINT32_MAX) (default -1)
   nb_samples        <int>        ..F.A... set the number of samples per requested frame (from 1 to INT_MAX) (default 1024)
@@ -10762,6 +10768,7 @@ Decoders:
  A....D bmv_audio            Discworld II BMV audio
  A....D comfortnoise         RFC 3389 comfort noise generator
  A....D cook                 Cook / Cooker / Gecko (RealAudio G2)
+ A....D dolby_e              Dolby E
  A..... dsd_lsbf             DSD (Direct Stream Digital), least significant bit first
  A..... dsd_lsbf_planar      DSD (Direct Stream Digital), least significant bit first, planar
  A..... dsd_msbf             DSD (Direct Stream Digital), most significant bit first
@@ -10908,7 +10915,7 @@ Codecs:
  ....L. = Lossy compression
  .....S = Lossless compression
  -------
- D.VI.. 012v                 Uncompressed 4:2:2 10-bit
+ D.VI.S 012v                 Uncompressed 4:2:2 10-bit
  D.V.L. 4xm                  4X Movie
  D.VI.S 8bps                 QuickTime 8BPS video
  .EVIL. a64_multi            Multicolor charset for Commodore 64 (encoders: a64multi )
@@ -10926,10 +10933,10 @@ Codecs:
  D.VIL. aura2                Auravision Aura 2
  ..V.L. av1                  Alliance for Open Media AV1
  D.V... avrn                 Avid AVI Codec
- DEVI.. avrp                 Avid 1:1 10-bit RGB Packer
+ DEVI.S avrp                 Avid 1:1 10-bit RGB Packer
  D.V.L. avs                  AVS (Audio Video Standard) video
- DEVI.. avui                 Avid Meridien Uncompressed
- DEVI.. ayuv                 Uncompressed packed MS 4:4:4:4
+ DEVI.S avui                 Avid Meridien Uncompressed
+ DEVI.S ayuv                 Uncompressed packed MS 4:4:4:4
  D.V.L. bethsoftvid          Bethesda VID video
  D.V.L. bfi                  Brute Force & Ignorance
  D.V.L. binkvideo            Bink video
@@ -11078,7 +11085,7 @@ Codecs:
  DEV.L. svq1                 Sorenson Vector Quantizer 1 / Sorenson Video 1 / SVQ1
  D.V.L. svq3                 Sorenson Vector Quantizer 3 / Sorenson Video 3 / SVQ3
  DEVI.S targa                Truevision Targa image
- D.VI.. targa_y216           Pinnacle TARGA CineWave YUV16
+ D.VI.S targa_y216           Pinnacle TARGA CineWave YUV16
  D.V.L. tdsc                 TDSC
  D.V.L. tgq                  Electronic Arts TGQ video (decoders: eatgq )
  D.V.L. tgv                  Electronic Arts TGV video (decoders: eatgv )
@@ -11098,8 +11105,8 @@ Codecs:
  DEVI.S utvideo              Ut Video
  DEVI.S v210                 Uncompressed 4:2:2 10-bit
  D.VI.S v210x                Uncompressed 4:2:2 10-bit
- DEVI.. v308                 Uncompressed packed 4:4:4
- DEVI.. v408                 Uncompressed packed QT 4:4:4:4
+ DEVI.S v308                 Uncompressed packed 4:4:4
+ DEVI.S v408                 Uncompressed packed QT 4:4:4:4
  DEVI.S v410                 Uncompressed 4:4:4 10-bit
  D.V.L. vb                   Beam Software VB
  D.VI.S vble                 VBLE Lossless Codec
@@ -11132,10 +11139,10 @@ Codecs:
  DEVIL. xface                X-face image
  D.VI.S xpm                  XPM (X PixMap) image
  DEVI.S xwd                  XWD (X Window Dump) image
- DEVI.. y41p                 Uncompressed YUV 4:1:1 12-bit
+ DEVI.S y41p                 Uncompressed YUV 4:1:1 12-bit
  D.VI.S ylc                  YUY2 Lossless Codec
  D.V.L. yop                  Psygnosis YOP Video
- DEVI.. yuv4                 Uncompressed packed 4:2:0
+ DEVI.S yuv4                 Uncompressed packed 4:2:0
  D.V..S zerocodec            ZeroCodec Lossless Video
  DEVI.S zlib                 LCL (LossLess Codec Library) ZLIB
  DEV..S zmbv                 Zip Motion Blocks Video
@@ -11202,6 +11209,7 @@ Codecs:
  ..A.L. celt                 Constrained Energy Lapped Transform (CELT)
  DEA.L. comfortnoise         RFC 3389 Comfort Noise
  D.A.L. cook                 Cook / Cooker / Gecko (RealAudio G2)
+ D.A.L. dolby_e              Dolby E
  D.A.L. dsd_lsbf             DSD (Direct Stream Digital), least significant bit first
  D.A.L. dsd_lsbf_planar      DSD (Direct Stream Digital), least significant bit first, planar
  D.A.L. dsd_msbf             DSD (Direct Stream Digital), most significant bit first
@@ -11776,6 +11784,7 @@ File formats:
  DE s24le           PCM signed 24-bit little-endian
  DE s32be           PCM signed 32-bit big-endian
  DE s32le           PCM signed 32-bit little-endian
+ D  s337m           SMPTE 337M
  DE s8              PCM signed 8-bit
  D  sami            SAMI subtitle format
  DE sap             SAP output
@@ -12231,6 +12240,7 @@ File formats:
  D  s24le           PCM signed 24-bit little-endian
  D  s32be           PCM signed 32-bit big-endian
  D  s32le           PCM signed 32-bit little-endian
+ D  s337m           SMPTE 337M
  D  s8              PCM signed 8-bit
  D  sami            SAMI subtitle format
  D  sap             SAP input
