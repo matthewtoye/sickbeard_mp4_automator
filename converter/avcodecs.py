@@ -784,11 +784,6 @@ class NVEncH264(H264Codec):
         'nvenc_temporal_aq': int, # Default off / 0
         'nvenc_rc_lookahead': int, # Number of frames to look ahead, default -1
         'nvenc_weighted_prediction': int, # Default off / 0
-        'scale_npp_enabled': bool,
-        'scale_npp_interp_algo': str,
-        'scale_npp_wscale': int,
-        'scale_npp_hscale': int,
-        'scale_npp_pix_fmt': str,
         'nvenc_hwaccel_enabled': bool,
         'qp':int
     })
@@ -797,23 +792,12 @@ class NVEncH264(H264Codec):
         if 'global_quality' in opt:
             opt['qp'] = opt['global_quality']
             del(opt['global_quality'])
-        if opt['scale_npp_enabled'] == True:
-            if 'width' in opt:
-                opt['scale_npp_wscale'] = opt['width']
-                del(opt['width'])
-            if 'height' in opt:
-                opt['scale_npp_hscale'] = opt['height']
-                del(opt['height'])
-            if 'pix_fmt' in opt:
-                opt['scale_npp_pix_fmt'] = opt['pix_fmt']
-                del(opt['pix_fmt'])
-        else:
-            if 'width' in opt:
-                opt['wscale'] = opt['width']
-                del(opt['width'])
-            if 'height' in opt:
-                opt['hscale'] = opt['height']
-                del(opt['height'])
+        if 'width' in opt:
+            opt['wscale'] = opt['width']
+            del(opt['width'])
+        if 'height' in opt:
+            opt['hscale'] = opt['height']
+            del(opt['height'])
 
         return super(NVEncH264, self).parse_options(opt, stream)
     
@@ -835,23 +819,6 @@ class NVEncH264(H264Codec):
             optlist.extend(['-weighted_pred', str(safe['nvenc_weighted_prediction'])])
         if 'nvenc_rc_lookahead' in safe:
             optlist.extend(['-rc-lookahead', str(safe['nvenc_rc_lookahead'])])
-        if 'scale_npp_enabled' in safe and safe['scale_npp_enabled'] == True:
-            if safe['nvenc_hwaccel_enabled'] == False:
-                if 'scale_npp_wscale' in safe and 'scale_npp_hscale' in safe:
-                    optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:%s:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'], safe['scale_npp_pix_fmt'] )])
-                elif 'scale_npp_wscale' in safe:
-                    optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:trunc(ow/a/2)*2:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'], safe['scale_npp_pix_fmt'] )])
-                elif 'scale_npp_hscale' in safe:
-                    optlist.extend(['-vf', 'hwupload_cuda,scale_npp=trunc((oh*a)/2)*2:%s:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'], safe['scale_npp_pix_fmt'] )])
-                if 'scale_npp_pix_fmt' in safe:
-                    optlist.extend(['-pix_fmt', safe['scale_npp_pix_fmt']])
-            else:
-                if 'scale_npp_wscale' in safe and 'scale_npp_hscale' in safe:
-                    optlist.extend(['-vf', 'scale_npp=%s:%s:format=%s:interp_algo=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
-                elif 'scale_npp_wscale' in safe:
-                    optlist.extend(['-vf', 'scale_npp=%s:trunc(ow/a/2)*2:format=%s:interp_algo=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
-                elif 'scale_npp_hscale' in safe:
-                    optlist.extend(['-vf', 'scale_npp=trunc((oh*a)/2)*2:%s:format=%s:interp_algo=%s'  % (safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
         if 'level' in safe:
             optlist.extend(['-level', '%0.1f' % safe['level']])
         if 'tune' in safe:
@@ -944,11 +911,6 @@ class NVEncH265(H265Codec):
         'nvenc_temporal_aq': int, # Default Off / 0
         'nvenc_rc_lookahead': int, # Number of frames to look ahead, default -1
         'nvenc_weighted_prediction': int, # Default Off / 0
-        'scale_npp_enabled': bool,
-        'scale_npp_interp_algo': str,
-        'scale_npp_wscale': int,
-        'scale_npp_hscale': int,
-        'scale_npp_pix_fmt': str,
         'nvenc_hwaccel_enabled': bool,
         'qp':int
     })
@@ -957,23 +919,12 @@ class NVEncH265(H265Codec):
         if 'global_quality' in opt:
             opt['qp'] = opt['global_quality']
             del(opt['global_quality'])
-        if opt['scale_npp_enabled'] == True:
-            if 'width' in opt:
-                opt['scale_npp_wscale'] = opt['width']
-                del(opt['width'])
-            if 'height' in opt:
-                opt['scale_npp_hscale'] = opt['height']
-                del(opt['height'])
-            if 'pix_fmt' in opt:
-                opt['scale_npp_pix_fmt'] = opt['pix_fmt']
-                del(opt['pix_fmt'])
-        else:
-            if 'width' in opt:
-                opt['wscale'] = opt['width']
-                del(opt['width'])
-            if 'height' in opt:
-                opt['hscale'] = opt['height']
-                del(opt['height'])
+        if 'width' in opt:
+            opt['wscale'] = opt['width']
+            del(opt['width'])
+        if 'height' in opt:
+            opt['hscale'] = opt['height']
+            del(opt['height'])
 
         return super(NVEncH265, self).parse_options(opt, stream)
     
@@ -995,23 +946,6 @@ class NVEncH265(H265Codec):
             optlist.extend(['-qp', str(safe['qp'])])
         if 'nvenc_weighted_prediction' in safe:
             optlist.extend(['-weighted_pred', str(safe['nvenc_weighted_prediction'])])
-        if 'scale_npp_enabled' in safe and safe['scale_npp_enabled'] == True:
-            if safe['nvenc_hwaccel_enabled'] == False:
-                if 'scale_npp_wscale' in safe and 'scale_npp_hscale' in safe:
-                    optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:%s:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'], safe['scale_npp_pix_fmt'] )])
-                elif 'scale_npp_wscale' in safe:
-                    optlist.extend(['-vf', 'hwupload_cuda,scale_npp=%s:trunc(ow/a/2)*2:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'], safe['scale_npp_pix_fmt'] )])
-                elif 'scale_npp_hscale' in safe:
-                    optlist.extend(['-vf', 'hwupload_cuda,scale_npp=trunc((oh*a)/2)*2:%s:format=%s:interp_algo=%s,hwdownload,format=%s'  % (safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'], safe['scale_npp_pix_fmt'] )])
-                if 'scale_npp_pix_fmt' in safe:
-                    optlist.extend(['-pix_fmt', safe['scale_npp_pix_fmt']])
-            else:
-                if 'scale_npp_wscale' in safe and 'scale_npp_hscale' in safe:
-                    optlist.extend(['-vf', 'scale_npp=%s:%s:format=%s:interp_algo=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
-                elif 'scale_npp_wscale' in safe:
-                    optlist.extend(['-vf', 'scale_npp=%s:trunc(ow/a/2)*2:format=%s:interp_algo=%s'  % (safe['scale_npp_wscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
-                elif 'scale_npp_hscale' in safe:
-                    optlist.extend(['-vf', 'scale_npp=trunc((oh*a)/2)*2:%s:format=%s:interp_algo=%s'  % (safe['scale_npp_hscale'], safe['scale_npp_pix_fmt'], safe['scale_npp_interp_algo'] )])
         if 'level' in safe:
             optlist.extend(['-level', '%0.1f' % safe['level']])
         if 'tune' in safe:

@@ -1,16 +1,10 @@
-Same as the original with better nvidia support and some other things to make automation easier, my changes are as follows:
+Same as the original with better Nvidia support and some other things to make automation easier, my changes are as follows:
 
 **I have not tested this on a non-windows machine. It should still work, but let me know if it doesn't so I can fix it.**
 
-Nightly builds from https://ffmpeg.zeranoe.com/builds/ will work with all added options except scale_npp.
+Nightly builds from https://ffmpeg.zeranoe.com/builds/ will work with all added options
 
-scale_npp support requires the following:
-  - CUDA Toolkit 8.0 - https://developer.nvidia.com/cuda-downloads installed on the pc using ffmpeg. Unfortunately there doesn't seem to be a way to statically compile scale_npp support on Windows, and this is the only way to get the shared libraries so ffmpeg doesn't complain about missing .dlls when loaded.
-  - I created a fork of ffmpeg-windows-build-helpers and edited the build script so that it will add scale_npp to ffmpeg while compiling - https://github.com/Collisionc/ffmpeg-windows-build-helpers - Make sure to enable non-free libraries for scale_npp support
-
-scale_npp requires that the input and output pixel formats be either yuv420p, nv12 or yuv444p. It will not work with any other pixel format, but will automatically be disabled whenever non-compatible pixel formats are found. It is a fairly noticable speed increase when downscaling is needed, anywhere from 30-70% faster than when it is turned off. 
-
-Cuvid/NVDEC also only support pixel formats with 420 chroma, so it will not work with yuv444p, yuv422p, etc. When these formats are encountered, NVDEC will be disabled. 
+Cuvid/NVDEC only support pixel formats with 420 chroma, so it will not work with yuv444p, yuv422p, etc. When these formats are encountered, NVDEC will be disabled. 
 
 Brief explanation of added settings:
 
@@ -45,8 +39,6 @@ Brief explanation of added settings:
 - 'enable_nvenc_hevc_decoder' = (true/false) Enable NVDEC gpu decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false
 - 'nvenc_decoder_gpu' = Selects which NVENC capable GPU to use for decoding. First GPU is 0, second is 1, and so on. Default is any
 - 'nvenc_hevc_decoder_gpu' = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any. 
-- 'scale_npp_enabled' = (true/false) Enables usage of https://developer.nvidia.com/npp to resize video output resolution. Requires building ffmpeg yourself, as npp is currently a nonfree license.  Default - false
-- 'scale_npp_interp_algo' = Which algorithm to use with scale_npp - Options include: nn, linear, cubic, cubic2p_bspline, cubic2p_catmullrom, cubic2p_b05c03, super, lanczos. Default - super
 
 If you have multiple nvidia cards you can decode on one and encode on the other, but it doesn't seem to speed up the process at all.
 Decoding by itself does not count towards the nvenc 2 stream limit.
