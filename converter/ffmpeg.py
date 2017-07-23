@@ -560,11 +560,11 @@ class FFMpeg(object):
                 if len(tmpframe) == 1 and frame != 0 and frame == int( tmpframe[0] ):
                     if starttime == lastframetime:
                         lastframetime = time.time()
-                    elif ( time.time() - lastframetime ) > 120.0:
+                    elif ( time.time() - lastframetime ) > 600.0:
                         cmd = ' '.join(cmds)
-                        raise FFMpegConvertError('Forcing ffmpeg to close due to taking more than 120 seconds to render a single frame. Source file may be corrupt.', cmd, total_output,
-                            "", pid=p.pid)
                         p.terminate()
+                        raise FFMpegConvertError('Forcing ffmpeg to close due to taking more than 10 minutes to render a single frame. Source file may be corrupt.', cmd, total_output,
+                            "", pid=p.pid)
                 else:
                     starttime = time.time()
                     lastframetime = starttime

@@ -548,6 +548,16 @@ class MkvtoMp4:
         subtitle_used = subtitle_number
         for s in info.subtitle:
             subtitle_number += 1
+            try:
+                if s.metadata['language'].strip() == "" or s.metadata['language'] is None:
+                    s.metadata['language'] = 'und'
+            except KeyError:
+                s.metadata['language'] = 'und'
+            self.log.info("Subtitle detected for stream #%s: %s [%s]." % (s.index, s.codec, s.metadata['language']))
+            # Set undefined language to default language if specified
+            if self.sdl is not None and s.metadata['language'] == 'und':
+                self.log.debug("Undefined language detected, defaulting to [%s]." % self.sdl)
+                s.metadata['language'] = self.sdl
             if s.metadata['language'].lower() not in self.swl:
                 continue
             if s.sub_forced == 2 and s.sub_default == 1: ## Prefer subs that are flagged forced AND default by their disposition
@@ -563,18 +573,8 @@ class MkvtoMp4:
         for s in info.subtitle:
             if forced_sub > 0 and s.index != forced_sub and self.burn_in_forced_subs == True:
                 continue
-            try:
-                if s.metadata['language'].strip() == "" or s.metadata['language'] is None:
-                    s.metadata['language'] = 'und'
-            except KeyError:
-                s.metadata['language'] = 'und'
             if forced_sub > 0 and self.burn_in_forced_subs == True and vcodec == 'copy':
                 vcodec = self.video_codec[0]
-            self.log.info("Subtitle detected for stream #%s: %s [%s]." % (s.index, s.codec, s.metadata['language']))
-            # Set undefined language to default language if specified
-            if self.sdl is not None and s.metadata['language'] == 'und':
-                self.log.debug("Undefined language detected, defaulting to [%s]." % self.sdl)
-                s.metadata['language'] = self.sdl
             # Make sure its not an image based codec
             if s.codec.lower() not in bad_subtitle_codecs and self.embedsubs:
 
