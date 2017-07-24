@@ -2417,6 +2417,7 @@ libvpx-vp9 encoder AVOptions:
      cyclic                       E..V.... Cyclic Refresh Aq
      equator360                   E..V.... 360 video Aq
   -level             <float>      E..V.... Specify level (from -1 to 6.2) (default -1)
+  -row-mt            <boolean>    E..V.... Row based multi-threading (default auto)
   -speed             <int>        E..V....  (from -16 to 16) (default 1)
   -quality           <int>        E..V....  (from INT_MIN to INT_MAX) (default good)
      best                         E..V....
@@ -2650,11 +2651,10 @@ libzvbi_teletextdec AVOptions:
   -txt_opacity       <int>        .D...S.. set opacity of the transparent background (from -1 to 255) (default -1)
 
 libopenh264enc AVOptions:
-  -slice_mode        <int>        E..V.... set slice mode (from 0 to 6) (default auto)
+  -slice_mode        <int>        E..V.... set slice mode (from 0 to 4) (default fixed)
      fixed                        E..V.... a fixed number of slices
-     rowmb                        E..V.... one slice per row of macroblocks
-     auto                         E..V.... automatic number of slices according to number of threads
-     dyn                          E..V.... Dynamic slicing
+     dyn                          E..V.... Size limited (compatibility name)
+     sizelimited                  E..V.... Size limited
   -loopfilter        <int>        E..V.... enable loop filter (from 0 to 1) (default 1)
   -profile           <string>     E..V.... set profile restrictions
   -max_nal_size      <int>        E..V.... set maximum NAL size in bytes (from 0 to INT_MAX) (default 0)
@@ -3384,6 +3384,12 @@ crypto AVOptions:
   -encryption_key    <binary>     E....... AES encryption key
   -encryption_iv     <binary>     E....... AES encryption initialization vector
 
+ffrtmpcrypt AVOptions:
+  -ffrtmpcrypt_tunneling <int>        .D...... Use a HTTP tunneling connection (RTMPTE). (from 0 to 1) (default 0)
+
+ffrtmphttp AVOptions:
+  -ffrtmphttp_tls    <boolean>    .D...... Use a HTTPS tunneling connection (RTMPTS). (default false)
+
 file AVOptions:
   -truncate          <boolean>    E....... truncate existing files on write (default true)
   -blocksize         <int>        E....... set I/O operation maximum block size (from 1 to INT_MAX) (default INT_MAX)
@@ -3469,6 +3475,138 @@ prompeg AVOptions:
   -l                 <int>        E....... FEC L (from 4 to 20) (default 5)
   -d                 <int>        E....... FEC D (from 4 to 20) (default 5)
 
+rtmp AVOptions:
+  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
+  -rtmp_buffer       <int>        ED...... Set buffer time in milliseconds. The default is 3000. (from 0 to INT_MAX) (default 3000)
+  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
+  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
+  -rtmp_flush_interval <int>        E....... Number of packets flushed in the same request (RTMPT only). (from 0 to INT_MAX) (default 10)
+  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default any)
+     any                          .D...... both
+     live                         .D...... live stream
+     recorded                     .D...... recorded stream
+  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
+  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
+  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
+  -rtmp_swfhash      <binary>     .D...... SHA256 hash of the decompressed SWF file (32 bytes).
+  -rtmp_swfsize      <int>        .D...... Size of the decompressed SWF file, required for SWFVerification. (from 0 to INT_MAX) (default 0)
+  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
+  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically.
+  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
+  -rtmp_listen       <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -listen            <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -timeout           <int>        .D...... Maximum timeout (in seconds) to wait for incoming connections. -1 is infinite. Implies -rtmp_listen 1 (from INT_MIN to INT_MAX) (default -1)
+
+rtmpe AVOptions:
+  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
+  -rtmp_buffer       <int>        ED...... Set buffer time in milliseconds. The default is 3000. (from 0 to INT_MAX) (default 3000)
+  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
+  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
+  -rtmp_flush_interval <int>        E....... Number of packets flushed in the same request (RTMPT only). (from 0 to INT_MAX) (default 10)
+  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default any)
+     any                          .D...... both
+     live                         .D...... live stream
+     recorded                     .D...... recorded stream
+  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
+  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
+  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
+  -rtmp_swfhash      <binary>     .D...... SHA256 hash of the decompressed SWF file (32 bytes).
+  -rtmp_swfsize      <int>        .D...... Size of the decompressed SWF file, required for SWFVerification. (from 0 to INT_MAX) (default 0)
+  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
+  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically.
+  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
+  -rtmp_listen       <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -listen            <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -timeout           <int>        .D...... Maximum timeout (in seconds) to wait for incoming connections. -1 is infinite. Implies -rtmp_listen 1 (from INT_MIN to INT_MAX) (default -1)
+
+rtmps AVOptions:
+  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
+  -rtmp_buffer       <int>        ED...... Set buffer time in milliseconds. The default is 3000. (from 0 to INT_MAX) (default 3000)
+  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
+  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
+  -rtmp_flush_interval <int>        E....... Number of packets flushed in the same request (RTMPT only). (from 0 to INT_MAX) (default 10)
+  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default any)
+     any                          .D...... both
+     live                         .D...... live stream
+     recorded                     .D...... recorded stream
+  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
+  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
+  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
+  -rtmp_swfhash      <binary>     .D...... SHA256 hash of the decompressed SWF file (32 bytes).
+  -rtmp_swfsize      <int>        .D...... Size of the decompressed SWF file, required for SWFVerification. (from 0 to INT_MAX) (default 0)
+  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
+  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically.
+  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
+  -rtmp_listen       <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -listen            <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -timeout           <int>        .D...... Maximum timeout (in seconds) to wait for incoming connections. -1 is infinite. Implies -rtmp_listen 1 (from INT_MIN to INT_MAX) (default -1)
+
+rtmpt AVOptions:
+  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
+  -rtmp_buffer       <int>        ED...... Set buffer time in milliseconds. The default is 3000. (from 0 to INT_MAX) (default 3000)
+  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
+  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
+  -rtmp_flush_interval <int>        E....... Number of packets flushed in the same request (RTMPT only). (from 0 to INT_MAX) (default 10)
+  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default any)
+     any                          .D...... both
+     live                         .D...... live stream
+     recorded                     .D...... recorded stream
+  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
+  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
+  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
+  -rtmp_swfhash      <binary>     .D...... SHA256 hash of the decompressed SWF file (32 bytes).
+  -rtmp_swfsize      <int>        .D...... Size of the decompressed SWF file, required for SWFVerification. (from 0 to INT_MAX) (default 0)
+  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
+  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically.
+  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
+  -rtmp_listen       <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -listen            <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -timeout           <int>        .D...... Maximum timeout (in seconds) to wait for incoming connections. -1 is infinite. Implies -rtmp_listen 1 (from INT_MIN to INT_MAX) (default -1)
+
+rtmpte AVOptions:
+  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
+  -rtmp_buffer       <int>        ED...... Set buffer time in milliseconds. The default is 3000. (from 0 to INT_MAX) (default 3000)
+  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
+  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
+  -rtmp_flush_interval <int>        E....... Number of packets flushed in the same request (RTMPT only). (from 0 to INT_MAX) (default 10)
+  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default any)
+     any                          .D...... both
+     live                         .D...... live stream
+     recorded                     .D...... recorded stream
+  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
+  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
+  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
+  -rtmp_swfhash      <binary>     .D...... SHA256 hash of the decompressed SWF file (32 bytes).
+  -rtmp_swfsize      <int>        .D...... Size of the decompressed SWF file, required for SWFVerification. (from 0 to INT_MAX) (default 0)
+  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
+  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically.
+  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
+  -rtmp_listen       <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -listen            <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -timeout           <int>        .D...... Maximum timeout (in seconds) to wait for incoming connections. -1 is infinite. Implies -rtmp_listen 1 (from INT_MIN to INT_MAX) (default -1)
+
+rtmpts AVOptions:
+  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
+  -rtmp_buffer       <int>        ED...... Set buffer time in milliseconds. The default is 3000. (from 0 to INT_MAX) (default 3000)
+  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
+  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
+  -rtmp_flush_interval <int>        E....... Number of packets flushed in the same request (RTMPT only). (from 0 to INT_MAX) (default 10)
+  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default any)
+     any                          .D...... both
+     live                         .D...... live stream
+     recorded                     .D...... recorded stream
+  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
+  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
+  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
+  -rtmp_swfhash      <binary>     .D...... SHA256 hash of the decompressed SWF file (32 bytes).
+  -rtmp_swfsize      <int>        .D...... Size of the decompressed SWF file, required for SWFVerification. (from 0 to INT_MAX) (default 0)
+  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
+  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically.
+  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
+  -rtmp_listen       <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -listen            <int>        .D...... Listen for incoming rtmp connections (from INT_MIN to INT_MAX) (default 0)
+  -timeout           <int>        .D...... Maximum timeout (in seconds) to wait for incoming connections. -1 is infinite. Implies -rtmp_listen 1 (from INT_MIN to INT_MAX) (default -1)
+
 rtp AVOptions:
   -ttl               <int>        ED...... Time to live (in milliseconds, multicast only) (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Send/Receive buffer size (in bytes) (from -1 to INT_MAX) (default -1)
@@ -3550,91 +3688,6 @@ udplite AVOptions:
   -timeout           <int>        .D...... set raise error timeout (only in read mode) (from 0 to INT_MAX) (default 0)
   -sources           <string>     ED...... Source list
   -block             <string>     ED...... Block list
-
-librtmp protocol AVOptions:
-  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
-  -rtmp_buffer       <string>     ED...... Set buffer time in milliseconds. The default is 3000. (default "3000")
-  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
-  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
-  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default recorded)
-     any                          .D...... both
-     live                         .D...... live stream
-     recorded                     .D...... recorded stream
-  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
-  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
-  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
-  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
-  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically. (unimplemented)
-  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
-  -rtmp_buffer_size  <int>        ED...... set buffer size in bytes (from -1 to INT_MAX) (default -1)
-
-librtmpe protocol AVOptions:
-  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
-  -rtmp_buffer       <string>     ED...... Set buffer time in milliseconds. The default is 3000. (default "3000")
-  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
-  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
-  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default recorded)
-     any                          .D...... both
-     live                         .D...... live stream
-     recorded                     .D...... recorded stream
-  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
-  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
-  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
-  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
-  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically. (unimplemented)
-  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
-  -rtmp_buffer_size  <int>        ED...... set buffer size in bytes (from -1 to INT_MAX) (default -1)
-
-librtmps protocol AVOptions:
-  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
-  -rtmp_buffer       <string>     ED...... Set buffer time in milliseconds. The default is 3000. (default "3000")
-  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
-  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
-  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default recorded)
-     any                          .D...... both
-     live                         .D...... live stream
-     recorded                     .D...... recorded stream
-  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
-  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
-  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
-  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
-  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically. (unimplemented)
-  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
-  -rtmp_buffer_size  <int>        ED...... set buffer size in bytes (from -1 to INT_MAX) (default -1)
-
-librtmpt protocol AVOptions:
-  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
-  -rtmp_buffer       <string>     ED...... Set buffer time in milliseconds. The default is 3000. (default "3000")
-  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
-  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
-  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default recorded)
-     any                          .D...... both
-     live                         .D...... live stream
-     recorded                     .D...... recorded stream
-  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
-  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
-  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
-  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
-  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically. (unimplemented)
-  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
-  -rtmp_buffer_size  <int>        ED...... set buffer size in bytes (from -1 to INT_MAX) (default -1)
-
-librtmpte protocol AVOptions:
-  -rtmp_app          <string>     ED...... Name of application to connect to on the RTMP server
-  -rtmp_buffer       <string>     ED...... Set buffer time in milliseconds. The default is 3000. (default "3000")
-  -rtmp_conn         <string>     ED...... Append arbitrary AMF data to the Connect message
-  -rtmp_flashver     <string>     ED...... Version of the Flash plugin used to run the SWF player.
-  -rtmp_live         <int>        .D...... Specify that the media is a live stream. (from INT_MIN to INT_MAX) (default recorded)
-     any                          .D...... both
-     live                         .D...... live stream
-     recorded                     .D...... recorded stream
-  -rtmp_pageurl      <string>     .D...... URL of the web page in which the media was embedded. By default no value will be sent.
-  -rtmp_playpath     <string>     ED...... Stream identifier to play or to publish
-  -rtmp_subscribe    <string>     .D...... Name of live stream to subscribe to. Defaults to rtmp_playpath.
-  -rtmp_swfurl       <string>     ED...... URL of the SWF player. By default no value will be sent
-  -rtmp_swfverify    <string>     .D...... URL to player swf file, compute hash/size automatically. (unimplemented)
-  -rtmp_tcurl        <string>     ED...... URL of the target stream. Defaults to proto://host[:port]/app.
-  -rtmp_buffer_size  <int>        ED...... set buffer size in bytes (from -1 to INT_MAX) (default -1)
 
 Blackmagic DeckLink demuxer AVOptions:
   -list_devices      <int>        .D...... list available devices (from 0 to 1) (default 0)
@@ -6432,38 +6485,6 @@ AVAudioResampleContext AVOptions:
      triangular_hp                ....A... Triangular Dither With High Pass
      triangular_ns                ....A... Triangular Dither With Noise Shaping
 
-rubberband AVOptions:
-  tempo             <double>     ..F.A... set tempo scale factor (from 0.01 to 100) (default 1)
-  pitch             <double>     ..F.A... set pitch scale factor (from 0.01 to 100) (default 1)
-  transients        <int>        ..F.A... set transients (from 0 to INT_MAX) (default crisp)
-     crisp                        ..F.A...
-     mixed                        ..F.A...
-     smooth                       ..F.A...
-  detector          <int>        ..F.A... set detector (from 0 to INT_MAX) (default compound)
-     compound                     ..F.A...
-     percussive                   ..F.A...
-     soft                         ..F.A...
-  phase             <int>        ..F.A... set phase (from 0 to INT_MAX) (default laminar)
-     laminar                      ..F.A...
-     independent                  ..F.A...
-  window            <int>        ..F.A... set window (from 0 to INT_MAX) (default standard)
-     standard                     ..F.A...
-     short                        ..F.A...
-     long                         ..F.A...
-  smoothing         <int>        ..F.A... set smoothing (from 0 to INT_MAX) (default off)
-     off                          ..F.A...
-     on                           ..F.A...
-  formant           <int>        ..F.A... set formant (from 0 to INT_MAX) (default shifted)
-     shifted                      ..F.A...
-     preserved                    ..F.A...
-  pitchq            <int>        ..F.A... set pitch quality (from 0 to INT_MAX) (default quality)
-     quality                      ..F.A...
-     speed                        ..F.A...
-     consistency                  ..F.A...
-  channels          <int>        ..F.A... set channels (from 0 to INT_MAX) (default apart)
-     apart                        ..F.A...
-     together                     ..F.A...
-
 sidechaincompress AVOptions:
   level_in          <double>     ..F.A... set input gain (from 0.015625 to 64) (default 1)
   threshold         <double>     ..F.A... set threshold (from 0.000976563 to 1) (default 0.125)
@@ -7514,6 +7535,7 @@ drawtext AVOptions:
   alpha             <string>     ..FV.... apply alpha while rendering (default "1")
   fix_bounds        <boolean>    ..FV.... check and fix text coords to avoid clipping (default true)
   start_number      <int>        ..FV.... start frame number for n/frame_num variable (from 0 to INT_MAX) (default 0)
+  text_shaping      <boolean>    ..FV.... attempt to shape text before drawing (default true)
   ft_load_flags     <flags>      ..FV.... set font loading flags for libfreetype (default 0)
      default                      ..FV....
      no_scale                     ..FV....
@@ -8486,20 +8508,6 @@ SWScaler AVOptions:
      none                         E..V.... ignore alpha
      uniform_color                E..V.... blend onto a uniform color
      checkerboard                 E..V.... blend onto a checkerboard
-
-nppscale AVOptions:
-  w                 <string>     ..FV.... Output video width (default "iw")
-  h                 <string>     ..FV.... Output video height (default "ih")
-  format            <string>     ..FV.... Output pixel format (default "same")
-  interp_algo       <int>        ..FV.... Interpolation algorithm used for resizing (from 0 to INT_MAX) (default cubic)
-     nn                           ..FV.... nearest neighbour
-     linear                       ..FV.... linear
-     cubic                        ..FV.... cubic
-     cubic2p_bspline              ..FV.... 2-parameter cubic (B=1, C=0)
-     cubic2p_catmullrom              ..FV.... 2-parameter cubic (B=0, C=1/2)
-     cubic2p_b05c03               ..FV.... 2-parameter cubic (B=1/2, C=3/10)
-     super                        ..FV.... supersampling
-     lanczos                      ..FV.... Lanczos
 
 qsvscale AVOptions:
   w                 <string>     ..FV.... Output video width (default "iw")
@@ -10436,7 +10444,6 @@ Encoders:
  A..X.. vorbis               Vorbis
  A..... libvorbis            libvorbis (codec vorbis)
  A..... wavpack              WavPack
- A..... libwavpack            (codec wavpack)
  A..... wmav1                Windows Media Audio 1
  A..... wmav2                Windows Media Audio 2
  S..... ssa                  ASS (Advanced SubStation Alpha) subtitle (codec ass)
@@ -11307,7 +11314,7 @@ Codecs:
  DEA.L. vorbis               Vorbis (decoders: vorbis libvorbis ) (encoders: vorbis libvorbis )
  ..A.L. voxware              Voxware RT29 Metasound
  D.A... wavesynth            Wave synthesis pseudo-codec
- DEAILS wavpack              WavPack (encoders: wavpack libwavpack )
+ DEAILS wavpack              WavPack
  D.A.L. westwood_snd1        Westwood Audio (SND1) (decoders: ws_snd1 )
  D.A..S wmalossless          Windows Media Audio Lossless
  D.A.L. wmapro               Windows Media Audio 9 Professional
@@ -12405,7 +12412,6 @@ Filters:
  ... pan               A->A       Remix channels with coefficients (panning).
  ... replaygain        A->A       ReplayGain scanner.
  ... resample          A->A       Audio resampling and conversion.
- ..C rubberband        A->A       Apply time-stretching and pitch-shifting.
  ... sidechaincompress AA->A      Sidechain compressor.
  ... sidechaingate     AA->A      Audio sidechain gate.
  ... silencedetect     A->A       Detect silence.
@@ -12568,7 +12574,6 @@ Filters:
  TSC rotate            V->V       Rotate the input image.
  T.. sab               V->V       Apply shape adaptive blur.
  ..C scale             V->V       Scale the input video size and/or convert the image format.
- ... scale_npp         V->V       NVIDIA Performance Primitives video scaling and format conversion
  ... scale_qsv         V->V       QuickSync video scaling and format conversion
  ..C scale2ref         VV->VV     Scale the input video size and/or convert the image format to the given reference.
  ... select            V->N       Select video frames to pass in output.
@@ -12962,23 +12967,4 @@ vp9_cuvid AVOptions:
   -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
   -resize            <string>     .D.V.... Resize (width)x(height)
 
-Filter scale_npp
-  NVIDIA Performance Primitives video scaling and format conversion
-    Inputs:
-       #0: default (video)
-    Outputs:
-       #0: default (video)
-nppscale AVOptions:
-  w                 <string>     ..FV.... Output video width (default "iw")
-  h                 <string>     ..FV.... Output video height (default "ih")
-  format            <string>     ..FV.... Output pixel format (default "same")
-  interp_algo       <int>        ..FV.... Interpolation algorithm used for resizing (from 0 to INT_MAX) (default cubic)
-     nn                           ..FV.... nearest neighbour
-     linear                       ..FV.... linear
-     cubic                        ..FV.... cubic
-     cubic2p_bspline              ..FV.... 2-parameter cubic (B=1, C=0)
-     cubic2p_catmullrom              ..FV.... 2-parameter cubic (B=0, C=1/2)
-     cubic2p_b05c03               ..FV.... 2-parameter cubic (B=1/2, C=3/10)
-     super                        ..FV.... supersampling
-     lanczos                      ..FV.... Lanczos
-
+Unknown filter 'scale_npp'.

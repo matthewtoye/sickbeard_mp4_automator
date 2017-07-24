@@ -390,7 +390,7 @@ class VideoCodec(BaseCodec):
             optlist.extend( ['-vcodec', self.ffmpeg_codec_name])
         else:
             optlist = ['-vcodec', self.ffmpeg_codec_name]
-        optlist.extend(['-movflags', 'faststart'])
+
         if 'qmin' in safe:
             optlist.extend(['-qmin', str(safe['qmin'])])
         if 'qmax' in safe:
