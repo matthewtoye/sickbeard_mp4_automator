@@ -546,7 +546,12 @@ class FFMpeg(object):
             if 'Non-monotonous DTS' in ret: #engage kludge
                 p.terminate()
                 if alreadykludged == False:
-                    os.remove(outfile)
+                    for i in range( 3 ):
+                        try:
+                            os.remove(outfile)
+                            break
+                        except:
+                            time.sleep(10)
                     os.chdir( os.path.dirname( abspath(getsourcefile(lambda:0)) ) ) #ugh, path problems.
                     os.chdir( '..' )
                     subprocess.call(["python", "manual.py", "-a", "-i", infile, "--forceConvert", "--nodelete" ])
