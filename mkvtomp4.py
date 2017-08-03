@@ -564,6 +564,11 @@ class MkvtoMp4:
             elif s.sub_forced == 1 and forced_sub == 0: ## Finally, go searching for forced subs that hang out in the title metadata
                 forced_sub = s.index
                 subtitle_used = subtitle_number
+            elif overrideLang == True: # If there is no audio stream in the desired language, burn in the first subtitle stream that matches the users language. 
+                forced_sub = s.index  
+                subtitle_used = subtitle_number
+                break
+
         for s in info.subtitle:
             if forced_sub > 0 and s.index != forced_sub and self.burn_in_forced_subs == True:
                 continue
