@@ -554,7 +554,7 @@ class FFMpeg(object):
                             time.sleep(10)
                     os.chdir( os.path.dirname( abspath(getsourcefile(lambda:0)) ) ) #ugh, path problems.
                     os.chdir( '..' )
-                    subprocess.call(["python", "manual.py", "-a", "-i", infile, "--forceConvert", "--nodelete" ])
+                    subprocess.call(["python", "manual.py", "-a", "-i", infile, "--forceConvert"])
                     return
 
             if '\r' in buf:

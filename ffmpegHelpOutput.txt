@@ -6485,6 +6485,38 @@ AVAudioResampleContext AVOptions:
      triangular_hp                ....A... Triangular Dither With High Pass
      triangular_ns                ....A... Triangular Dither With Noise Shaping
 
+rubberband AVOptions:
+  tempo             <double>     ..F.A... set tempo scale factor (from 0.01 to 100) (default 1)
+  pitch             <double>     ..F.A... set pitch scale factor (from 0.01 to 100) (default 1)
+  transients        <int>        ..F.A... set transients (from 0 to INT_MAX) (default crisp)
+     crisp                        ..F.A...
+     mixed                        ..F.A...
+     smooth                       ..F.A...
+  detector          <int>        ..F.A... set detector (from 0 to INT_MAX) (default compound)
+     compound                     ..F.A...
+     percussive                   ..F.A...
+     soft                         ..F.A...
+  phase             <int>        ..F.A... set phase (from 0 to INT_MAX) (default laminar)
+     laminar                      ..F.A...
+     independent                  ..F.A...
+  window            <int>        ..F.A... set window (from 0 to INT_MAX) (default standard)
+     standard                     ..F.A...
+     short                        ..F.A...
+     long                         ..F.A...
+  smoothing         <int>        ..F.A... set smoothing (from 0 to INT_MAX) (default off)
+     off                          ..F.A...
+     on                           ..F.A...
+  formant           <int>        ..F.A... set formant (from 0 to INT_MAX) (default shifted)
+     shifted                      ..F.A...
+     preserved                    ..F.A...
+  pitchq            <int>        ..F.A... set pitch quality (from 0 to INT_MAX) (default quality)
+     quality                      ..F.A...
+     speed                        ..F.A...
+     consistency                  ..F.A...
+  channels          <int>        ..F.A... set channels (from 0 to INT_MAX) (default apart)
+     apart                        ..F.A...
+     together                     ..F.A...
+
 sidechaincompress AVOptions:
   level_in          <double>     ..F.A... set input gain (from 0.015625 to 64) (default 1)
   threshold         <double>     ..F.A... set threshold (from 0.000976563 to 1) (default 0.125)
@@ -9061,6 +9093,12 @@ tinterlace AVOptions:
      interlacex2                  ..FV.... interlace fields from two consecutive frames
      mergex2                      ..FV.... merge fields keeping same frame rate
 
+tlut2 AVOptions:
+  c0                <string>     ..FV.... set component #0 expression (default "x")
+  c1                <string>     ..FV.... set component #1 expression (default "x")
+  c2                <string>     ..FV.... set component #2 expression (default "x")
+  c3                <string>     ..FV.... set component #3 expression (default "x")
+
 transpose AVOptions:
   dir               <int>        ..FV.... set transpose direction (from 0 to 7) (default cclock_flip)
      cclock_flip                  ..FV.... rotate counter-clockwise with vertical flip
@@ -9083,6 +9121,9 @@ trim AVOptions:
   durationi         <duration>   ..FV.... Maximum duration of the output (default 0)
   start_frame       <int64>      ..FV.... Number of the first frame that should be passed to the output (from -1 to I64_MAX) (default -1)
   end_frame         <int64>      ..FV.... Number of the first frame that should be dropped again (from 0 to I64_MAX) (default I64_MAX)
+
+unpremultiply AVOptions:
+  planes            <int>        ..FV.... set planes (from 0 to 15) (default 15)
 
 unsharp AVOptions:
   luma_msize_x      <int>        ..FV.... set luma matrix horizontal size (from 3 to 23) (default 5)
@@ -9816,6 +9857,7 @@ testsrc2 AVOptions:
   duration          <duration>   ..FV.... set video duration (default -0.000001)
   d                 <duration>   ..FV.... set video duration (default -0.000001)
   sar               <rational>   ..FV.... set video sample aspect ratio (from 0 to INT_MAX) (default 1/1)
+  alpha             <int>        ..FV.... set global alpha (opacity) (from 0 to 255) (default 255)
 
 yuvtestsrc AVOptions:
   size              <image_size> ..FV.... set video size (default "320x240")
@@ -10294,7 +10336,7 @@ Encoders:
  V..... cinepak              Cinepak
  V..... cljr                 Cirrus Logic AccuPak
  V.S... vc2                  SMPTE VC-2 (codec dirac)
- V.S... dnxhd                VC3/DNxHD
+ VFS... dnxhd                VC3/DNxHD
  V..... dpx                  DPX (Digital Picture Exchange) image
  VFS... dvvideo              DV (Digital Video)
  V.S... ffv1                 FFmpeg video codec #1
@@ -12412,6 +12454,7 @@ Filters:
  ... pan               A->A       Remix channels with coefficients (panning).
  ... replaygain        A->A       ReplayGain scanner.
  ... resample          A->A       Audio resampling and conversion.
+ ..C rubberband        A->A       Apply time-stretching and pitch-shifting.
  ... sidechaincompress AA->A      Sidechain compressor.
  ... sidechaingate     AA->A      Audio sidechain gate.
  ... silencedetect     A->A       Detect silence.
@@ -12609,8 +12652,10 @@ Filters:
  ... thumbnail         V->V       Select the most representative frame in a given sequence of consecutive frames.
  ... tile              V->V       Tile several successive frames together.
  ... tinterlace        V->V       Perform temporal field interlacing.
+ ... tlut2             V->V       Compute and apply a lookup table from two successive frames.
  .S. transpose         V->V       Transpose input video.
  ... trim              V->V       Pick one continuous section from the input, drop the rest.
+ T.. unpremultiply     VV->V      UnPreMultiply first stream with first plane of second stream.
  T.. unsharp           V->V       Sharpen or blur the input video.
  T.. uspp              V->V       Apply Ultra Simple / Slow Post-processing filter.
  T.. vaguedenoiser     V->V       Apply a Wavelet based Denoiser.
