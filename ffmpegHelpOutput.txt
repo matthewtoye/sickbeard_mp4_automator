@@ -812,6 +812,9 @@ dnxhd AVOptions:
      dnxhr_sq                     E..V....
      dnxhr_lb                     E..V....
 
+dvvideo encoder AVOptions:
+  -quant_deadzone    <int>        E..V.... Quantizer dead zone (from 0 to 1024) (default 7)
+
 EXR AVOptions:
   -layer             <string>     .D.V.... Set the decoding layer (default "")
   -gamma             <float>      .D.V.... Set the float gamma value when decoding (from 0.001 to FLT_MAX) (default 1)
@@ -1732,65 +1735,11 @@ sgi AVOptions:
   -rle               <int>        E..V.... Use run-length compression (from 0 to 1) (default 1)
 
 snow encoder AVOptions:
-  -mpv_flags         <flags>      E..V.... Flags common for all mpegvideo-based encoders. (default 0)
-     skip_rd                      E..V.... RD optimal MB level residual skipping
-     strict_gop                   E..V.... Strictly enforce gop size
-     qp_rd                        E..V.... Use rate distortion optimization for qp selection
-     cbp_rd                       E..V.... use rate distortion optimization for CBP
-     naq                          E..V.... normalize adaptive quantization
-     mv0                          E..V.... always try a mb with mv=<0,0>
-  -luma_elim_threshold <int>        E..V.... single coefficient elimination threshold for luminance (negative values also consider dc coefficient) (from INT_MIN to INT_MAX) (default 0)
-  -chroma_elim_threshold <int>        E..V.... single coefficient elimination threshold for chrominance (negative values also consider dc coefficient) (from INT_MIN to INT_MAX) (default 0)
-  -quantizer_noise_shaping <int>        E..V.... (from 0 to INT_MAX) (default 0)
-  -error_rate        <int>        E..V.... Simulate errors in the bitstream to test error concealment. (from 0 to INT_MAX) (default 0)
-  -qsquish           <float>      E..V.... how to keep quantizer between qmin and qmax (0 = clip, 1 = use differentiable function) (from 0 to 99) (default 0)
-  -rc_qmod_amp       <float>      E..V.... experimental quantizer modulation (from -FLT_MAX to FLT_MAX) (default 0)
-  -rc_qmod_freq      <int>        E..V.... experimental quantizer modulation (from INT_MIN to INT_MAX) (default 0)
-  -rc_eq             <string>     E..V.... Set rate control equation. When computing the expression, besides the standard functions defined in the section 'Expression Evaluation', the following functions are available: bits2qp(bits), qp2bits(qp). Also the following constants are available: iTex pTex tex mv fCode iCount mcVar var isI isP isB avgQP qComp avgIITex avgPITex avgPPTex avgBPTex avgTex.
-  -rc_init_cplx      <float>      E..V.... initial complexity for 1-pass encoding (from -FLT_MAX to FLT_MAX) (default 0)
-  -rc_buf_aggressivity <float>      E..V.... currently useless (from -FLT_MAX to FLT_MAX) (default 1)
-  -border_mask       <float>      E..V.... increase the quantizer for macroblocks close to borders (from -FLT_MAX to FLT_MAX) (default 0)
-  -lmin              <int>        E..V.... minimum Lagrange factor (VBR) (from 0 to INT_MAX) (default 236)
-  -lmax              <int>        E..V.... maximum Lagrange factor (VBR) (from 0 to INT_MAX) (default 3658)
-  -ibias             <int>        E..V.... intra quant bias (from INT_MIN to INT_MAX) (default 999999)
-  -pbias             <int>        E..V.... inter quant bias (from INT_MIN to INT_MAX) (default 999999)
-  -rc_strategy       <int>        E..V.... ratecontrol method (from 0 to 1) (default ffmpeg)
-     ffmpeg                       E..V.... default native rate control
-     xvid                         E..V.... libxvid (2 pass only)
-  -motion_est        <int>        E..V.... motion estimation algorithm (from 0 to 2) (default epzs)
+  -motion_est        <int>        E..V.... motion estimation algorithm (from 0 to 3) (default epzs)
      zero                         E..V....
      epzs                         E..V....
      xone                         E..V....
      iter                         E..V....
-  -force_duplicated_matrix <boolean>    E..V.... Always write luma and chroma matrix for mjpeg, useful for rtp streaming. (default false)
-  -b_strategy        <int>        E..V.... Strategy to choose between I/P/B-frames (from 0 to 2) (default 0)
-  -b_sensitivity     <int>        E..V.... Adjust sensitivity of b_frame_strategy 1 (from 1 to INT_MAX) (default 40)
-  -brd_scale         <int>        E..V.... Downscale frames for dynamic B-frame decision (from 0 to 3) (default 0)
-  -skip_threshold    <int>        E..V.... Frame skip threshold (from INT_MIN to INT_MAX) (default 0)
-  -skip_factor       <int>        E..V.... Frame skip factor (from INT_MIN to INT_MAX) (default 0)
-  -skip_exp          <int>        E..V.... Frame skip exponent (from INT_MIN to INT_MAX) (default 0)
-  -skip_cmp          <int>        E..V.... Frame skip compare function (from INT_MIN to INT_MAX) (default dctmax)
-     sad                          E..V.... Sum of absolute differences, fast
-     sse                          E..V.... Sum of squared errors
-     satd                         E..V.... Sum of absolute Hadamard transformed differences
-     dct                          E..V.... Sum of absolute DCT transformed differences
-     psnr                         E..V.... Sum of squared quantization errors, low quality
-     bit                          E..V.... Number of bits needed for the block
-     rd                           E..V.... Rate distortion optimal, slow
-     zero                         E..V.... Zero
-     vsad                         E..V.... Sum of absolute vertical differences
-     vsse                         E..V.... Sum of squared vertical differences
-     nsse                         E..V.... Noise preserving sum of squared differences
-     dct264                       E..V....
-     dctmax                       E..V....
-     chroma                       E..V....
-     msad                         E..V.... Sum of absolute differences, median predicted
-  -sc_threshold      <int>        E..V.... Scene change threshold (from INT_MIN to INT_MAX) (default 0)
-  -noise_reduction   <int>        E..V.... Noise reduction (from INT_MIN to INT_MAX) (default 0)
-  -mpeg_quant        <int>        E..V.... Use MPEG quantizers instead of H.263 (from 0 to 1) (default 0)
-  -ps                <int>        E..V.... RTP payload size in bytes (from INT_MIN to INT_MAX) (default 0)
-  -mepc              <int>        E..V.... Motion estimation bitrate penalty compensation (1.0 = 256) (from INT_MIN to INT_MAX) (default 256)
-  -mepre             <int>        E..V.... pre motion estimation (from INT_MIN to INT_MAX) (default 0)
   -memc_only         <boolean>    E..V.... Only do ME/MC (I frames -> ref, P frame -> ME+MC). (default false)
   -no_bitstream      <boolean>    E..V.... Skip final bitstream writeout. (default false)
   -intra_penalty     <int>        E..V.... Penalty for intra blocks in block decission (from 0 to INT_MAX) (default 0)
@@ -2199,6 +2148,9 @@ g722 decoder AVOptions:
   -bits_per_codeword <int>        .D..A... Bits per G722 codeword (from 6 to 8) (default 8)
 
 g726 AVOptions:
+  -code_size         <int>        E...A... Bits per code (from 2 to 5) (default 4)
+
+g726le AVOptions:
   -code_size         <int>        E...A... Bits per code (from 2 to 5) (default 4)
 
 Closed caption Decoder AVOptions:
@@ -3406,8 +3358,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.76.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.76.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.78.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.78.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3434,8 +3386,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.76.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.76.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.78.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.78.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3729,6 +3681,7 @@ Blackmagic DeckLink demuxer AVOptions:
      reference                    .D......
      wallclock                    .D......
   -draw_bars         <boolean>    .D...... draw bars on signal loss (default true)
+  -queue_size        <int64>      .D...... input queue buffer size (from 0 to I64_MAX) (default 1.07374e+009)
 
 dshow indev AVOptions:
   -video_size        <image_size> .D...... set video size given a string such as 640x480 or hd720.
@@ -3836,6 +3789,14 @@ live_flvdec AVOptions:
   -flv_metadata      <boolean>    .D.V.... Allocate streams according to the onMetaData array (default false)
   -missing_streams   <int>        .D.V..XR  (from 0 to 255) (default 0)
 
+G.726 big-endian demuxer AVOptions:
+  -code_size         <int>        .D...... Bits per G.726 code (from 2 to 5) (default 4)
+  -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 8000)
+
+G.726 little-endian demuxer AVOptions:
+  -code_size         <int>        .D...... Bits per G.726 code (from 2 to 5) (default 4)
+  -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 8000)
+
 g729 demuxer AVOptions:
   -bit_rate          <int>        .D......  (from 0 to INT_MAX) (default 8000)
 
@@ -3863,6 +3824,7 @@ hevc demuxer AVOptions:
 hls,applehttp AVOptions:
   -live_start_index  <int>        .D...... segment index to start live streams at (negative values are from the end) (from INT_MIN to INT_MAX) (default -3)
   -allowed_extensions <string>     .D...... List of file extensions that hls is allowed to access (default "3gp,aac,avi,flac,mkv,m3u8,m4a,m4s,m4v,mpg,mov,mp2,mp3,mp4,mpeg,mpegts,ogg,ogv,oga,ts,vob,wav")
+  -max_reload        <int>        .D...... Maximum number of times a insufficient list is attempted to be reloaded (from 0 to INT_MAX) (default 1000)
 
 iCE Draw File demuxer AVOptions:
   -linespeed         <int>        .D...... set simulated line speed (bytes per second) (from 1 to INT_MAX) (default 6000)
@@ -4112,7 +4074,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.76.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.78.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4800,6 +4762,7 @@ hls muxer AVOptions:
      second_level_segment_index              E....... include segment index in segment filenames when use_localtime
      second_level_segment_duration              E....... include segment duration in segment filenames when use_localtime
      second_level_segment_size              E....... include segment size in segment filenames when use_localtime
+     periodic_rekey               E....... reload keyinfo file periodically for re-keying
   -use_localtime     <boolean>    E....... set filename expansion with strftime at segment creation (default false)
   -use_localtime_mkdir <boolean>    E....... create last directory component in strftime-generated filename (default false)
   -hls_playlist_type <int>        E....... set the HLS playlist type (from 0 to 2) (default 0)
@@ -5240,7 +5203,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.76.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.78.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -6326,6 +6289,7 @@ firequalizer AVOptions:
      loglin                       ..F.A... logarithmic-freq linear-gain
      loglog                       ..F.A... logarithmic-freq logarithmic-gain
   fft2              <boolean>    ..F.A... set 2-channels fft (default false)
+  min_phase         <boolean>    ..F.A... set minimum phase mode (default false)
 
 flanger AVOptions:
   delay             <double>     ..F.A... base delay in milliseconds (from 0 to 30) (default 0)
@@ -6653,6 +6617,10 @@ surround AVOptions:
   lfe               <boolean>    ..F.A... output LFE (default true)
   lfe_low           <int>        ..F.A... LFE low cut off (from 0 to 256) (default 128)
   lfe_high          <int>        ..F.A... LFE high cut off (from 0 to 512) (default 256)
+  fc_in             <float>      ..F.A... set front center channel input level (from 0 to 10) (default 1)
+  fc_out            <float>      ..F.A... set front center channel output level (from 0 to 10) (default 1)
+  lfe_in            <float>      ..F.A... set lfe channel input level (from 0 to 10) (default 1)
+  lfe_out           <float>      ..F.A... set lfe channel output level (from 0 to 10) (default 1)
 
 treble AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
@@ -6822,12 +6790,14 @@ blend AVOptions:
   c0_mode           <int>        ..FV.... set component #0 blend mode (from 0 to 32) (default normal)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -6856,12 +6826,14 @@ blend AVOptions:
   c1_mode           <int>        ..FV.... set component #1 blend mode (from 0 to 32) (default normal)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -6890,12 +6862,14 @@ blend AVOptions:
   c2_mode           <int>        ..FV.... set component #2 blend mode (from 0 to 32) (default normal)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -6924,12 +6898,14 @@ blend AVOptions:
   c3_mode           <int>        ..FV.... set component #3 blend mode (from 0 to 32) (default normal)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -6958,12 +6934,14 @@ blend AVOptions:
   all_mode          <int>        ..FV.... set blend mode for all components (from -1 to 32) (default -1)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -6999,8 +6977,14 @@ blend AVOptions:
   c2_opacity        <double>     ..FV.... set color component #2 opacity (from 0 to 1) (default 1)
   c3_opacity        <double>     ..FV.... set color component #3 opacity (from 0 to 1) (default 1)
   all_opacity       <double>     ..FV.... set opacity for all color components (from 0 to 1) (default 1)
+
+framesync AVOptions:
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
+     pass                         ..FV.... Pass through the main input.
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
-  repeatlast        <boolean>    ..FV.... repeat last bottom frame (default true)
+  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
 
 boxblur AVOptions:
   luma_radius       <string>     ..FV.... Radius of the luma blurring box (default "2")
@@ -7179,7 +7163,7 @@ colorspace AVOptions:
      smpte170m                    ..FV.... 
      smpte240m                    ..FV.... 
      bt2020                       ..FV.... 
-  space             <int>        ..FV.... Output colorspace (from 0 to 11) (default 2)
+  space             <int>        ..FV.... Output colorspace (from 0 to 14) (default 2)
      bt709                        ..FV.... 
      fcc                          ..FV.... 
      bt470bg                      ..FV.... 
@@ -7714,6 +7698,18 @@ find_rect AVOptions:
   xmax              <int>        ..FV....  (from 0 to INT_MAX) (default 0)
   ymax              <int>        ..FV....  (from 0 to INT_MAX) (default 0)
 
+floodfill AVOptions:
+  x                 <int>        ..FV.... set pixel x coordinate (from 0 to 65535) (default 0)
+  y                 <int>        ..FV.... set pixel y coordinate (from 0 to 65535) (default 0)
+  s0                <int>        ..FV.... set source #0 component value (from -1 to 65535) (default 0)
+  s1                <int>        ..FV.... set source #1 component value (from -1 to 65535) (default 0)
+  s2                <int>        ..FV.... set source #2 component value (from -1 to 65535) (default 0)
+  s3                <int>        ..FV.... set source #3 component value (from -1 to 65535) (default 0)
+  d0                <int>        ..FV.... set destination #0 component value (from 0 to 65535) (default 0)
+  d1                <int>        ..FV.... set destination #1 component value (from 0 to 65535) (default 0)
+  d2                <int>        ..FV.... set destination #2 component value (from 0 to 65535) (default 0)
+  d3                <int>        ..FV.... set destination #3 component value (from 0 to 65535) (default 0)
+
 format AVOptions:
   pix_fmts          <string>     ..FV.... A '|'-separated list of pixel formats
 
@@ -7784,12 +7780,18 @@ gradfun AVOptions:
   radius            <int>        ..FV.... The neighborhood to fit the gradient to. (from 4 to 32) (default 16)
 
 haldclut AVOptions:
-  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
-  repeatlast        <boolean>    ..FV.... continue applying the last clut after eos (default true)
   interp            <int>        ..FV.... select interpolation mode (from 0 to 2) (default tetrahedral)
      nearest                      ..FV.... use values from the nearest defined points
      trilinear                    ..FV.... interpolate values using the 8 points defining a cube
      tetrahedral                  ..FV.... interpolate values using a tetrahedron
+
+framesync AVOptions:
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
+     pass                         ..FV.... Pass through the main input.
+  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
+  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
 
 hflip AVOptions:
 
@@ -8242,14 +8244,9 @@ oscilloscope AVOptions:
 overlay AVOptions:
   x                 <string>     ..FV.... set the x expression (default "0")
   y                 <string>     ..FV.... set the y expression (default "0")
-  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
-     repeat                       ..FV.... Repeat the previous frame.
-     endall                       ..FV.... End both streams.
-     pass                         ..FV.... Pass through the main input.
   eval              <int>        ..FV.... specify when to evaluate expressions (from 0 to 1) (default frame)
      init                         ..FV.... eval expressions once during initialization
      frame                        ..FV.... eval expressions per-frame
-  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
   format            <int>        ..FV.... set output format (from 0 to 5) (default yuv420)
      yuv420                       ..FV.... 
      yuv422                       ..FV.... 
@@ -8257,6 +8254,13 @@ overlay AVOptions:
      rgb                          ..FV.... 
      gbrp                         ..FV.... 
      auto                         ..FV.... 
+
+framesync AVOptions:
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
+     pass                         ..FV.... Pass through the main input.
+  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
   repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
 
 owdenoise AVOptions:
@@ -8352,6 +8356,8 @@ pixscope AVOptions:
   w                 <int>        ..FV.... set scope width (from 1 to 80) (default 7)
   h                 <int>        ..FV.... set scope height (from 1 to 80) (default 7)
   o                 <float>      ..FV.... set window opacity (from 0 to 1) (default 0.5)
+  wx                <float>      ..FV.... set window x offset (from 0 to 1) (default 1)
+  wy                <float>      ..FV.... set window y offset (from 0 to 1) (default 0)
 
 pp AVOptions:
   subfilters        <string>     ..FV.... set postprocess subfilters (default "de")
@@ -8365,17 +8371,33 @@ pp7 AVOptions:
 
 premultiply AVOptions:
   planes            <int>        ..FV.... set planes (from 0 to 15) (default 15)
+  inplace           <boolean>    ..FV.... enable inplace mode (default false)
 
 prewitt AVOptions:
   planes            <int>        ..FV.... set planes to filter (from 0 to 15) (default 15)
   scale             <float>      ..FV.... set scale (from 0 to 65535) (default 1)
   delta             <float>      ..FV.... set delta (from -65535 to 65535) (default 0)
 
+pseudocolor AVOptions:
+  c0                <string>     ..FV.... set component #0 expression (default "val")
+  c1                <string>     ..FV.... set component #1 expression (default "val")
+  c2                <string>     ..FV.... set component #2 expression (default "val")
+  c3                <string>     ..FV.... set component #3 expression (default "val")
+  i                 <int>        ..FV.... set component as base (from 0 to 3) (default 0)
+
 psnr AVOptions:
   stats_file        <string>     ..FV.... Set file where to store per-frame difference information
   f                 <string>     ..FV.... Set file where to store per-frame difference information
   stats_version     <int>        ..FV.... Set the format version for the stats file. (from 1 to 2) (default 1)
   output_max        <boolean>    ..FV.... Add raw stats (max values) to the output log. (default false)
+
+framesync AVOptions:
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
+     pass                         ..FV.... Pass through the main input.
+  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
+  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
 
 pullup AVOptions:
   jl                <int>        ..FV.... set left junk size (from 0 to INT_MAX) (default 1)
@@ -8804,6 +8826,14 @@ ssim AVOptions:
   stats_file        <string>     ..FV.... Set file where to store per-frame difference information
   f                 <string>     ..FV.... Set file where to store per-frame difference information
 
+framesync AVOptions:
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
+     pass                         ..FV.... Pass through the main input.
+  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
+  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
+
 stereo3d AVOptions:
   in                <int>        ..FV.... set input format (from 16 to 32) (default sbsl)
      ab2l                         ..FV.... above below half height left first
@@ -8883,12 +8913,14 @@ tblend AVOptions:
   c0_mode           <int>        ..FV.... set component #0 blend mode (from 0 to 32) (default normal)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -8917,12 +8949,14 @@ tblend AVOptions:
   c1_mode           <int>        ..FV.... set component #1 blend mode (from 0 to 32) (default normal)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -8951,12 +8985,14 @@ tblend AVOptions:
   c2_mode           <int>        ..FV.... set component #2 blend mode (from 0 to 32) (default normal)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -8985,12 +9021,14 @@ tblend AVOptions:
   c3_mode           <int>        ..FV.... set component #3 blend mode (from 0 to 32) (default normal)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -9019,12 +9057,14 @@ tblend AVOptions:
   all_mode          <int>        ..FV.... set blend mode for all components (from -1 to 32) (default -1)
      addition                     ..FV.... 
      addition128                  ..FV.... 
+     grainmerge                   ..FV.... 
      and                          ..FV.... 
      average                      ..FV.... 
      burn                         ..FV.... 
      darken                       ..FV.... 
      difference                   ..FV.... 
      difference128                ..FV.... 
+     grainextract                 ..FV.... 
      divide                       ..FV.... 
      dodge                        ..FV.... 
      exclusion                    ..FV.... 
@@ -9099,6 +9139,19 @@ tlut2 AVOptions:
   c2                <string>     ..FV.... set component #2 expression (default "x")
   c3                <string>     ..FV.... set component #3 expression (default "x")
 
+tonemap AVOptions:
+  tonemap           <int>        ..FV.... tonemap algorithm selection (from 0 to 6) (default none)
+     none                         ..FV....
+     linear                       ..FV....
+     gamma                        ..FV....
+     clip                         ..FV....
+     reinhard                     ..FV....
+     hable                        ..FV....
+     mobius                       ..FV....
+  param             <double>     ..FV.... tonemap parameter (from DBL_MIN to DBL_MAX) (default nan)
+  desat             <double>     ..FV.... desaturation strength (from 0 to DBL_MAX) (default 2)
+  peak              <double>     ..FV.... signal peak override (from 0 to DBL_MAX) (default 0)
+
 transpose AVOptions:
   dir               <int>        ..FV.... set transpose direction (from 0 to 7) (default cclock_flip)
      cclock_flip                  ..FV.... rotate counter-clockwise with vertical flip
@@ -9124,6 +9177,7 @@ trim AVOptions:
 
 unpremultiply AVOptions:
   planes            <int>        ..FV.... set planes (from 0 to 15) (default 15)
+  inplace           <boolean>    ..FV.... enable inplace mode (default false)
 
 unsharp AVOptions:
   luma_msize_x      <int>        ..FV.... set luma matrix horizontal size (from 3 to 23) (default 5)
@@ -10423,6 +10477,7 @@ Encoders:
  A..... adpcm_adx            SEGA CRI ADX ADPCM
  A..... g722                 G.722 ADPCM (codec adpcm_g722)
  A..... g726                 G.726 ADPCM (codec adpcm_g726)
+ A..... g726le               G.726 little endian ADPCM ("right-justified") (codec adpcm_g726le)
  A..... adpcm_ima_qt         ADPCM IMA QuickTime
  A..... adpcm_ima_wav        ADPCM IMA WAV
  A..... adpcm_ms             ADPCM Microsoft
@@ -11215,7 +11270,7 @@ Codecs:
  D.A.L. adpcm_ea_xas         ADPCM Electronic Arts XAS
  DEA.L. adpcm_g722           G.722 ADPCM (decoders: g722 ) (encoders: g722 )
  DEA.L. adpcm_g726           G.726 ADPCM (decoders: g726 ) (encoders: g726 )
- D.A.L. adpcm_g726le         G.726 ADPCM little-endian (decoders: g726le )
+ DEA.L. adpcm_g726le         G.726 ADPCM little-endian (decoders: g726le ) (encoders: g726le )
  D.A.L. adpcm_ima_amv        ADPCM IMA AMV
  D.A.L. adpcm_ima_apc        ADPCM IMA CRYO APC
  D.A.L. adpcm_ima_dat4       ADPCM IMA Eurocom DAT4
@@ -11589,6 +11644,12 @@ IO... gray10le               1            10
 I.... p016le                 3            24
 I.... p016be                 3            24
 ..H.. d3d11                  0             0
+IO... gray9be                1             9
+IO... gray9le                1             9
+..... gbrpf32be              3            96
+..... gbrpf32le              3            96
+..... gbrapf32be             4            128
+..... gbrapf32le             4            128
 File formats:
  D. = Demuxing supported
  .E = Muxing supported
@@ -11697,6 +11758,8 @@ File formats:
  D  fsb             FMOD Sample Bank
  DE g722            raw G.722
  DE g723_1          raw G.723.1
+ DE g726            raw big-endian G.726 ("left-justified")
+ DE g726le          raw little-endian G.726 ("right-justified")
  D  g729            G.729 raw format demuxer
  D  gdigrab         GDI API Windows frame grabber
  D  gdv             Gremlin Digital Video
@@ -11978,6 +12041,8 @@ File formats:
   E framemd5        Per-frame MD5 testing
   E g722            raw G.722
   E g723_1          raw G.723.1
+  E g726            raw big-endian G.726 ("left-justified")
+  E g726le          raw little-endian G.726 ("right-justified")
   E gif             GIF Animation
   E gsm             raw GSM
   E gxf             GXF (General eXchange Format)
@@ -12175,6 +12240,8 @@ File formats:
  D  fsb             FMOD Sample Bank
  D  g722            raw G.722
  D  g723_1          G.723.1
+ D  g726            raw big-endian G.726 ("left aligned")
+ D  g726le          raw little-endian G.726 ("right aligned")
  D  g729            G.729 raw format demuxer
  D  gdigrab         GDI API Windows frame grabber
  D  gdv             Gremlin Digital Video
@@ -12533,6 +12600,7 @@ Filters:
  ... fieldmatch        N->V       Field matching for inverse telecine.
  T.. fieldorder        V->V       Set the field order.
  ... find_rect         V->V       Find a user specified object.
+ T.. floodfill         V->V       Fill area with same color with another color.
  ... format            V->V       Convert the input video to one of the specified pixel formats.
  ... fps               V->V       Force constant framerate.
  ... framepack         VV->V      Generate a frame packed stereoscopic video.
@@ -12599,8 +12667,9 @@ Filters:
  ... pixscope          V->V       Pixel data analysis.
  T.C pp                V->V       Filter video using libpostproc.
  T.. pp7               V->V       Apply Postprocessing 7 filter.
- T.. premultiply       VV->V      PreMultiply first stream with first plane of second stream.
+ T.. premultiply       N->V       PreMultiply first stream with first plane of second stream.
  TS. prewitt           V->V       Apply prewitt operator.
+ T.. pseudocolor       V->V       Make pseudocolored video frames.
  ... psnr              VV->V      Calculate the PSNR between two video streams.
  ... pullup            V->V       Pullup from field sequence to frames.
  T.. qp                V->V       Change video quantization parameters.
@@ -12653,9 +12722,10 @@ Filters:
  ... tile              V->V       Tile several successive frames together.
  ... tinterlace        V->V       Perform temporal field interlacing.
  ... tlut2             V->V       Compute and apply a lookup table from two successive frames.
+ ... tonemap           V->V       Conversion to/from different dynamic ranges.
  .S. transpose         V->V       Transpose input video.
  ... trim              V->V       Pick one continuous section from the input, drop the rest.
- T.. unpremultiply     VV->V      UnPreMultiply first stream with first plane of second stream.
+ T.. unpremultiply     N->V       UnPreMultiply first stream with first plane of second stream.
  T.. unsharp           V->V       Sharpen or blur the input video.
  T.. uspp              V->V       Apply Ultra Simple / Slow Post-processing filter.
  T.. vaguedenoiser     V->V       Apply a Wavelet based Denoiser.
@@ -12670,7 +12740,7 @@ Filters:
  ... weave             V->V       Weave input video fields into frames.
  .S. xbr               V->V       Scale the input using xBR algorithm.
  TS. yadif             V->V       Deinterlace the input image.
- T.. zoompan           V->V       Apply Zoom & Pan effect.
+ ... zoompan           V->V       Apply Zoom & Pan effect.
  ..C zscale            V->V       Apply resizing, colorspace and bit depth conversion.
  ... allrgb            |->V       Generate all RGB colors.
  ... allyuv            |->V       Generate all yuv colors.
