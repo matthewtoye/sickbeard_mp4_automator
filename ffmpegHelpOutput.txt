@@ -856,6 +856,9 @@ ffvhuff AVOptions:
 FIC encoder AVOptions:
   -skip_cursor       <boolean>    .D.V.... skip the cursor (default false)
 
+FITS decoder AVOptions:
+  -blank_value       <int>        .D.V.... value that is used to replace BLANK pixels in data array (from 0 to 65535) (default 0)
+
 flv encoder AVOptions:
   -mpv_flags         <flags>      E..V.... Flags common for all mpegvideo-based encoders. (default 0)
      skip_rd                      E..V.... RD optimal MB level residual skipping
@@ -2703,6 +2706,13 @@ h264_nvenc AVOptions:
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
   -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
+  -coder             <int>        E..V.... Coder type (from -1 to 2) (default default)
+     default                      E..V.... 
+     auto                         E..V.... 
+     cabac                        E..V.... 
+     cavlc                        E..V.... 
+     ac                           E..V.... 
+     vlc                          E..V.... 
 
 h264_qsv encoder AVOptions:
   -async_depth       <int>        E..V.... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -2834,6 +2844,13 @@ nvenc AVOptions:
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
   -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
+  -coder             <int>        E..V.... Coder type (from -1 to 2) (default default)
+     default                      E..V.... 
+     auto                         E..V.... 
+     cabac                        E..V.... 
+     cavlc                        E..V.... 
+     ac                           E..V.... 
+     vlc                          E..V.... 
 
 nvenc_h264 AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -2914,6 +2931,13 @@ nvenc_h264 AVOptions:
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
   -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
+  -coder             <int>        E..V.... Coder type (from -1 to 2) (default default)
+     default                      E..V.... 
+     auto                         E..V.... 
+     cabac                        E..V.... 
+     cavlc                        E..V.... 
+     ac                           E..V.... 
+     vlc                          E..V.... 
 
 nvenc_hevc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
@@ -3358,8 +3382,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.78.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.78.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.81.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.81.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3386,8 +3410,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.78.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.78.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.81.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.81.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3781,6 +3805,9 @@ dvbtxt demuxer AVOptions:
 
 ffm demuxer AVOptions:
 
+FITS demuxer AVOptions:
+  -framerate         <video_rate> .D...... set the framerate (default "1")
+
 flvdec AVOptions:
   -flv_metadata      <boolean>    .D.V.... Allocate streams according to the onMetaData array (default false)
   -missing_streams   <int>        .D.V..XR  (from 0 to 255) (default 0)
@@ -4074,7 +4101,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.78.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.81.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4773,6 +4800,7 @@ hls muxer AVOptions:
      generic                      E....... start_number value (default)
      epoch                        E....... seconds since epoch
      datetime                     E....... current datetime as YYYYMMDDhhmmss
+  -http_user_agent   <string>     E....... override User-Agent field in HTTP header
 
 image2 muxer AVOptions:
   -updatefirst       <boolean>    E....... continuously overwrite one file (default false)
@@ -5203,7 +5231,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.78.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.81.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -6307,6 +6335,25 @@ flanger AVOptions:
      linear                       ..F.A...
      quadratic                    ..F.A...
 
+haas AVOptions:
+  level_in          <double>     ..F.A... set level in (from 0.015625 to 64) (default 1)
+  level_out         <double>     ..F.A... set level out (from 0.015625 to 64) (default 1)
+  side_gain         <double>     ..F.A... set side gain (from 0.015625 to 64) (default 1)
+  middle_source     <int>        ..F.A... set middle source (from 0 to 3) (default mid)
+     left                         ..F.A...
+     right                        ..F.A...
+     mid                          ..F.A... L+R
+     side                         ..F.A... L-R
+  middle_phase      <boolean>    ..F.A... set middle phase (default false)
+  left_delay        <double>     ..F.A... set left delay (from 0 to 40) (default 2.05)
+  left_balance      <double>     ..F.A... set left balance (from -1 to 1) (default -1)
+  left_gain         <double>     ..F.A... set left gain (from 0.015625 to 64) (default 1)
+  left_phase        <boolean>    ..F.A... set left phase (default false)
+  right_delay       <double>     ..F.A... set right delay (from 0 to 40) (default 2.12)
+  right_balance     <double>     ..F.A... set right balance (from -1 to 1) (default 1)
+  right_gain        <double>     ..F.A... set right gain (from 0.015625 to 64) (default 1)
+  right_phase       <boolean>    ..F.A... set right phase (default true)
+
 hdcd AVOptions:
   disable_autoconvert <boolean>    ..F.A... Disable any format conversion or resampling in the filter graph. (default true)
   process_stereo    <boolean>    ..F.A... Process stereo channels together. Only apply target_gain when both channels match. (default true)
@@ -6741,6 +6788,7 @@ ass AVOptions:
   f                 <string>     ..FV.... set the filename of file to read
   original_size     <image_size> ..FV.... set the size of the original video (used to scale fonts)
   fontsdir          <string>     ..FV.... set the directory containing the fonts to read
+  alpha             <boolean>    ..FV.... enable processing of alpha channel (default false)
   shaping           <int>        ..FV.... set shaping engine (from -1 to 1) (default auto)
      auto                         ..FV....
      simple                       ..FV.... simple shaping
@@ -7439,6 +7487,18 @@ deshake AVOptions:
   filename          <string>     ..FV.... set motion search detailed log file name
   opencl            <boolean>    ..FV.... use OpenCL filtering capabilities (default false)
 
+despill AVOptions:
+  type              <int>        ..FV.... set the screen type (from 0 to 1) (default green)
+     green                        ..FV.... greenscreen
+     blue                         ..FV.... bluescreen
+  mix               <float>      ..FV.... set the spillmap mix (from 0 to 1) (default 0.5)
+  expand            <float>      ..FV.... set the spillmap expand (from 0 to 1) (default 0)
+  red               <float>      ..FV.... set red scale (from -100 to 100) (default 0)
+  green             <float>      ..FV.... set green scale (from -100 to 100) (default -1)
+  blue              <float>      ..FV.... set blue scale (from -100 to 100) (default 0)
+  brightness        <float>      ..FV.... set brightness (from -10 to 10) (default 0)
+  alpha             <boolean>    ..FV.... change alpha component (default false)
+
 detelecine AVOptions:
   first_field       <int>        ..FV.... select first field (from 0 to 1) (default top)
      top                          ..FV.... select top field first
@@ -7456,10 +7516,11 @@ dilation AVOptions:
   coordinates       <int>        ..FV.... set coordinates (from 0 to 255) (default 255)
 
 displace AVOptions:
-  edge              <int>        ..FV.... set edge mode (from 0 to 2) (default smear)
+  edge              <int>        ..FV.... set edge mode (from 0 to 3) (default smear)
      blank                        ..FV.... 
      smear                        ..FV.... 
      wrap                         ..FV.... 
+     mirror                       ..FV.... 
 
 doubleweave AVOptions:
   first_field       <int>        ..FV.... set first field (from 0 to 1) (default top)
@@ -7637,6 +7698,9 @@ fftfilt AVOptions:
   weight_Y          <string>     ..FV.... set luminance expression in Y plane (default "1")
   weight_U          <string>     ..FV.... set chrominance expression in U plane
   weight_V          <string>     ..FV.... set chrominance expression in V plane
+  eval              <int>        ..FV.... specify when to evaluate expressions (from 0 to 1) (default init)
+     init                         ..FV.... eval expressions once during initialization
+     frame                        ..FV.... eval expressions per-frame
 
 field AVOptions:
   type              <int>        ..FV.... set field type (top or bottom) (from 0 to 1) (default top)
@@ -7979,6 +8043,14 @@ lut2 AVOptions:
   c2                <string>     ..FV.... set component #2 expression (default "x")
   c3                <string>     ..FV.... set component #3 expression (default "x")
 
+framesync AVOptions:
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
+     pass                         ..FV.... Pass through the main input.
+  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
+  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
+
 lut3d AVOptions:
   file              <string>     ..FV.... set 3D LUT file name
   interp            <int>        ..FV.... select interpolation mode (from 0 to 2) (default tetrahedral)
@@ -8244,9 +8316,14 @@ oscilloscope AVOptions:
 overlay AVOptions:
   x                 <string>     ..FV.... set the x expression (default "0")
   y                 <string>     ..FV.... set the y expression (default "0")
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
+     pass                         ..FV.... Pass through the main input.
   eval              <int>        ..FV.... specify when to evaluate expressions (from 0 to 1) (default frame)
      init                         ..FV.... eval expressions once during initialization
      frame                        ..FV.... eval expressions per-frame
+  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
   format            <int>        ..FV.... set output format (from 0 to 5) (default yuv420)
      yuv420                       ..FV.... 
      yuv422                       ..FV.... 
@@ -8254,6 +8331,7 @@ overlay AVOptions:
      rgb                          ..FV.... 
      gbrp                         ..FV.... 
      auto                         ..FV.... 
+  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
 
 framesync AVOptions:
   eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
@@ -8356,8 +8434,8 @@ pixscope AVOptions:
   w                 <int>        ..FV.... set scope width (from 1 to 80) (default 7)
   h                 <int>        ..FV.... set scope height (from 1 to 80) (default 7)
   o                 <float>      ..FV.... set window opacity (from 0 to 1) (default 0.5)
-  wx                <float>      ..FV.... set window x offset (from 0 to 1) (default 1)
-  wy                <float>      ..FV.... set window y offset (from 0 to 1) (default 0)
+  wx                <float>      ..FV.... set window x offset (from -1 to 1) (default -1)
+  wy                <float>      ..FV.... set window y offset (from -1 to 1) (default -1)
 
 pp AVOptions:
   subfilters        <string>     ..FV.... set postprocess subfilters (default "de")
@@ -8894,6 +8972,7 @@ subtitles AVOptions:
   f                 <string>     ..FV.... set the filename of file to read
   original_size     <image_size> ..FV.... set the size of the original video (used to scale fonts)
   fontsdir          <string>     ..FV.... set the directory containing the fonts to read
+  alpha             <boolean>    ..FV.... enable processing of alpha channel (default false)
   charenc           <string>     ..FV.... set input character encoding
   stream_index      <int>        ..FV.... set stream index (from -1 to INT_MAX) (default -1)
   si                <int>        ..FV.... set stream index (from -1 to INT_MAX) (default -1)
@@ -10009,7 +10088,7 @@ avectorscope AVOptions:
   gf                <int>        ..FV.... set green fade (from 0 to 255) (default 10)
   bf                <int>        ..FV.... set blue fade (from 0 to 255) (default 5)
   af                <int>        ..FV.... set alpha fade (from 0 to 255) (default 5)
-  zoom              <double>     ..FV.... set zoom factor (from 1 to 10) (default 1)
+  zoom              <double>     ..FV.... set zoom factor (from 0 to 10) (default 1)
   draw              <int>        ..FV.... set draw mode (from 0 to 1) (default dot)
      dot                          ..FV.... 
      line                         ..FV.... 
@@ -10395,6 +10474,7 @@ Encoders:
  VFS... dvvideo              DV (Digital Video)
  V.S... ffv1                 FFmpeg video codec #1
  VF.... ffvhuff              Huffyuv FFmpeg variant
+ V..... fits                 Flexible Image Transport System
  V..... flashsv              Flash Screen Video
  V..... flashsv2             Flash Screen Video Version 2
  V..... flv                  FLV / Sorenson Spark / Sorenson H.263 (Flash Video) (codec flv1)
@@ -10619,6 +10699,7 @@ Decoders:
  VFS..D ffv1                 FFmpeg video codec #1
  VF..BD ffvhuff              Huffyuv FFmpeg variant
  V.S..D fic                  Mirillis FIC
+ V....D fits                 Flexible Image Transport System
  V....D flashsv              Flash Screen Video v1
  V....D flashsv2             Flash Screen Video v2
  V....D flic                 Autodesk Animator Flic video
@@ -10782,7 +10863,7 @@ Decoders:
  V....D libvpx               libvpx VP8 (codec vp8)
  V..... vp8_cuvid            Nvidia CUVID VP8 decoder (codec vp8)
  V....D vp8_qsv              VP8 video (Intel Quick Sync Video acceleration) (codec vp8)
- VF...D vp9                  Google VP9
+ VFS..D vp9                  Google VP9
  V....D libvpx-vp9           libvpx VP9 (codec vp9)
  V..... vp9_cuvid            Nvidia CUVID VP9 decoder (codec vp9)
  VF...D webp                 WebP image
@@ -11079,6 +11160,7 @@ Codecs:
  DEV..S ffv1                 FFmpeg video codec #1
  DEVI.S ffvhuff              Huffyuv FFmpeg variant
  D.V.L. fic                  Mirillis FIC
+ DEVI.S fits                 FITS (Flexible Image Transport System)
  DEV..S flashsv              Flash Screen Video v1
  DEV.L. flashsv2             Flash Screen Video v2
  D.V..S flic                 Autodesk Animator Flic video
@@ -11748,6 +11830,7 @@ File formats:
   E fifo            FIFO queue pseudo-muxer
  D  film_cpk        Sega FILM / CPK
  DE filmstrip       Adobe Filmstrip
+ DE fits            Flexible Image Transport System
  DE flac            raw FLAC
  D  flic            FLI/FLC/FLX animation
  DE flv             FLV (Flash Video)
@@ -12034,6 +12117,7 @@ File formats:
   E ffmetadata      FFmpeg metadata in text
   E fifo            FIFO queue pseudo-muxer
   E filmstrip       Adobe Filmstrip
+  E fits            Flexible Image Transport System
   E flac            raw FLAC
   E flv             FLV (Flash Video)
   E framecrc        framecrc testing
@@ -12233,6 +12317,7 @@ File formats:
  D  ffmetadata      FFmpeg metadata in text
  D  film_cpk        Sega FILM / CPK
  D  filmstrip       Adobe Filmstrip
+ D  fits            Flexible Image Transport System
  D  flac            raw FLAC
  D  flic            FLI/FLC/FLX animation
  D  flv             FLV (Flash Video)
@@ -12512,6 +12597,7 @@ Filters:
  ... extrastereo       A->A       Increase difference between stereo audio channels.
  ..C firequalizer      A->A       Finite Impulse Response Equalizer.
  ... flanger           A->A       Apply a flanging effect to the audio.
+ ... haas              A->A       Apply Haas Stereo Enhancer.
  ... hdcd              A->A       Apply High Definition Compatible Digital (HDCD) decoding.
  .S. headphone         N->A       Apply headphone binaural spatialization with HRTFs in additional streams.
  ... highpass          A->A       Apply a high-pass filter with 3dB point frequency.
@@ -12580,6 +12666,7 @@ Filters:
  ... dejudder          V->V       Remove judder produced by pullup.
  T.. delogo            V->V       Remove logo from input video.
  ... deshake           V->V       Stabilize shaky video.
+ TS. despill           V->V       Despill video.
  ... detelecine        V->V       Apply an inverse telecine pattern.
  T.. dilation          V->V       Apply dilation effect.
  T.. displace          VVV->V     Displace pixels.
@@ -12594,7 +12681,7 @@ Filters:
  T.. erosion           V->V       Apply erosion effect.
  ... extractplanes     V->N       Extract planes as grayscale frames.
  .S. fade              V->V       Fade in/out input video.
- ... fftfilt           V->V       Apply arbitrary expressions to pixels in frequency domain.
+ T.. fftfilt           V->V       Apply arbitrary expressions to pixels in frequency domain.
  ... field             V->V       Extract a field from the input video.
  ... fieldhint         V->V       Field matching using hints.
  ... fieldmatch        N->V       Field matching for inverse telecine.
@@ -12654,7 +12741,7 @@ Filters:
  ... noformat          V->V       Force libavfilter not to use any of the specified pixel formats for the input to the next filter.
  TS. noise             V->V       Add noise.
  ... null              V->V       Pass the source unchanged to the output.
- ... oscilloscope      V->V       2D Video Oscilloscope.
+ T.. oscilloscope      V->V       2D Video Oscilloscope.
  T.C overlay           VV->V      Overlay a video source on top of the input.
  T.. owdenoise         V->V       Denoise using wavelets.
  ... pad               V->V       Pad the input video.
@@ -12664,7 +12751,7 @@ Filters:
  TS. perspective       V->V       Correct the perspective of video.
  T.. phase             V->V       Phase shift fields.
  ... pixdesctest       V->V       Test pixel format definitions.
- ... pixscope          V->V       Pixel data analysis.
+ T.. pixscope          V->V       Pixel data analysis.
  T.C pp                V->V       Filter video using libpostproc.
  T.. pp7               V->V       Apply Postprocessing 7 filter.
  T.. premultiply       N->V       PreMultiply first stream with first plane of second stream.
@@ -12864,6 +12951,13 @@ nvenc_h264 AVOptions:
   -init_qpI          <int>        E..V.... Initial QP value for I frame (from -1 to 51) (default -1)
   -qp                <int>        E..V.... Constant quantization parameter rate control method (from -1 to 51) (default -1)
   -weighted_pred     <int>        E..V.... Set 1 to enable weighted prediction (from 0 to 1) (default 0)
+  -coder             <int>        E..V.... Coder type (from -1 to 2) (default default)
+     default                      E..V.... 
+     auto                         E..V.... 
+     cabac                        E..V.... 
+     cavlc                        E..V.... 
+     ac                           E..V.... 
+     vlc                          E..V.... 
 
 Encoder nvenc_hevc [NVIDIA NVENC hevc encoder]:
     General capabilities: delay 
