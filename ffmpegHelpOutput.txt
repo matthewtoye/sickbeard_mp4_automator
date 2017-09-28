@@ -2138,7 +2138,7 @@ G.723.1 decoder AVOptions:
   -postfilter        <boolean>    .D..A... enable postfilter (default true)
 
 Opus encoder AVOptions:
-  -opus_delay        <float>      E...A... Maximum delay (and lookahead) in milliseconds (from 2.5 to 360) (default 360)
+  -opus_delay        <float>      E...A... Maximum delay in milliseconds (from 2.5 to 360) (default 360)
 
 TTA Decoder AVOptions:
   -password          <string>     .D..A... Set decoding password
@@ -3382,8 +3382,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.81.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.81.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.82.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.82.102")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3410,8 +3410,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.81.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.81.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/57.82.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/57.82.102")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -4101,7 +4101,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.81.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.82.102")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4651,6 +4651,7 @@ AVI muxer AVOptions:
   -write_channel_mask <boolean>    E....... write channel mask into wave format header (default true)
 
 dash muxer AVOptions:
+  -adaptation_sets   <string>     E....... Adaptation sets. Syntax: id=0,streams=0,1,2 id=1,streams=3,4 and so on
   -window_size       <int>        E....... number of segments kept in the manifest (from 0 to INT_MAX) (default 0)
   -extra_window_size <int>        E....... number of segments kept outside of the manifest before removing from disk (from 0 to INT_MAX) (default 5)
   -min_seg_duration  <int64>      E....... minimum segment duration (in microseconds) (from 0 to INT_MAX) (default 5e+006)
@@ -4683,6 +4684,7 @@ f4v muxer AVOptions:
      write_gama                   E....... Write deprecated gama atom
      use_metadata_tags              E....... Use mdta atom for metadata.
      skip_trailer                 E....... Skip writing the mfra/tfra/mfro trailer for fragmented files
+     negative_cts_offsets              E....... Use negative CTS offsets (reducing the need for edit lists)
   -moov_size         <int>        E....... maximum moov size so it can be placed at the begin (from 0 to INT_MAX) (default 0)
   -rtpflags          <flags>      E....... RTP muxer flags (default 0)
      latm                         E....... Use MP4A-LATM packetization instead of MPEG4-GENERIC for AAC
@@ -4829,6 +4831,7 @@ ipod muxer AVOptions:
      write_gama                   E....... Write deprecated gama atom
      use_metadata_tags              E....... Use mdta atom for metadata.
      skip_trailer                 E....... Skip writing the mfra/tfra/mfro trailer for fragmented files
+     negative_cts_offsets              E....... Use negative CTS offsets (reducing the need for edit lists)
   -moov_size         <int>        E....... maximum moov size so it can be placed at the begin (from 0 to INT_MAX) (default 0)
   -rtpflags          <flags>      E....... RTP muxer flags (default 0)
      latm                         E....... Use MP4A-LATM packetization instead of MPEG4-GENERIC for AAC
@@ -4875,6 +4878,7 @@ ismv muxer AVOptions:
      write_gama                   E....... Write deprecated gama atom
      use_metadata_tags              E....... Use mdta atom for metadata.
      skip_trailer                 E....... Skip writing the mfra/tfra/mfro trailer for fragmented files
+     negative_cts_offsets              E....... Use negative CTS offsets (reducing the need for edit lists)
   -moov_size         <int>        E....... maximum moov size so it can be placed at the begin (from 0 to INT_MAX) (default 0)
   -rtpflags          <flags>      E....... RTP muxer flags (default 0)
      latm                         E....... Use MP4A-LATM packetization instead of MPEG4-GENERIC for AAC
@@ -4948,6 +4952,7 @@ mov muxer AVOptions:
      write_gama                   E....... Write deprecated gama atom
      use_metadata_tags              E....... Use mdta atom for metadata.
      skip_trailer                 E....... Skip writing the mfra/tfra/mfro trailer for fragmented files
+     negative_cts_offsets              E....... Use negative CTS offsets (reducing the need for edit lists)
   -moov_size         <int>        E....... maximum moov size so it can be placed at the begin (from 0 to INT_MAX) (default 0)
   -rtpflags          <flags>      E....... RTP muxer flags (default 0)
      latm                         E....... Use MP4A-LATM packetization instead of MPEG4-GENERIC for AAC
@@ -4999,6 +5004,7 @@ mp4 muxer AVOptions:
      write_gama                   E....... Write deprecated gama atom
      use_metadata_tags              E....... Use mdta atom for metadata.
      skip_trailer                 E....... Skip writing the mfra/tfra/mfro trailer for fragmented files
+     negative_cts_offsets              E....... Use negative CTS offsets (reducing the need for edit lists)
   -moov_size         <int>        E....... maximum moov size so it can be placed at the begin (from 0 to INT_MAX) (default 0)
   -rtpflags          <flags>      E....... RTP muxer flags (default 0)
      latm                         E....... Use MP4A-LATM packetization instead of MPEG4-GENERIC for AAC
@@ -5165,6 +5171,7 @@ psp muxer AVOptions:
      write_gama                   E....... Write deprecated gama atom
      use_metadata_tags              E....... Use mdta atom for metadata.
      skip_trailer                 E....... Skip writing the mfra/tfra/mfro trailer for fragmented files
+     negative_cts_offsets              E....... Use negative CTS offsets (reducing the need for edit lists)
   -moov_size         <int>        E....... maximum moov size so it can be placed at the begin (from 0 to INT_MAX) (default 0)
   -rtpflags          <flags>      E....... RTP muxer flags (default 0)
      latm                         E....... Use MP4A-LATM packetization instead of MPEG4-GENERIC for AAC
@@ -5231,7 +5238,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.81.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf57.82.102")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -5266,7 +5273,7 @@ segment muxer AVOptions:
   -break_non_keyframes <boolean>    E....... allow breaking segments on non-keyframes (default false)
   -individual_header_trailer <boolean>    E....... write header/trailer to each segment (default true)
   -write_header_trailer <boolean>    E....... write a header to the first segment and a trailer to the last one (default true)
-  -reset_timestamps  <boolean>    E....... reset timestamps at the begin of each segment (default false)
+  -reset_timestamps  <boolean>    E....... reset timestamps at the beginning of each segment (default false)
   -initial_offset    <duration>   E....... set initial timestamp offset (default 0)
   -write_empty_segments <boolean>    E....... allow writing empty 'filler' segments (default false)
 
@@ -5303,7 +5310,7 @@ stream_segment muxer AVOptions:
   -break_non_keyframes <boolean>    E....... allow breaking segments on non-keyframes (default false)
   -individual_header_trailer <boolean>    E....... write header/trailer to each segment (default true)
   -write_header_trailer <boolean>    E....... write a header to the first segment and a trailer to the last one (default true)
-  -reset_timestamps  <boolean>    E....... reset timestamps at the begin of each segment (default false)
+  -reset_timestamps  <boolean>    E....... reset timestamps at the beginning of each segment (default false)
   -initial_offset    <duration>   E....... set initial timestamp offset (default 0)
   -write_empty_segments <boolean>    E....... allow writing empty 'filler' segments (default false)
 
@@ -5350,6 +5357,7 @@ tg2 muxer AVOptions:
      write_gama                   E....... Write deprecated gama atom
      use_metadata_tags              E....... Use mdta atom for metadata.
      skip_trailer                 E....... Skip writing the mfra/tfra/mfro trailer for fragmented files
+     negative_cts_offsets              E....... Use negative CTS offsets (reducing the need for edit lists)
   -moov_size         <int>        E....... maximum moov size so it can be placed at the begin (from 0 to INT_MAX) (default 0)
   -rtpflags          <flags>      E....... RTP muxer flags (default 0)
      latm                         E....... Use MP4A-LATM packetization instead of MPEG4-GENERIC for AAC
@@ -5396,6 +5404,7 @@ tgp muxer AVOptions:
      write_gama                   E....... Write deprecated gama atom
      use_metadata_tags              E....... Use mdta atom for metadata.
      skip_trailer                 E....... Skip writing the mfra/tfra/mfro trailer for fragmented files
+     negative_cts_offsets              E....... Use negative CTS offsets (reducing the need for edit lists)
   -moov_size         <int>        E....... maximum moov size so it can be placed at the begin (from 0 to INT_MAX) (default 0)
   -rtpflags          <flags>      E....... RTP muxer flags (default 0)
      latm                         E....... Use MP4A-LATM packetization instead of MPEG4-GENERIC for AAC
@@ -7032,7 +7041,7 @@ framesync AVOptions:
      endall                       ..FV.... End both streams.
      pass                         ..FV.... Pass through the main input.
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
-  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
+  repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
 
 boxblur AVOptions:
   luma_radius       <string>     ..FV.... Radius of the luma blurring box (default "2")
@@ -7334,6 +7343,20 @@ convolution AVOptions:
   1bias             <float>      ..FV.... set bias for 2nd plane (from 0 to INT_MAX) (default 0)
   2bias             <float>      ..FV.... set bias for 3rd plane (from 0 to INT_MAX) (default 0)
   3bias             <float>      ..FV.... set bias for 4th plane (from 0 to INT_MAX) (default 0)
+
+convolve AVOptions:
+  planes            <int>        ..FV.... set planes to convolve (from 0 to 15) (default 7)
+  impulse           <int>        ..FV.... when to process impulses (from 0 to 1) (default all)
+     first                        ..FV.... process only first impulse, ignore rest
+     all                          ..FV.... process all impulses
+
+framesync AVOptions:
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
+     pass                         ..FV.... Pass through the main input.
+  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
+  repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
 
 cover_rect AVOptions:
   cover             <string>     ..FV.... cover bitmap filename
@@ -7855,7 +7878,7 @@ framesync AVOptions:
      endall                       ..FV.... End both streams.
      pass                         ..FV.... Pass through the main input.
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
-  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
+  repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
 
 hflip AVOptions:
 
@@ -8049,7 +8072,7 @@ framesync AVOptions:
      endall                       ..FV.... End both streams.
      pass                         ..FV.... Pass through the main input.
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
-  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
+  repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
 
 lut3d AVOptions:
   file              <string>     ..FV.... set 3D LUT file name
@@ -8339,7 +8362,7 @@ framesync AVOptions:
      endall                       ..FV.... End both streams.
      pass                         ..FV.... Pass through the main input.
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
-  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
+  repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
 
 owdenoise AVOptions:
   depth             <int>        ..FV.... set depth (from 8 to 16) (default 8)
@@ -8475,7 +8498,7 @@ framesync AVOptions:
      endall                       ..FV.... End both streams.
      pass                         ..FV.... Pass through the main input.
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
-  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
+  repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
 
 pullup AVOptions:
   jl                <int>        ..FV.... set left junk size (from 0 to INT_MAX) (default 1)
@@ -8910,7 +8933,7 @@ framesync AVOptions:
      endall                       ..FV.... End both streams.
      pass                         ..FV.... Pass through the main input.
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
-  repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
+  repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
 
 stereo3d AVOptions:
   in                <int>        ..FV.... set input format (from 16 to 32) (default sbsl)
@@ -10872,6 +10895,7 @@ Decoders:
  V....D wmv3                 Windows Media Video 9
  V....D wmv3image            Windows Media Video 9 Image
  V....D wnv1                 Winnov WNV1
+ V..... wrapped_avframe      AVPacket to AVFrame passthrough
  V....D vqavideo             Westwood Studios VQA (Vector Quantized Animation) video (codec ws_vqa)
  V....D xan_wc3              Wing Commander III / Xan
  V....D xan_wc4              Wing Commander IV / Xxan
@@ -11316,7 +11340,7 @@ Codecs:
  D.V.L. wmv3                 Windows Media Video 9
  D.V.L. wmv3image            Windows Media Video 9 Image
  D.VIL. wnv1                 Winnov WNV1
- .EV..S wrapped_avframe      AVFrame to AVPacket passthrough
+ DEV..S wrapped_avframe      AVFrame to AVPacket passthrough
  D.V.L. ws_vqa               Westwood Studios VQA (Vector Quantized Animation) video (decoders: vqavideo )
  D.V.L. xan_wc3              Wing Commander III / Xan
  D.V.L. xan_wc4              Wing Commander IV / Xxan
@@ -11732,6 +11756,7 @@ IO... gray9le                1             9
 ..... gbrpf32le              3            96
 ..... gbrapf32be             4            128
 ..... gbrapf32le             4            128
+..H.. drm_prime              0             0
 File formats:
  D. = Demuxing supported
  .E = Muxing supported
@@ -12010,7 +12035,7 @@ File formats:
  D  subviewer       SubViewer subtitle format
  D  subviewer1      SubViewer v1 subtitle format
  D  sunrast_pipe    piped sunrast sequence
- D  sup             raw HDMV Presentation Graphic Stream subtitles
+ DE sup             raw HDMV Presentation Graphic Stream subtitles
  D  svag            Konami PS2 SVAG
   E svcd            MPEG-2 PS (SVCD)
  D  svg_pipe        piped svg sequence
@@ -12203,6 +12228,7 @@ File formats:
   E spx             Ogg Speex
   E srt             SubRip subtitle
   E stream_segment,ssegment streaming segment muxer
+  E sup             raw HDMV Presentation Graphic Stream subtitles
   E svcd            MPEG-2 PS (SVCD)
   E swf             SWF (ShockWave Flash)
   E tee             Multiple muxer tee
@@ -12651,6 +12677,7 @@ Filters:
  TS. colormatrix       V->V       Convert color matrix.
  TS. colorspace        V->V       Convert between colorspaces.
  TS. convolution       V->V       Apply convolution filter.
+ T.. convolve          VV->V      Convolve first video stream with second video stream.
  ... copy              V->V       Copy the input video unchanged to the output.
  ... cover_rect        V->V       Find and cover a user specified object.
  ..C crop              V->V       Crop the input video.
