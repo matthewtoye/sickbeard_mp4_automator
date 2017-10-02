@@ -2,14 +2,12 @@
 
 import sys
 import os
-import time
 import guessit
 import locale
 import glob
 import argparse
 import struct
 import logging
-from subprocess import call
 from readSettings import ReadSettings
 from tvdb_mp4 import Tvdb_mp4
 from tmdb_mp4 import tmdb_mp4
@@ -274,22 +272,6 @@ def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
                 print("An unexpected error occurred, processing of this file has failed")
                 print(str(e))
 
-def checkForSpot(maxproc, printlog=True):
-  for pos in range(1, maxproc):
-    fname='.spot' + str(pos)
-    if not os.path.isfile(fname):
-        try:
-            f = open(fname ,'w')
-        except:
-            f = False
-        if not f == False:
-          f.close()
-          return pos
-  if printlog == True:
-      print("Waiting for other scripts to finish..")
-  time.sleep(1)
-  return checkForSpot(maxproc, False)
-
 
 def main():
     global settings
@@ -310,7 +292,6 @@ def main():
     parser.add_argument('-np', '--nopost', action="store_true", help="Overrides and disables the execution of additional post processing scripts")
     parser.add_argument('-pr', '--preserveRelative', action='store_true', help="Preserves relative directories when processing multiple files using the copy-to or move-to functionality")
     parser.add_argument('-cmp4', '--convertmp4', action='store_true', help="Overrides convert-mp4 setting in autoProcess.ini enabling the reprocessing of mp4 files")
-    parser.add_argument('-mp', '--maxproc', help="Specify the max amount of concurrent scripts can happen. Passmark score of your CPU / 2000 is a good baseline.")
     parser.add_argument('-m', '--moveto', help="Override move-to value setting in autoProcess.ini changing the final destination of the file")
     parser.add_argument('-fc', '--forceConvert', action='store_true', help="Override video copying and force encoding, useful for files that have timescale issues.") 
 
@@ -321,11 +302,6 @@ def main():
     tag = True
 
     print("%sbit Python." % (struct.calcsize("P") * 8))
-
-    #Concurrent
-    if not args['maxproc'] == None:
-        checkForSpot(args['maxproc'])
-
 
     # Settings overrides
     if(args['config']):
