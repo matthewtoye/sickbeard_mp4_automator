@@ -47,6 +47,7 @@ class MkvtoMp4:
                  nvenc_decoder_hevc_gpu=None,
                  nvenc_hwaccel_enabled=False,
                  burn_in_forced_subs=False,
+                 dxva2_decoder=False,
                  audio_codec=['ac3'],
                  audio_bitrate=256,
                  audio_filter=None,
@@ -131,6 +132,7 @@ class MkvtoMp4:
         self.nvenc_decoder_hevc_gpu = nvenc_decoder_hevc_gpu
         self.nvenc_hwaccel_enabled = nvenc_hwaccel_enabled
         self.burn_in_forced_subs = burn_in_forced_subs
+        self.dxva2_decoder = settings.dxva2_decoder
         self.pix_fmt = pix_fmt
         # Audio settings
         self.audio_codec = audio_codec
@@ -208,6 +210,7 @@ class MkvtoMp4:
         self.nvenc_decoder_hevc_gpu = settings.nvenc_decoder_hevc_gpu
         self.nvenc_hwaccel_enabled = settings.nvenc_hwaccel_enabled
         self.burn_in_forced_subs = settings.burn_in_forced_subs
+        self.dxva2_decoder = settings.dxva2_decoder
         self.pix_fmt = settings.pix_fmt
         # Audio settings
         self.audio_codec = settings.acodec
@@ -839,6 +842,9 @@ class MkvtoMp4:
                 options['preopts'].extend(['-gpu', str( self.nvenc_decoder_gpu )])
         else:
             options['video']['nvenc_hwaccel_enabled'] = False
+
+        if self.dxva2_decoder: # DXVA2 will fallback to CPU decoding when it hits a file that it cannot handle, so we don't need to check if the file is supported.
+            options['preopts'].extend(['-hwaccel', 'dxva2' ])
 
         # Add width option
         if vwidth:

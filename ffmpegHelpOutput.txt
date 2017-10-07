@@ -3670,6 +3670,12 @@ Blackmagic DeckLink demuxer AVOptions:
   -list_formats      <int>        .D...... list supported formats (from 0 to 1) (default 0)
   -format_code       <string>     .D...... set format by fourcc
   -bm_v210           <int>        .D...... v210 10 bit per channel (from 0 to 1) (default 0)
+  -raw_format        <int>        .D...... pixel format to be returned by the card when capturing (from 0 to UINT32_MAX) (default uyvy422)
+     uyvy422                      .D......
+     yuv422p10                    .D......
+     argb                         .D......
+     bgra                         .D......
+     rgb10                        .D......
   -teletext_lines    <int64>      .D...... teletext lines bitmask (from 0 to 3.43597e+010) (default 0)
      standard                     .D......
      all                          .D......
@@ -9423,6 +9429,9 @@ vignette AVOptions:
   dither            <boolean>    ..FV.... set dithering (default true)
   aspect            <rational>   ..FV.... set aspect ratio (from 0 to DBL_MAX) (default 1/1)
 
+vmafmotion AVOptions:
+  stats_file        <string>     ..FV.... Set file where to store per-frame difference information
+
 vstack AVOptions:
   inputs            <int>        ..FV.... set number of inputs (from 2 to INT_MAX) (default 2)
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
@@ -12848,6 +12857,7 @@ Filters:
  ... vidstabdetect     V->V       Extract relative transformations, pass 1 of 2 for stabilization (see vidstabtransform for pass 2).
  ... vidstabtransform  V->V       Transform the frames, pass 2 of 2 for stabilization (see vidstabdetect for pass 1).
  T.. vignette          V->V       Make or reverse a vignette effect.
+ ... vmafmotion        V->V       Calculate the VMAF Motion score.
  ... vstack            N->V       Stack video inputs vertically.
  TS. w3fdif            V->V       Apply Martin Weston three field deinterlace.
  ... waveform          V->V       Video waveform monitor.
