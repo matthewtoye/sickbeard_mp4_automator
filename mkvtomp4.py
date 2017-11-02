@@ -868,6 +868,11 @@ class MkvtoMp4:
             options['video']['nvenc_weighted_prediction'] = self.nvenc_weighted_prediction
         if self.nvenc_rc_lookahead:
             options['video']['nvenc_rc_lookahead'] = self.nvenc_rc_lookahead
+        # HEVC Tagging for copied streams
+        if info.video.codec.lower() in ['x265', 'h265', 'hevc'] and vcodec == 'copy':
+            options['postopts'].extend(['-tag:v', 'hvc1'])
+            self.log.info("Tagging copied video stream as hvc1")
+
         self.options = options
         return options
 
