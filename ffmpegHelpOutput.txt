@@ -1895,6 +1895,7 @@ AAC encoder AVOptions:
   -aac_tns           <boolean>    E...A... Temporal noise shaping (default true)
   -aac_ltp           <boolean>    E...A... Long term prediction (default false)
   -aac_pred          <boolean>    E...A... AAC-Main prediction (default false)
+  -aac_pce           <boolean>    E...A... Forces the use of PCEs (default false)
 
 AAC decoder AVOptions:
   -dual_mono_mode    <int>        .D..A... Select the channel to decode for dual mono (from -1 to 2) (default auto)
@@ -3127,6 +3128,8 @@ mjpeg_cuvid AVOptions:
   -crop              <string>     .D.V.... Crop (top)x(bottom)x(left)x(right)
   -resize            <string>     .D.V.... Resize (width)x(height)
 
+mjpeg_qsv encoder AVOptions:
+
 mpeg1_cuvid AVOptions:
   -deint             <int>        .D.V.... Set deinterlacing mode (from 0 to 2) (default weave)
      weave                        .D.V.... Weave deinterlacing (do nothing)
@@ -3358,8 +3361,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.0.102")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.0.102")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3386,8 +3389,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.0.102")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.0.102")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3747,6 +3750,9 @@ APNG demuxer AVOptions:
   -max_fps           <int>        .D...... maximum framerate (0 is no limit) (from 0 to INT_MAX) (default 0)
   -default_fps       <int>        .D...... default framerate (0 is as fast as possible) (from 0 to INT_MAX) (default 15)
 
+aptx demuxer AVOptions:
+  -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 48000)
+
 aqtdec AVOptions:
   -subfps            <rational>   .D...S.. set the movie frame rate (from 0 to INT_MAX) (default 25/1)
 
@@ -4084,7 +4090,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.0.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.2.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -5220,7 +5226,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.0.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.2.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -7459,6 +7465,9 @@ deflicker AVOptions:
   bypass            <boolean>    ..FV.... leave frames unchanged (default false)
 
 deinterlace_qsv AVOptions:
+  mode              <int>        ..FV.... set deinterlace mode (from 1 to 2) (default advanced)
+     bob                          ..FV.... bob algorithm
+     advanced                     ..FV.... Motion adaptive algorithm
 
 dejudder AVOptions:
   cycle             <int>        ..FV.... set the length of the cycle to use for dejuddering (from 2 to 240) (default 4)
@@ -8346,6 +8355,16 @@ framesync AVOptions:
      pass                         ..FV.... Pass through the main input.
   shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
   repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
+
+overlay_qsv AVOptions:
+  -x                 <string>     ...V.... Overlay x position (default "0")
+  -y                 <string>     ...V.... Overlay y position (default "0")
+  -w                 <string>     ...V.... Overlay width (default "overlay_iw")
+  -h                 <string>     ...V.... Overlay height (default "overlay_ih*w/overlay_iw")
+  -alpha             <int>        ...V.... Overlay global alpha (from 0 to 255) (default 255)
+  -eof_action        <int>        ...V.... Action to take when encountering EOF from secondary input  (from 0 to 1) (default repeat)
+     repeat                       ...V.... Repeat the previous frame.
+     endall                       ...V.... End both streams.
 
 owdenoise AVOptions:
   depth             <int>        ..FV.... set depth (from 8 to 16) (default 8)
@@ -9404,6 +9423,27 @@ vignette AVOptions:
 
 vmafmotion AVOptions:
   stats_file        <string>     ..FV.... Set file where to store per-frame difference information
+
+vpp_qsv AVOptions:
+  -deinterlace       <int>        ...V.... deinterlace mode: 0=off, 1=bob, 2=advanced (from 0 to 2) (default 0)
+     bob                          ...V.... Bob deinterlace mode.
+     advanced                     ...V.... Advanced deinterlace mode. 
+  -denoise           <int>        ...V.... denoise level [0, 100] (from 0 to 100) (default 0)
+  -detail            <int>        ...V.... enhancement level [0, 100] (from 0 to 100) (default 0)
+  -framerate         <rational>   ...V.... output framerate (from 0 to DBL_MAX) (default 0/1)
+  -procamp           <int>        ...V.... Enable ProcAmp (from 0 to 1) (default 0)
+  -hue               <float>      ...V.... ProcAmp hue (from -180 to 180) (default 0)
+  -saturation        <float>      ...V.... ProcAmp saturation (from 0 to 10) (default 1)
+  -contrast          <float>      ...V.... ProcAmp contrast (from 0 to 10) (default 1)
+  -brightness        <float>      ...V.... ProcAmp brightness (from -100 to 100) (default 0)
+  -cw                <string>     ...V.... set the width crop area expression (default "iw")
+  -ch                <string>     ...V.... set the height crop area expression (default "ih")
+  -cx                <string>     ...V.... set the x crop area expression (default "(in_w-out_w)/2")
+  -cy                <string>     ...V.... set the y crop area expression (default "(in_h-out_h)/2")
+  -w                 <string>     ...V.... Output video width (default "cw")
+  -width             <string>     ...V.... Output video width (default "cw")
+  -h                 <string>     ...V.... Output video height (default "w*ch/cw")
+  -height            <string>     ...V.... Output video height (default "w*ch/cw")
 
 vstack AVOptions:
   inputs            <int>        ..FV.... set number of inputs (from 2 to INT_MAX) (default 2)
@@ -10502,6 +10542,7 @@ Encoders:
  VF.... ljpeg                Lossless JPEG
  VF.... magicyuv             MagicYUV video
  VFS... mjpeg                MJPEG (Motion JPEG)
+ V..... mjpeg_qsv            MJPEG (Intel Quick Sync Video acceleration) (codec mjpeg)
  V.S... mpeg1video           MPEG-1 video
  V.S... mpeg2video           MPEG-2 video
  V..... mpeg2_qsv            MPEG-2 video (Intel Quick Sync Video acceleration) (codec mpeg2video)
@@ -10568,6 +10609,7 @@ Encoders:
  A..... alac                 ALAC (Apple Lossless Audio Codec)
  A..... libopencore_amrnb    OpenCORE AMR-NB (Adaptive Multi-Rate Narrow-Band) (codec amr_nb)
  A..... libvo_amrwbenc       Android VisualOn AMR-WB (Adaptive Multi-Rate Wide-Band) (codec amr_wb)
+ A..... aptx                 aptX (Audio Processing Technology for Bluetooth)
  A..... comfortnoise         RFC 3389 comfort noise generator
  A..X.. dca                  DCA (DTS Coherent Acoustics) (codec dts)
  A..... eac3                 ATSC A/52 E-AC-3
@@ -10945,6 +10987,7 @@ Decoders:
  A....D amrwb                AMR-WB (Adaptive Multi-Rate WideBand) (codec amr_wb)
  A....D libopencore_amrwb    OpenCORE AMR-WB (Adaptive Multi-Rate Wide-Band) (codec amr_wb)
  A....D ape                  Monkey's Audio
+ A....D aptx                 aptX (Audio Processing Technology for Bluetooth)
  A....D atrac1               ATRAC1 (Adaptive TRansform Acoustic Coding)
  A....D atrac3               ATRAC3 (Adaptive TRansform Acoustic Coding 3)
  A....D atrac3al             ATRAC3 AL (Adaptive TRansform Acoustic Coding 3 Advanced Lossless)
@@ -11206,7 +11249,7 @@ Codecs:
  DEVI.S magicyuv             MagicYUV video
  D.VIL. mdec                 Sony PlayStation MDEC (Motion DECoder)
  D.V.L. mimic                Mimic
- DEVIL. mjpeg                Motion JPEG (decoders: mjpeg mjpeg_cuvid )
+ DEVIL. mjpeg                Motion JPEG (decoders: mjpeg mjpeg_cuvid ) (encoders: mjpeg mjpeg_qsv )
  D.VIL. mjpegb               Apple MJPEG-B
  D.V.L. mmvideo              American Laser Games MM Video
  D.V.L. motionpixels         Motion Pixels video
@@ -11385,6 +11428,7 @@ Codecs:
  DEA.L. amr_nb               AMR-NB (Adaptive Multi-Rate NarrowBand) (decoders: amrnb libopencore_amrnb ) (encoders: libopencore_amrnb )
  DEA.L. amr_wb               AMR-WB (Adaptive Multi-Rate WideBand) (decoders: amrwb libopencore_amrwb ) (encoders: libvo_amrwbenc )
  D.A..S ape                  Monkey's Audio
+ DEA.L. aptx                 aptX (Audio Processing Technology for Bluetooth)
  D.A.L. atrac1               ATRAC1 (Adaptive TRansform Acoustic Coding)
  D.A.L. atrac3               ATRAC3 (Adaptive TRansform Acoustic Coding 3)
  D.A..S atrac3al             ATRAC3 AL (Adaptive TRansform Acoustic Coding 3 Advanced Lossless)
@@ -11751,10 +11795,13 @@ File formats:
  DE alaw            PCM A-law
  D  alias_pix       Alias/Wavefront PIX image
  DE amr             3GPP AMR
+ D  amrnb           raw AMR-NB
+ D  amrwb           raw AMR-WB
  D  anm             Deluxe Paint Animation
  D  apc             CRYO APC
  D  ape             Monkey's Audio
  DE apng            Animated Portable Network Graphics
+ DE aptx            raw aptX (Audio Processing Technology for Bluetooth)
  D  aqtitle         AQTitle subtitles
  DE asf             ASF (Advanced / Active Streaming Format)
  D  asf_o           ASF (Advanced / Active Streaming Format)
@@ -12019,6 +12066,7 @@ File formats:
  DE tta             TTA (True Audio)
  D  tty             Tele-typewriter
  D  txd             Renderware TeXture Dictionary
+ D  ty              TiVo TY Stream
  DE u16be           PCM unsigned 16-bit big-endian
  DE u16le           PCM unsigned 16-bit little-endian
  DE u24be           PCM unsigned 24-bit big-endian
@@ -12079,6 +12127,7 @@ File formats:
   E alaw            PCM A-law
   E amr             3GPP AMR
   E apng            Animated Portable Network Graphics
+  E aptx            raw aptX (Audio Processing Technology for Bluetooth)
   E asf             ASF (Advanced / Active Streaming Format)
   E asf_stream      ASF (Advanced / Active Streaming Format)
   E ass             SSA (SubStation Alpha) subtitle
@@ -12247,10 +12296,13 @@ File formats:
  D  alaw            PCM A-law
  D  alias_pix       Alias/Wavefront PIX image
  D  amr             3GPP AMR
+ D  amrnb           raw AMR-NB
+ D  amrwb           raw AMR-WB
  D  anm             Deluxe Paint Animation
  D  apc             CRYO APC
  D  ape             Monkey's Audio
  D  apng            Animated Portable Network Graphics
+ D  aptx            raw aptX
  D  aqtitle         AQTitle subtitles
  D  asf             ASF (Advanced / Active Streaming Format)
  D  asf_o           ASF (Advanced / Active Streaming Format)
@@ -12474,6 +12526,7 @@ File formats:
  D  tta             TTA (True Audio)
  D  tty             Tele-typewriter
  D  txd             Renderware TeXture Dictionary
+ D  ty              TiVo TY Stream
  D  u16be           PCM unsigned 16-bit big-endian
  D  u16le           PCM unsigned 16-bit little-endian
  D  u24be           PCM unsigned 24-bit big-endian
@@ -12518,6 +12571,7 @@ Hardware acceleration methods:
 d3d11va
 dxva2
 qsv
+nvdec
 cuvid
 
 Filters:
@@ -12738,6 +12792,7 @@ Filters:
  ... null              V->V       Pass the source unchanged to the output.
  T.. oscilloscope      V->V       2D Video Oscilloscope.
  T.C overlay           VV->V      Overlay a video source on top of the input.
+ ... overlay_qsv       VV->V      Quick Sync Video overlay.
  T.. owdenoise         V->V       Denoise using wavelets.
  ... pad               V->V       Pad the input video.
  ... palettegen        V->V       Find the optimal palette for a given stream.
@@ -12817,6 +12872,7 @@ Filters:
  ... vidstabtransform  V->V       Transform the frames, pass 2 of 2 for stabilization (see vidstabdetect for pass 1).
  T.. vignette          V->V       Make or reverse a vignette effect.
  ... vmafmotion        V->V       Calculate the VMAF Motion score.
+ ... vpp_qsv           V->V       Quick Sync Video VPP.
  ... vstack            N->V       Stack video inputs vertically.
  TS. w3fdif            V->V       Apply Martin Weston three field deinterlace.
  ... waveform          V->V       Video waveform monitor.
