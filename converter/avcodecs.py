@@ -385,11 +385,7 @@ class VideoCodec(BaseCodec):
         h = safe['height']
         filters = safe['aspect_filters']
 
-        if 'filter_complex' in safe:
-            optlist = ['-filter_complex', safe['filter_complex'] ] #This must be placed inbetween the input file and the output file options.
-            optlist.extend( ['-vcodec', self.ffmpeg_codec_name])
-        else:
-            optlist = ['-vcodec', self.ffmpeg_codec_name]
+        optlist = ['-vcodec', self.ffmpeg_codec_name]
 
         if 'qmin' in safe:
             optlist.extend(['-qmin', str(safe['qmin'])])
@@ -760,15 +756,15 @@ class H264Codec(VideoCodec):
             optlist.extend(['-level', '%0.1f' % safe['level']])
         if 'tune' in safe:
             optlist.extend(['-tune', safe['tune']])
-        tempvalue = ""
         if 'filter_complex' in safe:
-            tempvalue = safe['filter_complex']
             if 'wscale' in safe and 'hscale' in safe:
-                safe['filter_complex'] = 'scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:0]scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex']] )
             elif 'wscale' in safe:
-                safe['filter_complex'] = 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:0]scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + safe['filter_complex']] )
             elif 'hscale' in safe:
-                safe['filter_complex'] = 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:0]scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + safe['filter_complex']] )
+            else:
+                optlist.extend(['-filter_complex', safe['filter_complex'] ])
         else:
             if 'wscale' in safe and 'hscale' in safe:
                 optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
@@ -833,15 +829,15 @@ class NVEncH264(H264Codec):
             optlist.extend(['-level', '%0.1f' % safe['level']])
         if 'tune' in safe:
             optlist.extend(['-tune', safe['tune']])
-        tempvalue = ""
         if 'filter_complex' in safe:
-            tempvalue = safe['filter_complex']
             if 'wscale' in safe and 'hscale' in safe:
-                safe['filter_complex'] = 'scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex'] + '[0:v]'] )
             elif 'wscale' in safe:
-                safe['filter_complex'] = 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + safe['filter_complex'] + '[0:v]'] )
             elif 'hscale' in safe:
-                safe['filter_complex'] = 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:v]scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + safe['filter_complex'] + '[0:v]'] )
+            else:
+                optlist.extend(['-filter_complex', safe['filter_complex'] ])
         else:
             if 'wscale' in safe and 'hscale' in safe:
                 optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
@@ -906,15 +902,15 @@ class H265Codec(VideoCodec):
             optlist.extend(['-level', '%0.1f' % safe['level']])
         if 'tune' in safe:
             optlist.extend(['-tune', safe['tune']])
-        tempvalue = ""
         if 'filter_complex' in safe:
-            tempvalue = safe['filter_complex']
             if 'wscale' in safe and 'hscale' in safe:
-                safe['filter_complex'] = 'scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex']] )
             elif 'wscale' in safe:
-                safe['filter_complex'] = 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + safe['filter_complex']] )
             elif 'hscale' in safe:
-                safe['filter_complex'] = 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:v]scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + safe['filter_complex']] )
+            else:
+                optlist.extend(['-filter_complex', safe['filter_complex'] ])
         else:
             if 'wscale' in safe and 'hscale' in safe:
                 optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
@@ -980,15 +976,15 @@ class NVEncH265(H265Codec):
         if 'tune' in safe:
             optlist.extend(['-tune', safe['tune']])
 
-        tempvalue = ""
         if 'filter_complex' in safe:
-            tempvalue = safe['filter_complex']
             if 'wscale' in safe and 'hscale' in safe:
-                safe['filter_complex'] = 'scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex']] )
             elif 'wscale' in safe:
-                safe['filter_complex'] = 'scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + safe['filter_complex']] )
             elif 'hscale' in safe:
-                safe['filter_complex'] = 'scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + tempvalue
+                optlist.extend(['-filter_complex', '[0:v]scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + safe['filter_complex']] )
+            else:
+                optlist.extend(['-filter_complex', safe['filter_complex'] ])
         else:
             if 'wscale' in safe and 'hscale' in safe:
                 optlist.extend(['-vf', 'scale=%s:%s' % (safe['wscale'], safe['hscale'])])
