@@ -13,8 +13,8 @@ Brief explanation of added settings:
   This part uses a whitelist method that only flags a subtitle stream as forced if it matches one of the items on the whitelist.
   Enabling this option will discard all subtitle streams at the moment due to a weird problem I'm having on some media where ffmpeg will get stuck on the 2-3rd frame while encoding the video stream, soaking up all the RAM it can find until the computer runs out, and then a crash occurs. 
   Disabling the copy/convert process of the other subtitle streams seems to avoid this problem. 
-  Unfortunately this will not work in every case, but it seems to get most modern tv shows/movies. This option will also use a lot of RAM if it has to burn in subtitles that are photo-based instead of text-based -- I've seen it use upwards of 8-10 GB on long movies.
-- 'sample_rate' = By default ffmpeg will resample to 96 KHz with some audio filters. Internet explorer/Firefox/edge will not play any video with 96 KHz audio, so this will allow you to set it to something lower like 48KHz.
+  Unfortunately this will not work in every case, but it seems to get most modern tv shows/movies.
+- 'sample_rate' = By default ffmpeg will upsample to 96 KHz with some audio filters (loudnorm being an example). Internet explorer/Firefox/edge will not play any video with 96 KHz audio, so this will allow you to set it to something lower like 48KHz.
 - 'handle_m2ts_files' = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the remaining m2ts file to mp4. Default is disabled. 
 - 'resolution-bitrate-restriction' = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
   Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 
@@ -31,7 +31,7 @@ Brief explanation of added settings:
 - 'nvenc_preset' = Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
 - 'nvenc_rate_control' = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass, cbr_ld_hq, cbr_hq, vbr_hq - default constqp
 - 'nvenc_temporal_aq' = (true/false) Improves output quality slightly, adds 2-5% extra processing time - default false
-- 'nvenc_weighted_prediction' = (true/false) Reduces bitrate needed for scenes that fade to black - default false
+- 'nvenc_weighted_prediction' = (true/false) Reduces bitrate needed for scenes that fade to black - default false - WARNING: Currently broken with Nvidia drivers 387.xx and 388.xx, the encoder will eventually halt and throw an error.  385.69 are the most current drivers that work with this, otherwise leave it disabled.
 - 'nvenc_rc_lookahead' = Number of frames to look ahead for rate-control (from -1 to INT_MAX) - default -1
 - 'enable_nvenc_decoder' = (true/false) Enable NVDEC gpu decoding. Default is false
 - 'enable_nvenc_hevc_decoder' = (true/false) Enable NVDEC gpu decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false
