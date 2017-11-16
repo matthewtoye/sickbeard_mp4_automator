@@ -3106,6 +3106,8 @@ hevc_qsv encoder AVOptions:
   -adaptive_b        <int>        E..V.... Adaptive B-frame placement (from -1 to 1) (default -1)
   -b_strategy        <int>        E..V.... Strategy to choose between I/P/B-frames (from -1 to 1) (default -1)
   -cavlc             <int>        E..V.... Enable CAVLC (from 0 to 1) (default 0)
+  -idr_interval      <int>        E..V.... Distance (in I-frames) between IDR frames (from -1 to INT_MAX) (default 0)
+     begin_only                   E..V.... Output an IDR-frame only at the beginning of the stream
   -load_plugin       <int>        E..V.... A user plugin to load in an internal session (from 0 to 2) (default hevc_sw)
      none                         E..V....
      hevc_sw                      E..V....
@@ -4797,6 +4799,7 @@ image2 muxer AVOptions:
   -update            <boolean>    E....... continuously overwrite one file (default false)
   -start_number      <int>        E....... set first number in the sequence (from 0 to INT_MAX) (default 1)
   -strftime          <boolean>    E....... use strftime for filename (default false)
+  -frame_pts         <boolean>    E....... use current frame pts for filename (default false)
   -atomic_writing    <boolean>    E....... write files atomically (using temporary files and renames) (default false)
 
 ipod muxer AVOptions:
@@ -7941,6 +7944,14 @@ hysteresis AVOptions:
   planes            <int>        ..FV.... set planes (from 0 to 15) (default 15)
   threshold         <int>        ..FV.... set threshold (from 0 to 65535) (default 0)
 
+framesync AVOptions:
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
+     pass                         ..FV.... Pass through the main input.
+  shortest          <boolean>    ..FV.... force termination when the shortest input terminates (default false)
+  repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
+
 idet AVOptions:
   intl_thres        <float>      ..FV.... set interlacing threshold (from -1 to FLT_MAX) (default 1.04)
   prog_thres        <float>      ..FV.... set progressive threshold (from -1 to FLT_MAX) (default 1.5)
@@ -8357,14 +8368,14 @@ framesync AVOptions:
   repeatlast        <boolean>    ..FV.... extend last frame of secondary streams beyond EOF (default true)
 
 overlay_qsv AVOptions:
-  -x                 <string>     ...V.... Overlay x position (default "0")
-  -y                 <string>     ...V.... Overlay y position (default "0")
-  -w                 <string>     ...V.... Overlay width (default "overlay_iw")
-  -h                 <string>     ...V.... Overlay height (default "overlay_ih*w/overlay_iw")
-  -alpha             <int>        ...V.... Overlay global alpha (from 0 to 255) (default 255)
-  -eof_action        <int>        ...V.... Action to take when encountering EOF from secondary input  (from 0 to 1) (default repeat)
-     repeat                       ...V.... Repeat the previous frame.
-     endall                       ...V.... End both streams.
+  x                 <string>     ..FV.... Overlay x position (default "0")
+  y                 <string>     ..FV.... Overlay y position (default "0")
+  w                 <string>     ..FV.... Overlay width (default "overlay_iw")
+  h                 <string>     ..FV.... Overlay height (default "overlay_ih*w/overlay_iw")
+  alpha             <int>        ..FV.... Overlay global alpha (from 0 to 255) (default 255)
+  eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 1) (default repeat)
+     repeat                       ..FV.... Repeat the previous frame.
+     endall                       ..FV.... End both streams.
 
 owdenoise AVOptions:
   depth             <int>        ..FV.... set depth (from 8 to 16) (default 8)
@@ -9221,6 +9232,7 @@ tile AVOptions:
   margin            <int>        ..FV.... set outer border margin in pixels (from 0 to 1024) (default 0)
   padding           <int>        ..FV.... set inner border thickness in pixels (from 0 to 1024) (default 0)
   color             <color>      ..FV.... set the color of the unused area (default "black")
+  overlap           <int>        ..FV.... set how many frames to overlap for each render (from 0 to INT_MAX) (default 0)
 
 tinterlace AVOptions:
   mode              <int>        ..FV.... select interlace mode (from 0 to 7) (default merge)
@@ -9425,25 +9437,25 @@ vmafmotion AVOptions:
   stats_file        <string>     ..FV.... Set file where to store per-frame difference information
 
 vpp_qsv AVOptions:
-  -deinterlace       <int>        ...V.... deinterlace mode: 0=off, 1=bob, 2=advanced (from 0 to 2) (default 0)
-     bob                          ...V.... Bob deinterlace mode.
-     advanced                     ...V.... Advanced deinterlace mode. 
-  -denoise           <int>        ...V.... denoise level [0, 100] (from 0 to 100) (default 0)
-  -detail            <int>        ...V.... enhancement level [0, 100] (from 0 to 100) (default 0)
-  -framerate         <rational>   ...V.... output framerate (from 0 to DBL_MAX) (default 0/1)
-  -procamp           <int>        ...V.... Enable ProcAmp (from 0 to 1) (default 0)
-  -hue               <float>      ...V.... ProcAmp hue (from -180 to 180) (default 0)
-  -saturation        <float>      ...V.... ProcAmp saturation (from 0 to 10) (default 1)
-  -contrast          <float>      ...V.... ProcAmp contrast (from 0 to 10) (default 1)
-  -brightness        <float>      ...V.... ProcAmp brightness (from -100 to 100) (default 0)
-  -cw                <string>     ...V.... set the width crop area expression (default "iw")
-  -ch                <string>     ...V.... set the height crop area expression (default "ih")
-  -cx                <string>     ...V.... set the x crop area expression (default "(in_w-out_w)/2")
-  -cy                <string>     ...V.... set the y crop area expression (default "(in_h-out_h)/2")
-  -w                 <string>     ...V.... Output video width (default "cw")
-  -width             <string>     ...V.... Output video width (default "cw")
-  -h                 <string>     ...V.... Output video height (default "w*ch/cw")
-  -height            <string>     ...V.... Output video height (default "w*ch/cw")
+  deinterlace       <int>        ..FV.... deinterlace mode: 0=off, 1=bob, 2=advanced (from 0 to 2) (default 0)
+     bob                          ..FV.... Bob deinterlace mode.
+     advanced                     ..FV.... Advanced deinterlace mode. 
+  denoise           <int>        ..FV.... denoise level [0, 100] (from 0 to 100) (default 0)
+  detail            <int>        ..FV.... enhancement level [0, 100] (from 0 to 100) (default 0)
+  framerate         <rational>   ..FV.... output framerate (from 0 to DBL_MAX) (default 0/1)
+  procamp           <int>        ..FV.... Enable ProcAmp (from 0 to 1) (default 0)
+  hue               <float>      ..FV.... ProcAmp hue (from -180 to 180) (default 0)
+  saturation        <float>      ..FV.... ProcAmp saturation (from 0 to 10) (default 1)
+  contrast          <float>      ..FV.... ProcAmp contrast (from 0 to 10) (default 1)
+  brightness        <float>      ..FV.... ProcAmp brightness (from -100 to 100) (default 0)
+  cw                <string>     ..FV.... set the width crop area expression (default "iw")
+  ch                <string>     ..FV.... set the height crop area expression (default "ih")
+  cx                <string>     ..FV.... set the x crop area expression (default "(in_w-out_w)/2")
+  cy                <string>     ..FV.... set the y crop area expression (default "(in_h-out_h)/2")
+  w                 <string>     ..FV.... Output video width (default "cw")
+  width             <string>     ..FV.... Output video width (default "cw")
+  h                 <string>     ..FV.... Output video height (default "w*ch/cw")
+  height            <string>     ..FV.... Output video height (default "w*ch/cw")
 
 vstack AVOptions:
   inputs            <int>        ..FV.... set number of inputs (from 2 to INT_MAX) (default 2)
@@ -12923,7 +12935,7 @@ Filters:
 Encoder nvenc_h264 [NVIDIA NVENC H.264 encoder]:
     General capabilities: delay 
     Threading capabilities: none
-    Supported pixel formats: yuv420p nv12 p010le yuv444p yuv444p16le bgr0 rgb0 cuda
+    Supported pixel formats: yuv420p nv12 p010le yuv444p yuv444p16le bgr0 rgb0 cuda d3d11
 nvenc_h264 AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
      default                      E..V.... 
@@ -13014,7 +13026,7 @@ nvenc_h264 AVOptions:
 Encoder nvenc_hevc [NVIDIA NVENC hevc encoder]:
     General capabilities: delay 
     Threading capabilities: none
-    Supported pixel formats: yuv420p nv12 p010le yuv444p yuv444p16le bgr0 rgb0 cuda
+    Supported pixel formats: yuv420p nv12 p010le yuv444p yuv444p16le bgr0 rgb0 cuda d3d11
 nvenc_hevc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
      default                      E..V.... 

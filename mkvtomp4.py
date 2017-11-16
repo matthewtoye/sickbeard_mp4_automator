@@ -496,12 +496,12 @@ class MkvtoMp4:
                         ( a.codec.lower() == 'truehd' and acodec == 'copy' ): #mp4 container does not support truehd, we must encode it.
                         audio_channels = self.maxchannels
                         if acodec == 'copy':
+                            if a.codec.lower() == 'truehd':
+                                self.log.info( "MP4 containers do not support truehd audio, forcing aac conversion on source stream %s" % a.index )
                             acodec = self.audio_codec[0]
                             if acodec == 'copy': # Some people put 'copy' as the first audio codec.
                                 acodec = 'aac'
                         abitrate = self.maxchannels * self.audio_bitrate
-                        if a.codec.lower() == 'truehd':
-                            self.log.info( "MP4 containers do not support truehd audio, forcing aac conversion on source stream %s" % a.index )
                     else:
                         audio_channels = a.audio_channels
                         abitrate = a.audio_channels * self.audio_bitrate
@@ -621,12 +621,15 @@ class MkvtoMp4:
                         'burn_in_forced_subs': self.burn_in_forced_subs,
                         'subtitle_burn': drive_letter_no_colon + r"\:" + directory + "\\\\" + filename + "." + input_extension + \
                             ":si=" + str( subtitle_used ) + "'" #FFmpeg requires a very specific string of letters for -vf subtitles=
-                                                                                                                           #TODO: Check if this works on non win32.
+                                                                                                                           #TODO: Check if this works on something other than windows.
                     }})
                     self.log.info("Creating subtitle stream %s from source stream %s." % (l, s.index))
                     l = l + 1
             elif s.codec.lower() in bad_subtitle_codecs and self.embedsubs == True and forced_sub > 0 and self.burn_in_forced_subs == True: # This overlays forced picture subtitles on top of the video stream. Slows down conversion significantly.
-                overlay_stream = "[0:v][0:%s]overlay" % ( s.index )
+                if vwidth == None:
+                    overlay_stream = "[0:v][0:%s]overlay" % ( s.index )
+                else: # The resolution has changed, we must use scale2ref to resize the picture subtitles or they'll end up in weird places.
+                    overlay_stream = "[0:%s][video]scale2ref[sub][video];[video][sub]overlay" % ( s.index )
             elif s.codec.lower() not in bad_subtitle_codecs and not self.embedsubs:
                 if self.swl is None or s.metadata['language'].lower() in self.swl:
                     for codec in self.scodec:
@@ -776,11 +779,12 @@ class MkvtoMp4:
             options['video']['crf'] = self.vcrf
 
         if len(overlay_stream) > 0:
-            options['preopts'].remove( '-fix_sub_duration' ) #fix_sub_duration really screws up overlaid subtitles with overlaid "picture" subtitles, turn it off.
+            options['preopts'].remove( '-fix_sub_duration' ) #fix_sub_duration really screws up the duration of overlaid "picture" subtitles, as they do not stay on the screen long enough. Turn it off.
             if vwidth != None:
-                scaled_height = ( vwidth / float( info.video.video_width ) ) * info.video.video_height
-                options['preopts'].extend([ '-canvas_size', '%sx%s' % ( vwidth, int( scaled_height ) ) ] )
-                options['postopts'].extend([ '-max_muxing_queue_size', '1024' ] )
+                options['postopts'].extend([ '-max_muxing_queue_size', '1024' ] ) 
+                #This will use more memory, but without it ffmpeg will occasionally throw the error "too many packets buffered for output stream" - see https://trac.ffmpeg.org/ticket/6375
+                # Memory usage from 4k HEVC 2 hour movie ---> 1080P H264 with nvenc + picture subtitle stream = 2.5 GB max RAM usage.
+                del options['video']['map'] #The video stream is remapped to [video] in order to support scaling picture subtitles to another resolution.
             options['video']['filter_complex'] = overlay_stream
 
         if self.preopts:

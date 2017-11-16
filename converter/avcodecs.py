@@ -758,11 +758,14 @@ class H264Codec(VideoCodec):
             optlist.extend(['-tune', safe['tune']])
         if 'filter_complex' in safe:
             if 'wscale' in safe and 'hscale' in safe:
-                optlist.extend(['-filter_complex', '[0:0]scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex']] )
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s[video]' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             elif 'wscale' in safe:
-                optlist.extend(['-filter_complex', '[0:0]scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + safe['filter_complex']] )
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:-1[video]' % (safe['wscale']) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             elif 'hscale' in safe:
-                optlist.extend(['-filter_complex', '[0:0]scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + safe['filter_complex']] )
+                optlist.extend(['-filter_complex', '[0:v]scale=-1:%s[video]' % (safe['hscale']) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             else:
                 optlist.extend(['-filter_complex', safe['filter_complex'] ])
         else:
@@ -831,11 +834,14 @@ class NVEncH264(H264Codec):
             optlist.extend(['-tune', safe['tune']])
         if 'filter_complex' in safe:
             if 'wscale' in safe and 'hscale' in safe:
-                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex'] + '[0:v]'] )
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s[video]' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             elif 'wscale' in safe:
-                optlist.extend(['-filter_complex', '[0:v]scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + safe['filter_complex'] + '[0:v]'] )
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:-1[video]' % (safe['wscale']) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             elif 'hscale' in safe:
-                optlist.extend(['-filter_complex', '[0:v]scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + safe['filter_complex'] + '[0:v]'] )
+                optlist.extend(['-filter_complex', '[0:v]scale=-1:%s[video]' % (safe['hscale']) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             else:
                 optlist.extend(['-filter_complex', safe['filter_complex'] ])
         else:
@@ -904,11 +910,14 @@ class H265Codec(VideoCodec):
             optlist.extend(['-tune', safe['tune']])
         if 'filter_complex' in safe:
             if 'wscale' in safe and 'hscale' in safe:
-                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex']] )
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s[video]' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             elif 'wscale' in safe:
-                optlist.extend(['-filter_complex', '[0:v]scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + safe['filter_complex']] )
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:-1[video]' % (safe['wscale']) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             elif 'hscale' in safe:
-                optlist.extend(['-filter_complex', '[0:v]scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + safe['filter_complex']] )
+                optlist.extend(['-filter_complex', '[0:v]scale=-1:%s[video]' % (safe['hscale']) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             else:
                 optlist.extend(['-filter_complex', safe['filter_complex'] ])
         else:
@@ -975,14 +984,16 @@ class NVEncH265(H265Codec):
             optlist.extend(['-level', '%0.1f' % safe['level']])
         if 'tune' in safe:
             optlist.extend(['-tune', safe['tune']])
-
         if 'filter_complex' in safe:
             if 'wscale' in safe and 'hscale' in safe:
-                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex']] )
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:%s[video]' % (safe['wscale'], safe['hscale'] ) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             elif 'wscale' in safe:
-                optlist.extend(['-filter_complex', '[0:v]scale=%s:trunc(ow/a/2)*2' % (safe['wscale']) + ';' + safe['filter_complex']] )
+                optlist.extend(['-filter_complex', '[0:v]scale=%s:-1[video]' % (safe['wscale']) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             elif 'hscale' in safe:
-                optlist.extend(['-filter_complex', '[0:v]scale=trunc((oh*a)/2)*2:%s' % (safe['hscale']) + ';' + safe['filter_complex']] )
+                optlist.extend(['-filter_complex', '[0:v]scale=-1:%s[video]' % (safe['hscale']) + ';' + safe['filter_complex'] ] )
+                optlist.extend(['-map', 'video' ]);
             else:
                 optlist.extend(['-filter_complex', safe['filter_complex'] ])
         else:
