@@ -438,6 +438,9 @@ class MkvtoMp4:
 
             self.log.info("Audio detected for stream #%s: %s [%s]." % (a.index, a.codec, a.metadata['language']))
 
+            if a.codec.lower() == 'truehd': # Need to skip it early so that it flags the next track as default.
+                self.log.info( "MP4 containers do not support truehd audio, and converting it is hit or miss due to video/audio sync issues. Skipping stream %s as typically the 2nd audio track is the AC3 core of the truehd stream." % a.index )
+                continue
             # Set undefined language to default language if specified
             if self.adl is not None and a.metadata['language'] == 'und':
                 self.log.debug("Undefined language detected, defaulting to [%s]." % self.adl)
@@ -492,12 +495,9 @@ class MkvtoMp4:
                     # If desired codec is the same as the source codec, copy to avoid quality loss
                     acodec = 'copy' if a.codec.lower() in self.audio_codec else self.audio_codec[0]
                     # Audio channel adjustments
-                    if ( self.maxchannels and a.audio_channels > self.maxchannels ) or \
-                        ( a.codec.lower() == 'truehd' and acodec == 'copy' ): #mp4 container does not support truehd, we must encode it.
+                    if ( self.maxchannels and a.audio_channels > self.maxchannels ):
                         audio_channels = self.maxchannels
                         if acodec == 'copy':
-                            if a.codec.lower() == 'truehd':
-                                self.log.info( "MP4 containers do not support truehd audio, forcing aac conversion on source stream %s" % a.index )
                             acodec = self.audio_codec[0]
                             if acodec == 'copy': # Some people put 'copy' as the first audio codec.
                                 acodec = 'aac'
