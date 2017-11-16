@@ -106,6 +106,7 @@ class ReadSettings:
                         'aac_adtstoasc': 'False',
                         'sample_rate': '',
                         'use-qsv-decoder-with-encoder': 'True',
+                        'use-hevc-qsv-decoder': 'False',
                         'enable_dxva2_gpu_decode': 'False',
                         'subtitle-codec': 'mov_text',
                         'subtitle-language': '',
@@ -432,6 +433,7 @@ class ReadSettings:
         self.forceConvert = False
         self.handle_m2ts_files = config.getboolean( section, "handle_m2ts_files" )
         self.qsv_decoder = config.getboolean(section, "use-qsv-decoder-with-encoder")  # Use Intel QuickSync Decoder when using QuickSync Encoder
+        self.hevc_qsv_decoder = config.getboolean( section, "use-hevc-qsv-decoder") #only supported on 6th gen intel and up.
         self.dxva2_decoder = config.getboolean( section, "enable_dxva2_gpu_decode" )
         self.nvenc_hwaccel_enabled = False
         self.nvenc_profile = config.get(section, "nvenc_profile")

@@ -40,6 +40,7 @@ class MkvtoMp4:
                  handle_m2ts_files=False,
                  h264_level=None,
                  qsv_decoder=True,
+                 hevc_qsv_decoder=False,
                  dxva2_decoder=False,
                  nvenc_cuvid=False,
                  nvenc_cuvid_hevc=False,
@@ -124,6 +125,7 @@ class MkvtoMp4:
         self.h264_level = h264_level
         self.handle_m2ts_files = handle_m2ts_files
         self.qsv_decoder = qsv_decoder
+        self.hevc_qsv_decoder = hevc_qsv_decoder
         self.dxva2_decoder = dxva2_decoder
         self.nvenc_cuvid = nvenc_cuvid
         self.nvenc_cuvid_hevc = nvenc_cuvid_hevc
@@ -201,6 +203,7 @@ class MkvtoMp4:
         self.handle_m2ts_files = settings.handle_m2ts_files
         self.h264_level = settings.h264_level
         self.qsv_decoder = settings.qsv_decoder
+        self.hevc_qsv_decoder = settings.hevc_qsv_decoder
         self.dxva2_decoder = settings.dxva2_decoder
         self.nvenc_cuvid = settings.nvenc_cuvid
         self.nvenc_cuvid_hevc = settings.nvenc_cuvid_hevc
@@ -797,6 +800,9 @@ class MkvtoMp4:
         # If using h264qsv, add the codec in front of the input for decoding
         if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
+
+        if info.video.codec.lower() == "hevc" and self.hevc_qsv_decoder:
+            options['preopts'].extend(['-vcodec', 'hevc_qsv'])
 
         options['preopts'].extend(['-vsync', self.vsync ])
 
