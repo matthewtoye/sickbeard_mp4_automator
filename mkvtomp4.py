@@ -492,11 +492,16 @@ class MkvtoMp4:
                     # If desired codec is the same as the source codec, copy to avoid quality loss
                     acodec = 'copy' if a.codec.lower() in self.audio_codec else self.audio_codec[0]
                     # Audio channel adjustments
-                    if self.maxchannels and a.audio_channels > self.maxchannels:
+                    if ( self.maxchannels and a.audio_channels > self.maxchannels ) or \
+                        ( a.codec.lower() == 'truehd' and acodec == 'copy' ): #mp4 container does not support truehd, we must encode it.
                         audio_channels = self.maxchannels
                         if acodec == 'copy':
                             acodec = self.audio_codec[0]
+                            if acodec == 'copy': # Some people put 'copy' as the first audio codec.
+                                acodec = 'aac'
                         abitrate = self.maxchannels * self.audio_bitrate
+                        if a.codec.lower() == 'truehd':
+                            self.log.info( "MP4 containers do not support truehd audio, forcing aac conversion on source stream %s" % a.index )
                     else:
                         audio_channels = a.audio_channels
                         abitrate = a.audio_channels * self.audio_bitrate
@@ -772,6 +777,10 @@ class MkvtoMp4:
 
         if len(overlay_stream) > 0:
             options['preopts'].remove( '-fix_sub_duration' ) #fix_sub_duration really screws up overlaid subtitles with overlaid "picture" subtitles, turn it off.
+            if vwidth != None:
+                scaled_height = ( vwidth / float( info.video.video_width ) ) * info.video.video_height
+                options['preopts'].extend([ '-canvas_size', '%sx%s' % ( vwidth, int( scaled_height ) ) ] )
+                options['postopts'].extend([ '-max_muxing_queue_size', '1024' ] )
             options['video']['filter_complex'] = overlay_stream
 
         if self.preopts:
