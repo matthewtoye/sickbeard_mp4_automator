@@ -442,8 +442,9 @@ class MkvtoMp4:
             self.log.info("Audio detected for stream #%s: %s [%s]." % (a.index, a.codec, a.metadata['language']))
 
             if a.codec.lower() == 'truehd': # Need to skip it early so that it flags the next track as default.
-                self.log.info( "MP4 containers do not support truehd audio, and converting it is hit or miss due to video/audio sync issues. Skipping stream %s as typically the 2nd audio track is the AC3 core of the truehd stream." % a.index )
+                self.log.info( "MP4 containers do not support truehd audio, and converting it is inconsistent due to video/audio sync issues. Skipping stream %s as typically the 2nd audio track is the AC3 core of the truehd stream." % a.index )
                 continue
+
             # Set undefined language to default language if specified
             if self.adl is not None and a.metadata['language'] == 'und':
                 self.log.debug("Undefined language detected, defaulting to [%s]." % self.adl)
@@ -797,10 +798,6 @@ class MkvtoMp4:
         if self.postopts:
             options['postopts'].extend(self.postopts)
 
-        # If using h264qsv, add the codec in front of the input for decoding
-        if vcodec == "h264qsv" and info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
-            options['preopts'].extend(['-vcodec', 'h264_qsv'])
-
         if info.video.codec.lower() == "hevc" and self.hevc_qsv_decoder:
             options['preopts'].extend(['-vcodec', 'hevc_qsv'])
 
@@ -810,6 +807,11 @@ class MkvtoMp4:
         use_nv12 = False
         if self.dxva2_decoder: # DXVA2 will fallback to CPU decoding when it hits a file that it cannot handle, so we don't need to check if the file is supported.
             options['preopts'].extend(['-hwaccel', 'dxva2' ])
+        elif info.video.codec.lower() == "hevc" and self.hevc_qsv_decoder:
+            options['preopts'].extend(['-vcodec', 'hevc_qsv'])
+        elif info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
+            options['preopts'].extend(['-vcodec', 'h264_qsv'])
+
             self.nvenc_cuvid = False
             self.nvenc_hwaccel_enabled = False
             options['video']['nvenc_hwaccel_enabled'] = False
