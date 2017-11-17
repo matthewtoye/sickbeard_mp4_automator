@@ -625,7 +625,7 @@ class MkvtoMp4:
                         'burn_in_forced_subs': self.burn_in_forced_subs,
                         'subtitle_burn': drive_letter_no_colon + r"\:" + directory + "\\\\" + filename + "." + input_extension + \
                             ":si=" + str( subtitle_used ) + "'" #FFmpeg requires a very specific string of letters for -vf subtitles=
-                                                                                                                           #TODO: Check if this works on something other than windows.
+                                                                #TODO: Check if this works on something other than windows.
                     }})
                     self.log.info("Creating subtitle stream %s from source stream %s." % (l, s.index))
                     l = l + 1
@@ -798,43 +798,30 @@ class MkvtoMp4:
         if self.postopts:
             options['postopts'].extend(self.postopts)
 
-        if info.video.codec.lower() == "hevc" and self.hevc_qsv_decoder:
-            options['preopts'].extend(['-vcodec', 'hevc_qsv'])
-
         options['preopts'].extend(['-vsync', self.vsync ])
 
         nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "mpeg4", "vc1", "vp8", "hevc", "vp9" }
-        use_nv12 = False
+
         if self.dxva2_decoder: # DXVA2 will fallback to CPU decoding when it hits a file that it cannot handle, so we don't need to check if the file is supported.
             options['preopts'].extend(['-hwaccel', 'dxva2' ])
         elif info.video.codec.lower() == "hevc" and self.hevc_qsv_decoder:
             options['preopts'].extend(['-vcodec', 'hevc_qsv'])
         elif info.video.codec.lower() == "h264" and self.qsv_decoder and (info.video.video_level / 10) < 5:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
-
-            self.nvenc_cuvid = False
-            self.nvenc_hwaccel_enabled = False
-            options['video']['nvenc_hwaccel_enabled'] = False
-            if '10le' in info.video.pix_fmt or '16le' in info.video.pix_fmt:
-                if 'nvenc_h264' in self.video_codec: #nvenc_h264 seems to require yuv420p/nv12 output when accepting a 10/12 bit HEVC stream. nvenc_hevc handles this without issues as of 3/20/2017
-                    use_nv12 = True
         elif info.video.codec.lower() in nvenc_cuvid_codecs and \
         self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
-            if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding. CHECKMELATER - Video SDK 8.0 will support this. 
-                # Commenting this section off as I've had inconsistent problems with enabling the -hwaccel cuvid flag. Might be driver related.
-                #options['preopts'].extend(['-hwaccel', 'cuvid' ])
-                #if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
-                #    if self.nvenc_decoder_hevc_gpu:
-                #        options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_hevc_gpu )])
-                #        self.nvenc_decoder_hevc_gpu = None
-                #elif self.nvenc_decoder_gpu:
-                #    options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_gpu )])
-                #    self.nvenc_decoder_gpu = None
-                #options['video']['nvenc_hwaccel_enabled'] = True
-            #else:
+            if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding.
+                options['preopts'].extend(['-hwaccel', 'cuvid' ])
+                if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
+                    if self.nvenc_decoder_hevc_gpu:
+                        options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_hevc_gpu )])
+                        self.nvenc_decoder_hevc_gpu = None
+                elif self.nvenc_decoder_gpu:
+                    options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_gpu )])
+                    self.nvenc_decoder_gpu = None
+                options['video']['nvenc_hwaccel_enabled'] = True
+            else:
                 options['video']['nvenc_hwaccel_enabled'] = False
-                if 'nvenc_h264' in self.video_codec: #nvenc_h264 does not support 10/12 bit encoding.
-                    use_nv12 = True
             if info.video.codec.lower() == "h264":
                 options['preopts'].extend(['-c:v', 'h264_cuvid'])
             elif info.video.codec.lower() == "mjpeg":
@@ -866,10 +853,10 @@ class MkvtoMp4:
             options['video']['width'] = vwidth
 
         # Add pix_fmt
-        if self.pix_fmt and use_nv12 == False:
+        if self.pix_fmt and vcodec != 'nvenc_h264':
             options['video']['pix_fmt'] = self.pix_fmt[0]
-        elif use_nv12 == True:
-            options['video']['pix_fmt'] = "nv12" # NV12 seems to work better than yuv420p for nvenc, and it has the same color capabilities.
+        else: #yuv420 + nvenc has odd aliasing, nv12 does not and supports the same colors.
+            options['video']['pix_fmt'] = "nv12"
         # Add Nvidia specific options
         if self.nvenc_profile:
             options['video']['nvenc_profile'] = self.nvenc_profile
