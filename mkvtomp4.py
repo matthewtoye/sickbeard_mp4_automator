@@ -461,7 +461,7 @@ class MkvtoMp4:
             if self.awl is None or a.metadata['language'].lower() in self.awl:
                 # Create iOS friendly audio stream if the default audio stream has too many channels (iOS only likes AAC stereo)
                 if self.iOS and a.audio_channels > 2:
-                    iOSbitrate = 256 if (self.audio_bitrate * 2) > 256 else (self.audio_bitrate * 2)
+                    iOSbitrate = 256 if (self.audio_bitrate * 2) > 384 else (self.audio_bitrate * 2)
                     self.log.info("Creating audio stream %s from source audio stream %s [iOS-audio]." % (str(l), a.index))
                     self.log.debug("Audio codec: %s." % self.iOS[0])
                     self.log.debug("Channels: 2.")
@@ -853,10 +853,12 @@ class MkvtoMp4:
             options['video']['width'] = vwidth
 
         # Add pix_fmt
-        if self.pix_fmt and vcodec != 'nvenc_h264':
-            options['video']['pix_fmt'] = self.pix_fmt[0]
-        else: #yuv420 + nvenc has odd aliasing, nv12 does not and supports the same colors.
-            options['video']['pix_fmt'] = "nv12"
+        if self.pix_fmt:
+            if vcodec != 'nvenc_h264':
+                options['video']['pix_fmt'] = self.pix_fmt[0]
+            else:
+            #yuv420 + nvenc has odd aliasing, nv12 does not and supports the same colors.
+                options['video']['pix_fmt'] = "nv12"
         # Add Nvidia specific options
         if self.nvenc_profile:
             options['video']['nvenc_profile'] = self.nvenc_profile
