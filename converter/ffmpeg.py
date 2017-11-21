@@ -132,6 +132,7 @@ class MediaStreamInfo(object):
         self.attached_pic = None
         self.sub_forced = None
         self.sub_default = None
+        self.sub_force_guess = None
         self.metadata = {}
 
     @staticmethod
@@ -221,6 +222,11 @@ class MediaStreamInfo(object):
                 newval = val.lower()
                 if newval in possible_ways_of_saying_forced or "forced" in newval or "alien only" in newval:
                     self.sub_forced = 1
+            if key == 'duration' and val != 'N/A': #Sometimes there are 2 english subs, one of which has a much shorter duration than the other.
+                                  #This shorter duration subtitle tends to be the forced subs, and we will use this in a last ditch effort
+                                  # to figure out which subtitles need to be encoded into the video. 
+
+                self.sub_force_guess = val
 
     def __repr__(self):
         d = ''
@@ -430,7 +436,7 @@ class FFMpeg(object):
 
         info = MediaInfo(posters_as_video)
 
-        p = self._spawn([self.ffprobe_path,
+        p = self._spawn([self.ffprobe_path, '-analyzeduration', '2147483647', '-probesize', '2147483647',
                          '-show_format', '-show_streams', fname])
         stdout_data, _ = p.communicate()
         stdout_data = stdout_data.decode(console_encoding, errors='ignore')
@@ -606,6 +612,9 @@ class FFMpeg(object):
                 raise FFMpegConvertError('Encoding error', cmd, total_output,
                                          err, pid=p.pid)
             if line.startswith('Error while '):
+                raise FFMpegConvertError('Encoding error', cmd, total_output,
+                                         line, pid=p.pid)
+            if line.startswith('Conversion failed!'):
                 raise FFMpegConvertError('Encoding error', cmd, total_output,
                                          line, pid=p.pid)
             if not yielded:

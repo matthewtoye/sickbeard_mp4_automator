@@ -8,6 +8,7 @@ import logging
 from converter import Converter, FFMpegConvertError
 from extensions import valid_input_extensions, valid_output_extensions, bad_subtitle_codecs, valid_subtitle_extensions, subtitle_codec_extensions
 from babelfish import Language
+import datetime
 
 
 class MkvtoMp4:
@@ -573,9 +574,14 @@ class MkvtoMp4:
         l = 0
         self.log.info("Reading subtitle streams.")
         forced_sub = 0
+        guessed_forced_sub = 0
+        guessed_subtitle_number  = -1
         overlay_stream = ""
         subtitle_number = -1
         subtitle_used = subtitle_number
+        shortest_duration_subtitle_stream = 86400 # There probably aren't too many movies that are 24 hours long.
+        longest_duration_subtitle_stream = 0
+        desired_language_streams = 0
         for s in info.subtitle:
             subtitle_number += 1
             try:
@@ -590,6 +596,7 @@ class MkvtoMp4:
                 s.metadata['language'] = self.sdl
             if s.metadata['language'].lower() not in self.swl:
                 continue
+            desired_language_streams += 1
             if s.sub_forced == 2 and s.sub_default == 1: ## Prefer subs that are flagged forced AND default by their disposition
                 forced_sub = s.index
                 subtitle_used = subtitle_number
@@ -597,13 +604,31 @@ class MkvtoMp4:
             elif s.sub_forced == 2: ## Prefer flagged subs next
                 forced_sub = s.index
                 subtitle_used = subtitle_number
-            elif s.sub_forced == 1 and forced_sub == 0: ## Finally, go searching for forced subs that hang out in the title metadata
+                break
+            elif s.sub_forced == 1: ## Go searching for forced subs that hang out in the title metadata
                 forced_sub = s.index
                 subtitle_used = subtitle_number
+                break
             elif overrideLang == True: # If there is no audio stream in the desired language, burn in the first subtitle stream that matches the users language. 
                 forced_sub = s.index  
                 subtitle_used = subtitle_number
                 break
+            elif s.sub_force_guess:## Finally, throw a guess at it if there are 2 desired language subtitle streams.
+                s.sub_force_guess = s.sub_force_guess[:-3]
+                duration = datetime.datetime.strptime(s.sub_force_guess,'%H:%M:%S.%f')
+                total_seconds = duration.second + ( duration.minute * 60 ) + ( duration.hour * 3600 )
+                if total_seconds < shortest_duration_subtitle_stream:
+                    shortest_duration_subtitle_stream = total_seconds
+                    guessed_forced_sub = s.index
+                    guessed_subtitle_number = subtitle_number
+                if total_seconds > longest_duration_subtitle_stream:
+                    longest_duration_subtitle_stream = total_seconds
+
+        if forced_sub == 0 and desired_language_streams > 1 and \
+            ( float( shortest_duration_subtitle_stream ) / float( longest_duration_subtitle_stream ) ) < 0.75: # This is a sanity check just in case there is a video with multiple
+            forced_sub = guessed_forced_sub # native-speaking language subtitle streams and the 2nd one just happens to be a director's commentary instead of foreign language subtitles.
+            subtitle_used = guessed_subtitle_number # If the film has >75% forced subtitles then it's probably going to be flagged with overrideLang = true
+
 
         for s in info.subtitle:
             if forced_sub > 0 and s.index != forced_sub and self.burn_in_forced_subs == True:
