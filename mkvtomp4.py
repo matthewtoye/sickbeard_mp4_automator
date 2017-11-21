@@ -627,7 +627,7 @@ class MkvtoMp4:
                 except:
                     self.log.info( "Couldn't use experimental forced subtitle duration." )
 
-        if forced_sub == 0 and desired_language_streams > 1 and longest_duration_subtitle_stream > 1 \
+        if forced_sub == 0 and desired_language_streams > 1 and longest_duration_subtitle_stream > 1 and \
             ( float( shortest_duration_subtitle_stream ) / float( longest_duration_subtitle_stream ) ) < 0.75: # This is a sanity check just in case there is a video with multiple
             forced_sub = guessed_forced_sub # native-speaking language subtitle streams and the 2nd one just happens to be a director's commentary instead of foreign language subtitles.
             subtitle_used = guessed_subtitle_number # If the film has >75% forced subtitles then it's probably going to be flagged with overrideLang = true
