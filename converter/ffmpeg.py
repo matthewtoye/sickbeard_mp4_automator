@@ -217,7 +217,7 @@ class MediaStreamInfo(object):
                 self.sub_default = self.parse_int(val)
             if key == 'title': #Some videos just mention in the title if the sub is forced or not. 
                 possible_ways_of_saying_forced = { "forced", "english subs for non-english parts", "force", "non-english parts",
-                                                   "foreign parts only", "non english parts", "non english part", "foreign parts" }
+                                                   "foreign parts only", "non english parts", "non english part", "foreign parts", "valyrian dialogue" }
                                                    #unfortunately this is not standardized at all, and there are probably 30 other ways that this is labeled
                 newval = val.lower()
                 if newval in possible_ways_of_saying_forced or "forced" in newval or "alien only" in newval:

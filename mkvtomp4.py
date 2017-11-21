@@ -580,7 +580,7 @@ class MkvtoMp4:
         subtitle_number = -1
         subtitle_used = subtitle_number
         shortest_duration_subtitle_stream = 86400 # There probably aren't too many movies that are 24 hours long.
-        longest_duration_subtitle_stream = 0
+        longest_duration_subtitle_stream = 1
         desired_language_streams = 0
         for s in info.subtitle:
             subtitle_number += 1
@@ -615,19 +615,23 @@ class MkvtoMp4:
                 break
             elif s.sub_force_guess:## Finally, throw a guess at it if there are 2 desired language subtitle streams.
                 s.sub_force_guess = s.sub_force_guess[:-3]
-                duration = datetime.datetime.strptime(s.sub_force_guess,'%H:%M:%S.%f')
-                total_seconds = duration.second + ( duration.minute * 60 ) + ( duration.hour * 3600 )
-                if total_seconds < shortest_duration_subtitle_stream:
-                    shortest_duration_subtitle_stream = total_seconds
-                    guessed_forced_sub = s.index
-                    guessed_subtitle_number = subtitle_number
-                if total_seconds > longest_duration_subtitle_stream:
-                    longest_duration_subtitle_stream = total_seconds
+                try:
+                    duration = datetime.datetime.strptime(s.sub_force_guess,'%H:%M:%S.%f')
+                    total_seconds = duration.second + ( duration.minute * 60 ) + ( duration.hour * 3600 )
+                    if total_seconds < shortest_duration_subtitle_stream:
+                        shortest_duration_subtitle_stream = total_seconds
+                        guessed_forced_sub = s.index
+                        guessed_subtitle_number = subtitle_number
+                    if total_seconds > longest_duration_subtitle_stream:
+                        longest_duration_subtitle_stream = total_seconds
+                except:
+                    self.log.info( "Couldn't use experimental forced subtitle duration." )
 
-        if forced_sub == 0 and desired_language_streams > 1 and \
+        if forced_sub == 0 and desired_language_streams > 1 and longest_duration_subtitle_stream > 1 \
             ( float( shortest_duration_subtitle_stream ) / float( longest_duration_subtitle_stream ) ) < 0.75: # This is a sanity check just in case there is a video with multiple
             forced_sub = guessed_forced_sub # native-speaking language subtitle streams and the 2nd one just happens to be a director's commentary instead of foreign language subtitles.
             subtitle_used = guessed_subtitle_number # If the film has >75% forced subtitles then it's probably going to be flagged with overrideLang = true
+            self.log.info( "Used experimental forced subtitle guess" ) #Just to check when it is used. 
 
 
         for s in info.subtitle:
@@ -825,7 +829,7 @@ class MkvtoMp4:
 
         options['preopts'].extend(['-vsync', self.vsync ])
 
-        nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "mpeg4", "vc1", "vp8", "hevc", "vp9" }
+        nvenc_cuvid_codecs = { "h264", "mjpeg", "mpeg1video", "mpeg2video", "mpeg4", "vc1", "vp8", "hevc", "vp9" } # mpeg1video/mpeg4 decoding were horribly broken before an ffmpeg commit on 11/20/2017
 
         if self.dxva2_decoder: # DXVA2 will fallback to CPU decoding when it hits a file that it cannot handle, so we don't need to check if the file is supported.
             options['preopts'].extend(['-hwaccel', 'dxva2' ])
