@@ -443,8 +443,12 @@ class MkvtoMp4:
             self.log.info("Audio detected for stream #%s: %s [%s]." % (a.index, a.codec, a.metadata['language']))
 
             if a.codec.lower() == 'truehd': # Need to skip it early so that it flags the next track as default.
-                self.log.info( "MP4 containers do not support truehd audio, and converting it is inconsistent due to video/audio sync issues. Skipping stream %s as typically the 2nd audio track is the AC3 core of the truehd stream." % a.index )
-                continue
+                if len( info.audio ) == 1:
+                    self.log.info( "MP4 does not support truehd audio, as this is the only audio track we will attempt to convert it, but be warned that there may be audio syncing issues.")
+                    self.audio_copyoriginal = False #Need to disable copying this or it will just fail anyway.
+                else: 
+                    self.log.info( "MP4 containers do not support truehd audio, and converting it is inconsistent due to video/audio sync issues. Skipping stream %s as typically the 2nd audio track is the AC3 core of the truehd stream." % a.index )
+                    continue
 
             # Set undefined language to default language if specified
             if self.adl is not None and a.metadata['language'] == 'und':
@@ -560,7 +564,7 @@ class MkvtoMp4:
                     audio_settings.update({l: iosdata})
                     l += 1
 
-                if self.audio_copyoriginal and acodec != 'copy':
+                if self.audio_copyoriginal and acodec != 'copy' and self.forceConvert == False:
                     self.log.info("Adding copy of original audio track in format %s" % a.codec)
                     audio_settings.update({l: {
                         'map': a.index,

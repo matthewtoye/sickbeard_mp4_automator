@@ -2338,6 +2338,10 @@ libvpx-vp9 encoder AVOptions:
      equator360                   E..V.... 360 video Aq
   -level             <float>      E..V.... Specify level (from -1 to 6.2) (default -1)
   -row-mt            <boolean>    E..V.... Row based multi-threading (default auto)
+  -tune-content      <int>        E..V.... Tune content type (from -1 to 2) (default -1)
+     default                      E..V.... Regular video content
+     screen                       E..V.... Screen capture content
+     film                         E..V.... Film content; improves grain retention
   -speed             <int>        E..V....  (from -16 to 16) (default 1)
   -quality           <int>        E..V....  (from INT_MIN to INT_MAX) (default good)
      best                         E..V....
@@ -3363,8 +3367,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.102")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3391,8 +3395,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.100")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.102")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.102")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3596,6 +3600,7 @@ tcp AVOptions:
   -listen_timeout    <int>        ED...... Connection awaiting timeout (in milliseconds) (from -1 to INT_MAX) (default -1)
   -send_buffer_size  <int>        ED...... Socket send buffer size (in bytes) (from -1 to INT_MAX) (default -1)
   -recv_buffer_size  <int>        ED...... Socket receive buffer size (in bytes) (from -1 to INT_MAX) (default -1)
+  -tcp_nodelay       <boolean>    ED...... Use TCP_NODELAY to disable nagle's algorithm (default false)
 
 tls AVOptions:
   -ca_file           <string>     ED...... Certificate Authority database file
@@ -4092,7 +4097,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.2.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.2.102")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4645,7 +4650,7 @@ dash muxer AVOptions:
   -adaptation_sets   <string>     E....... Adaptation sets. Syntax: id=0,streams=0,1,2 id=1,streams=3,4 and so on
   -window_size       <int>        E....... number of segments kept in the manifest (from 0 to INT_MAX) (default 0)
   -extra_window_size <int>        E....... number of segments kept outside of the manifest before removing from disk (from 0 to INT_MAX) (default 5)
-  -min_seg_duration  <int64>      E....... minimum segment duration (in microseconds) (from 0 to INT_MAX) (default 5e+006)
+  -min_seg_duration  <int>        E....... minimum segment duration (in microseconds) (from 0 to INT_MAX) (default 5e+006)
   -remove_at_exit    <boolean>    E....... remove all segments when finished (default false)
   -use_template      <boolean>    E....... Use SegmentTemplate instead of SegmentList (default true)
   -use_timeline      <boolean>    E....... Use SegmentTimeline in SegmentTemplate (default true)
@@ -4654,6 +4659,7 @@ dash muxer AVOptions:
   -init_seg_name     <string>     E....... DASH-templated name to used for the initialization segment (default "init-stream$RepresentationID$.m4s")
   -media_seg_name    <string>     E....... DASH-templated name to used for the media segments (default "chunk-stream$RepresentationID$-$Number%05d$.m4s")
   -utc_timing_url    <string>     E....... URL of the page that will return the UTC timestamp in ISO format
+  -http_user_agent   <string>     E....... override User-Agent field in HTTP header
 
 f4v muxer AVOptions:
   -movflags          <flags>      E....... MOV muxer flags (default 0)
@@ -4783,6 +4789,7 @@ hls muxer AVOptions:
      second_level_segment_duration              E....... include segment duration in segment filenames when use_localtime
      second_level_segment_size              E....... include segment size in segment filenames when use_localtime
      periodic_rekey               E....... reload keyinfo file periodically for re-keying
+     independent_segments              E....... add EXT-X-INDEPENDENT-SEGMENTS, whenever applicable
   -use_localtime     <boolean>    E....... set filename expansion with strftime at segment creation (default false)
   -use_localtime_mkdir <boolean>    E....... create last directory component in strftime-generated filename (default false)
   -hls_playlist_type <int>        E....... set the HLS playlist type (from 0 to 2) (default 0)
@@ -4794,6 +4801,9 @@ hls muxer AVOptions:
      epoch                        E....... seconds since epoch
      datetime                     E....... current datetime as YYYYMMDDhhmmss
   -http_user_agent   <string>     E....... override User-Agent field in HTTP header
+  -var_stream_map    <string>     E....... Variant stream map string
+  -master_pl_name    <string>     E....... Create HLS master playlist with this name
+  -master_pl_publish_rate <int>        E....... Publish master play list every after this many segment intervals (from 0 to UINT32_MAX) (default 0)
 
 image2 muxer AVOptions:
   -update            <boolean>    E....... continuously overwrite one file (default false)
@@ -5229,7 +5239,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.2.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.2.102")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -5609,6 +5619,9 @@ acompressor AVOptions:
      rms                          ..F.A...
   level_sc          <double>     ..F.A... set sidechain gain (from 0.015625 to 64) (default 1)
   mix               <double>     ..F.A... set mix (from 0 to 1) (default 1)
+
+acontrast AVOptions:
+  contrast          <float>      ..F.A... set contrast (from 0 to 100) (default 33)
 
 acrossfade AVOptions:
   nb_samples        <int>        ..F.A... set number of samples for cross fade duration (from 1 to 2.14748e+008) (default 44100)
@@ -6444,6 +6457,9 @@ lowpass AVOptions:
   p                 <int>        ..F.A... set number of poles (from 1 to 2) (default 2)
   channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
   c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
+
+mcompand AVOptions:
+  args              <string>     ..F.A... set parameters for each band (default "0.005,0.1 6 -47/-40,-34/-34,-17/-33 100 | 0.003,0.05 6 -47/-40,-34/-34,-17/-33 400 | 0.000625,0.0125 6 -47/-40,-34/-34,-15/-33 1600 | 0.0001,0.025 6 -47/-40,-34/-34,-31/-31,-0/-30 6400 | 0,0.025 6 -38/-31,-28/-28,-0/-25 22000")
 
 pan AVOptions:
   args              <string>     ..F.A...
@@ -7500,7 +7516,7 @@ deshake AVOptions:
      exhaustive                   ..FV.... exhaustive search
      less                         ..FV.... less exhaustive search
   filename          <string>     ..FV.... set motion search detailed log file name
-  opencl            <boolean>    ..FV.... use OpenCL filtering capabilities (default false)
+  opencl            <boolean>    ..FV.... ignored (default false)
 
 despill AVOptions:
   type              <int>        ..FV.... set the screen type (from 0 to 1) (default green)
@@ -8198,6 +8214,14 @@ minterpolate AVOptions:
      none                         ..FV.... disable detection
      fdiff                        ..FV.... frame difference
   scd_threshold     <double>     ..FV.... scene change threshold (from 0 to 100) (default 5)
+
+mix AVOptions:
+  inputs            <int>        ..FV.... set number of inputs (from 2 to INT_MAX) (default 2)
+  weights           <string>     ..FV.... set weight for each input (default "1 1")
+  duration          <int>        ..FV.... how to determine end of stream (from 0 to 2) (default longest)
+     longest                      ..FV.... Duration of longest input
+     shortest                     ..FV.... Duration of shortest input
+     first                        ..FV.... Duration of first input
 
 mpdecimate AVOptions:
   max               <int>        ..FV.... set the maximum number of consecutive dropped frames (positive), or the minimum interval between dropped frames (negative) (from INT_MIN to INT_MAX) (default 0)
@@ -9304,7 +9328,7 @@ unsharp AVOptions:
   cy                <int>        ..FV.... set chroma matrix vertical size (from 3 to 23) (default 5)
   chroma_amount     <float>      ..FV.... set chroma effect strength (from -2 to 5) (default 0)
   ca                <float>      ..FV.... set chroma effect strength (from -2 to 5) (default 0)
-  opencl            <boolean>    ..FV.... use OpenCL filtering capabilities (default false)
+  opencl            <boolean>    ..FV.... ignored (default false)
 
 uspp AVOptions:
   quality           <int>        ..FV.... set quality (from 0 to 8) (default 3)
@@ -10154,6 +10178,12 @@ avectorscope AVOptions:
      sqrt                         ..FV.... square root
      cbrt                         ..FV.... cube root
      log                          ..FV.... logarithmic
+  swap              <boolean>    ..FV.... swap x axis with y axis (default true)
+  mirror            <int>        ..FV.... mirror axis (from 0 to 3) (default y)
+     none                         ..FV.... no mirror
+     x                            ..FV.... mirror x
+     y                            ..FV.... mirror y
+     xy                           ..FV.... mirror both
 
 concat AVOptions:
   n                 <int>        ..FVA... specify the number of segments (from 1 to INT_MAX) (default 2)
@@ -11781,6 +11811,7 @@ IO... gray9le                1             9
 ..... gbrapf32be             4            128
 ..... gbrapf32le             4            128
 ..H.. drm_prime              0             0
+..H.. opencl                 0             0
 File formats:
  D. = Demuxing supported
  .E = Muxing supported
@@ -12596,6 +12627,7 @@ Filters:
   | = Source or sink filter
  ... abench            A->A       Benchmark part of a filtergraph.
  ... acompressor       A->A       Audio compressor.
+ ... acontrast         A->A       Simple audio dynamic range compression/expansion filter.
  ... acopy             A->A       Copy the input audio unchanged to the output.
  ... acrossfade        AA->A      Cross fade two input audio streams.
  ... acrusher          A->A       Reduce audio bit resolution.
@@ -12664,6 +12696,7 @@ Filters:
  ... join              N->A       Join multiple audio streams into multi-channel output.
  ... loudnorm          A->A       EBU R128 loudness normalization
  ... lowpass           A->A       Apply a low-pass filter with 3dB point frequency.
+ ... mcompand          A->A       Multiband Compress or expand audio dynamic range.
  ... pan               A->A       Remix channels with coefficients (panning).
  ... replaygain        A->A       ReplayGain scanner.
  ... resample          A->A       Audio resampling and conversion.
@@ -12795,6 +12828,7 @@ Filters:
  T.. metadata          V->V       Manipulate video frame metadata.
  T.. midequalizer      VV->V      Apply Midway Equalization.
  ... minterpolate      V->V       Frame rate conversion using Motion Interpolation.
+ ... mix               N->V       Mix video inputs.
  ... mpdecimate        V->V       Remove near-duplicate frames.
  T.. negate            V->V       Negate input video.
  TS. nlmeans           V->V       Non-local means denoiser.
