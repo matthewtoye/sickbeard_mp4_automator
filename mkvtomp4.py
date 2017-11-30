@@ -556,6 +556,8 @@ class MkvtoMp4:
 
                 if acodec == 'copy' and a.codec == 'aac' and self.aac_adtstoasc:
                     audio_settings[l]['bsf'] = 'aac_adtstoasc'
+                if a.codec.lower() == 'flac' and acodec == 'copy': #flac in mp4 is experimental, ffmpeg requires adding strict -2 to do it.
+                    audio_settings[l]['strict'] = '-2'
                 l += 1
 
                 #Add the iOS track last instead
@@ -572,6 +574,8 @@ class MkvtoMp4:
                         'language': a.metadata['language'],
                         'disposition': 'none',
                     }})
+                    if a.codec == 'flac': #flac in mp4 is experimental, ffmpeg requires adding strict -2 to do it.
+                        audio_settings[l]['strict'] = '-2'
 
         # Subtitle streams
         subtitle_settings = {}

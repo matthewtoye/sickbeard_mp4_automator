@@ -481,6 +481,7 @@ class AudioCopyCodec(BaseCodec):
                        'source': str,
                        'map': int,
                        'bsf': str,
+                       'strict': str,
                        'disposition': str}
 
     def parse_options(self, opt, stream=0):
@@ -496,6 +497,8 @@ class AudioCopyCodec(BaseCodec):
             optlist.extend(['-map', s + ':' + str(safe['map'])])
         if 'bsf' in safe:
             optlist.extend(['-bsf:a:' + stream, str(safe['bsf'])])
+        if 'strict' in safe:
+            optlist.extend(['-strict', str(safe['strict'])])
         lang = 'und'
         if 'language' in safe:
             l = safe['language']
