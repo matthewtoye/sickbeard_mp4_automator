@@ -252,6 +252,9 @@ class MkvtoMp4:
 
         if self.needProcessing(inputfile):
             options = self.generateOptions(inputfile, original=original)
+            if options == None:
+                self.log.debug("Error generating options, possibly due to corrupt input file.")
+                return False
 
             try:
                 if reportProgress:
@@ -370,6 +373,9 @@ class MkvtoMp4:
 
         # Video stream
         self.log.info("Reading video stream.")
+
+        if info == None: # Exit before the exception. 
+            return None
         self.log.info("Video codec detected: %s." % info.video.codec)
 
         try:
