@@ -423,6 +423,7 @@ class MkvtoMp4:
         self.log.info("Reading audio streams.")
 
         overrideLang = True
+        num_desired_language_audio_streams = 0
         for a in info.audio:
             try:
                 if a.metadata['language'].strip() == "" or a.metadata['language'] is None:
@@ -431,7 +432,7 @@ class MkvtoMp4:
                 a.metadata['language'] = 'und'
             if (a.metadata['language'] == 'und' and self.adl) or (self.awl and a.metadata['language'].lower() in self.awl):
                 overrideLang = False
-                break
+                num_desired_language_audio_streams +=1
 
         if overrideLang:
             self.awl = None
@@ -449,8 +450,8 @@ class MkvtoMp4:
             self.log.info("Audio detected for stream #%s: %s [%s]." % (a.index, a.codec, a.metadata['language']))
 
             if a.codec.lower() == 'truehd': # Need to skip it early so that it flags the next track as default.
-                if len( info.audio ) == 1:
-                    self.log.info( "MP4 does not support truehd audio, as this is the only audio track we will attempt to convert it, but be warned that there may be audio syncing issues.")
+                if num_desired_language_audio_streams < 2 or overrideLang == True:
+                    self.log.info( "MP4 does not support truehd audio, as this is the only audio track in the desired language we will attempt to convert it, but be warned that there may be audio syncing issues.")
                     self.audio_copyoriginal = False #Need to disable copying this or it will just fail anyway.
                 else: 
                     self.log.info( "MP4 containers do not support truehd audio, and converting it is inconsistent due to video/audio sync issues. Skipping stream %s as typically the 2nd audio track is the AC3 core of the truehd stream." % a.index )

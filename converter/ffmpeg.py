@@ -514,6 +514,7 @@ class FFMpeg(object):
         frame = 0
         starttime = time.time()
         lastframetime = starttime
+        ignore_non_monotonous = False
         while True:
             if timeout:
                 signal.alarm(timeout)
@@ -548,8 +549,14 @@ class FFMpeg(object):
             # Instead, we're going to close the current ffmpeg instance, and pipe the file through manual.py with a 
             # new option to force re-encoding.
             # The script will wait here until the subprocess is finished, in which it then exits this function and
-            # pretends that everything is a-okay so that sabn/nzbget/etc scripts will properly autoimport the file. 
-            if 'Non-monotonous DTS' in ret: #engage kludge
+            # pretends that everything is a-okay so that sabn/nzbget/etc scripts will properly autoimport the file.
+
+            if 'Queue input is backward in time' in ret: # This warning tends to come up at the very end of a file
+                ignore_non_monotonous = True # generally it's because the audio stream ends a few seconds before the video.
+                # After this, it will spam warnings about non-monotonous DTS, but it doesn't matter since it's during the credits.
+                # So, we won't re-encode a video just because the last few seconds of audio are trash.
+
+            if 'Non-monotonous DTS' in ret and ignore_non_monotonous == False: #engage kludge... but don't do it at the end of the audio stream.
                 p.terminate()
                 if alreadykludged == False:
                     for i in range( 3 ):
