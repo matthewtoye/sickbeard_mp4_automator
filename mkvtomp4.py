@@ -456,6 +456,8 @@ class MkvtoMp4:
                 else: 
                     self.log.info( "MP4 containers do not support truehd audio, and converting it is inconsistent due to video/audio sync issues. Skipping stream %s as typically the 2nd audio track is the AC3 core of the truehd stream." % a.index )
                     continue
+            if a.codec.startswith( 'pcm' ): #pcm formats also cannot be container in a .mp4 file
+                self.audio_copyoriginal = False
 
             # Set undefined language to default language if specified
             if self.adl is not None and a.metadata['language'] == 'und':
@@ -826,12 +828,11 @@ class MkvtoMp4:
             del options['video']['bitrate']
             options['video']['crf'] = self.vcrf
 
+        options['postopts'].extend([ '-max_muxing_queue_size', '2048' ] ) 
+
         if len(overlay_stream) > 0:
             options['preopts'].remove( '-fix_sub_duration' ) #fix_sub_duration really screws up the duration of overlaid "picture" subtitles, as they do not stay on the screen long enough. Turn it off.
             if vwidth != None:
-                options['postopts'].extend([ '-max_muxing_queue_size', '1024' ] ) 
-                #This will use more memory, but without it ffmpeg will occasionally throw the error "too many packets buffered for output stream" - see https://trac.ffmpeg.org/ticket/6375
-                # Memory usage from 4k HEVC 2 hour movie ---> 1080P H264 with nvenc + picture subtitle stream = 2.5 GB max RAM usage.
                 del options['video']['map'] #The video stream is remapped to [video] in order to support scaling picture subtitles to another resolution.
             options['video']['filter_complex'] = overlay_stream
 
