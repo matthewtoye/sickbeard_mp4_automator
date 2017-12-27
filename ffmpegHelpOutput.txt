@@ -1076,6 +1076,7 @@ H.263p encoder AVOptions:
 
 H264 Decoder AVOptions:
   -enable_er         <boolean>    .D.V.... Enable error resilience on damaged frames (unsafe) (default auto)
+  -x264_build        <int>        .D.V.... Assume this x264 version if no x264 version found in any SEI (from -1 to INT_MAX) (default -1)
 
 h264_qsv AVOptions:
   -async_depth       <int>        .D.V.... Internal parallelization depth, the higher the value the higher the latency. (from 0 to INT_MAX) (default 4)
@@ -2105,6 +2106,9 @@ G.723.1 decoder AVOptions:
 Opus encoder AVOptions:
   -opus_delay        <float>      E...A... Maximum delay in milliseconds (from 2.5 to 360) (default 360)
 
+Opus Decoder AVOptions:
+  -apply_phase_inv   <boolean>    .D..A... Apply intensity stereo phase inversion (default true)
+
 TTA Decoder AVOptions:
   -password          <string>     .D..A... Set decoding password
 
@@ -2535,6 +2539,7 @@ libx265 AVOptions:
   -forced-idr        <boolean>    E..V.... if forcing keyframes, force them as IDR frames (default false)
   -preset            <string>     E..V.... set the x265 preset
   -tune              <string>     E..V.... set the x265 tune parameter
+  -profile           <string>     E..V.... set the x265 profile
   -x265-params       <string>     E..V.... set the x265 configuration using a :-separated list of key=value parameters
 
 libxavs AVOptions:
@@ -2725,10 +2730,12 @@ h264_qsv encoder AVOptions:
   -max_dec_frame_buffering <int>        E..V.... Maximum number of frames buffered in the DPB (from 0 to 65535) (default 0)
   -look_ahead        <int>        E..V.... Use VBR algorithm with look ahead (from 0 to 1) (default 1)
   -look_ahead_depth  <int>        E..V.... Depth of look ahead in number frames (from 0 to 100) (default 0)
-  -look_ahead_downsampling <int>        E..V.... (from 0 to 2) (default unknown)
+  -look_ahead_downsampling <int>        E..V.... Downscaling factor for the frames saved for the lookahead analysis (from 0 to 2) (default unknown)
      unknown                      E..V....
+     auto                         E..V....
      off                          E..V....
      2x                           E..V....
+     4x                           E..V....
   -int_ref_type      <int>        E..V.... Intra refresh type (from -1 to 65535) (default -1)
      none                         E..V....
      vertical                     E..V....
@@ -3254,7 +3261,7 @@ AVFormatContext AVOptions:
      nobuffer                     .D...... reduce the latency introduced by optional buffering
      bitexact                     E....... do not write random/volatile data
      shortest                     E....... stop muxing with the shortest stream
-     autobsf                      E....... add needed bsfs automatically (delays header until each stream's first packet is written)
+     autobsf                      E....... add needed bsfs automatically
   -seek2any          <boolean>    .D...... allow seeking to non-keyframes on demuxer level when supported (default false)
   -analyzeduration   <int64>      .D...... specify how many microseconds are analyzed to probe the input (from 0 to I64_MAX) (default 0)
   -cryptokey         <binary>     .D...... decryption key
@@ -3366,8 +3373,8 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.103")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.103")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.3.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.3.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3394,8 +3401,8 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.103")
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.2.103")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.3.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.3.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3847,6 +3854,8 @@ hls,applehttp AVOptions:
   -live_start_index  <int>        .D...... segment index to start live streams at (negative values are from the end) (from INT_MIN to INT_MAX) (default -3)
   -allowed_extensions <string>     .D...... List of file extensions that hls is allowed to access (default "3gp,aac,avi,flac,mkv,m3u8,m4a,m4s,m4v,mpg,mov,mp2,mp3,mp4,mpeg,mpegts,ogg,ogv,oga,ts,vob,wav")
   -max_reload        <int>        .D...... Maximum number of times a insufficient list is attempted to be reloaded (from 0 to INT_MAX) (default 1000)
+  -http_persistent   <boolean>    .D...... Use persistent HTTP connections (default true)
+  -http_multiple     <boolean>    .D...... Use multiple HTTP connections for fetching segments (default auto)
 
 iCE Draw File demuxer AVOptions:
   -linespeed         <int>        .D...... set simulated line speed (bytes per second) (from 1 to INT_MAX) (default 6000)
@@ -4096,7 +4105,7 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.2.103")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.3.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -5240,7 +5249,7 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.2.103")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf58.3.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -5868,16 +5877,18 @@ alimiter AVOptions:
 allpass AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
   f                 <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
-  width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default h)
+  width_type        <int>        ..F.A... set filter-width type (from 1 to 5) (default h)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default h)
+     k                            ..F.A... kHz
+  t                 <int>        ..F.A... set filter-width type (from 1 to 5) (default h)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+     k                            ..F.A... kHz
   width             <double>     ..F.A... set filter-width (from 0 to 99999) (default 707.1)
   w                 <double>     ..F.A... set filter-width (from 0 to 99999) (default 707.1)
   channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
@@ -6132,18 +6143,20 @@ atrim AVOptions:
 bandpass AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
   f                 <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
-  width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+  width_type        <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     k                            ..F.A... kHz
+  t                 <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  width             <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
-  w                 <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
+     k                            ..F.A... kHz
+  width             <double>     ..F.A... set band-width (from 0 to 99999) (default 0.5)
+  w                 <double>     ..F.A... set band-width (from 0 to 99999) (default 0.5)
   csg               <boolean>    ..F.A... use constant skirt gain (default false)
   channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
   c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
@@ -6151,34 +6164,38 @@ bandpass AVOptions:
 bandreject AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
   f                 <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
-  width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+  width_type        <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     k                            ..F.A... kHz
+  t                 <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  width             <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
-  w                 <double>     ..F.A... set band-width (from 0 to 999) (default 0.5)
+     k                            ..F.A... kHz
+  width             <double>     ..F.A... set band-width (from 0 to 99999) (default 0.5)
+  w                 <double>     ..F.A... set band-width (from 0 to 99999) (default 0.5)
   channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
   c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 bass AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 100)
   f                 <double>     ..F.A... set central frequency (from 0 to 999999) (default 100)
-  width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+  width_type        <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     k                            ..F.A... kHz
+  t                 <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+     k                            ..F.A... kHz
   width             <double>     ..F.A... set shelf transition steep (from 0 to 99999) (default 0.5)
   w                 <double>     ..F.A... set shelf transition steep (from 0 to 99999) (default 0.5)
   gain              <double>     ..F.A... set gain (from -900 to 900) (default 0)
@@ -6187,12 +6204,12 @@ bass AVOptions:
   c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
 biquad AVOptions:
-  a0                <double>     ..F.A... (from -32768 to 32767) (default 1)
-  a1                <double>     ..F.A... (from -32768 to 32767) (default 1)
-  a2                <double>     ..F.A... (from -32768 to 32767) (default 1)
-  b0                <double>     ..F.A... (from -32768 to 32767) (default 1)
-  b1                <double>     ..F.A... (from -32768 to 32767) (default 1)
-  b2                <double>     ..F.A... (from -32768 to 32767) (default 1)
+  a0                <double>     ..F.A... (from INT_MIN to INT_MAX) (default 1)
+  a1                <double>     ..F.A... (from INT_MIN to INT_MAX) (default 0)
+  a2                <double>     ..F.A... (from INT_MIN to INT_MAX) (default 0)
+  b0                <double>     ..F.A... (from INT_MIN to INT_MAX) (default 0)
+  b1                <double>     ..F.A... (from INT_MIN to INT_MAX) (default 0)
+  b2                <double>     ..F.A... (from INT_MIN to INT_MAX) (default 0)
   channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
   c                 <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
 
@@ -6279,18 +6296,20 @@ ebur128 AVOptions:
 equalizer AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 0)
   f                 <double>     ..F.A... set central frequency (from 0 to 999999) (default 0)
-  width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+  width_type        <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     k                            ..F.A... kHz
+  t                 <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  width             <double>     ..F.A... set band-width (from 0 to 999) (default 1)
-  w                 <double>     ..F.A... set band-width (from 0 to 999) (default 1)
+     k                            ..F.A... kHz
+  width             <double>     ..F.A... set band-width (from 0 to 99999) (default 1)
+  w                 <double>     ..F.A... set band-width (from 0 to 99999) (default 1)
   gain              <double>     ..F.A... set gain (from -900 to 900) (default 0)
   g                 <double>     ..F.A... set gain (from -900 to 900) (default 0)
   channels          <channel_layout> ..F.A... set channels to filter (default 0xffffffffffffffff)
@@ -6395,16 +6414,18 @@ headphone AVOptions:
 highpass AVOptions:
   frequency         <double>     ..F.A... set frequency (from 0 to 999999) (default 3000)
   f                 <double>     ..F.A... set frequency (from 0 to 999999) (default 3000)
-  width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+  width_type        <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     k                            ..F.A... kHz
+  t                 <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+     k                            ..F.A... kHz
   width             <double>     ..F.A... set width (from 0 to 99999) (default 0.707)
   w                 <double>     ..F.A... set width (from 0 to 99999) (default 0.707)
   poles             <int>        ..F.A... set number of poles (from 1 to 2) (default 2)
@@ -6442,16 +6463,18 @@ loudnorm AVOptions:
 lowpass AVOptions:
   frequency         <double>     ..F.A... set frequency (from 0 to 999999) (default 500)
   f                 <double>     ..F.A... set frequency (from 0 to 999999) (default 500)
-  width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+  width_type        <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     k                            ..F.A... kHz
+  t                 <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+     k                            ..F.A... kHz
   width             <double>     ..F.A... set width (from 0 to 99999) (default 0.707)
   w                 <double>     ..F.A... set width (from 0 to 99999) (default 0.707)
   poles             <int>        ..F.A... set number of poles (from 1 to 2) (default 2)
@@ -6689,16 +6712,18 @@ surround AVOptions:
 treble AVOptions:
   frequency         <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
   f                 <double>     ..F.A... set central frequency (from 0 to 999999) (default 3000)
-  width_type        <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+  width_type        <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
-  t                 <int>        ..F.A... set filter-width type (from 1 to 4) (default q)
+     k                            ..F.A... kHz
+  t                 <int>        ..F.A... set filter-width type (from 1 to 5) (default q)
      h                            ..F.A... Hz
      q                            ..F.A... Q-Factor
      o                            ..F.A... octave
      s                            ..F.A... slope
+     k                            ..F.A... kHz
   width             <double>     ..F.A... set shelf transition steep (from 0 to 99999) (default 0.5)
   w                 <double>     ..F.A... set shelf transition steep (from 0 to 99999) (default 0.5)
   gain              <double>     ..F.A... set gain (from -900 to 900) (default 0)
@@ -7572,6 +7597,7 @@ drawbox AVOptions:
   c                 <string>     ..FV.... set color of the box (default "black")
   thickness         <string>     ..FV.... set the box thickness (default "3")
   t                 <string>     ..FV.... set the box thickness (default "3")
+  replace           <boolean>    ..FV.... replace color & alpha (default false)
 
 drawgraph AVOptions:
   m1                <string>     ..FV.... set 1st metadata key (default "")
@@ -7609,6 +7635,7 @@ drawgrid AVOptions:
   c                 <string>     ..FV.... set color of the grid (default "black")
   thickness         <string>     ..FV.... set grid line thickness (default "1")
   t                 <string>     ..FV.... set grid line thickness (default "1")
+  replace           <boolean>    ..FV.... replace color & alpha (default false)
 
 drawtext AVOptions:
   fontfile          <string>     ..FV.... set font file
@@ -7785,6 +7812,17 @@ fieldorder AVOptions:
      bff                          ..FV.... bottom field first
      tff                          ..FV.... top field first
 
+fillborders AVOptions:
+  left              <int>        ..FV.... set the left fill border (from 0 to INT_MAX) (default 0)
+  right             <int>        ..FV.... set the right fill border (from 0 to INT_MAX) (default 0)
+  top               <int>        ..FV.... set the top fill border (from 0 to INT_MAX) (default 0)
+  bottom            <int>        ..FV.... set the bottom fill border (from 0 to INT_MAX) (default 0)
+  mode              <int>        ..FV.... set the fill borders mode (from 0 to 2) (default smear)
+     smear                        ..FV....
+     mirror                       ..FV....
+     fixed                        ..FV....
+  color             <color>      ..FV.... set the color for the fixed mode (default "black")
+
 find_rect AVOptions:
   object            <string>     ..FV.... object bitmap filename
   threshold         <float>      ..FV.... set threshold (from 0 to 1) (default 0.5)
@@ -7834,7 +7872,7 @@ framerate AVOptions:
   fps               <video_rate> ..FV.... required output frames per second rate (default "50")
   interp_start      <int>        ..FV.... point to start linear interpolation (from 0 to 255) (default 15)
   interp_end        <int>        ..FV.... point to end linear interpolation (from 0 to 255) (default 240)
-  scene             <double>     ..FV.... scene change level (from 0 to INT_MAX) (default 7)
+  scene             <double>     ..FV.... scene change level (from 0 to INT_MAX) (default 8.2)
   flags             <flags>      ..FV.... set flags (default scene_change_detect+scd)
      scene_change_detect              ..FV.... enable scene change detection
      scd                          ..FV.... enable scene change detection
@@ -8390,6 +8428,9 @@ overlay AVOptions:
      gbrp                         ..FV.... 
      auto                         ..FV.... 
   repeatlast        <boolean>    ..FV.... repeat overlay of the last overlay frame (default true)
+  alpha             <int>        ..FV.... alpha format (from 0 to 1) (default straight)
+     straight                     ..FV.... 
+     premultiplied                ..FV.... 
 
 framesync AVOptions:
   eof_action        <int>        ..FV.... Action to take when encountering EOF from secondary input  (from 0 to 2) (default repeat)
@@ -8638,14 +8679,18 @@ scale AVOptions:
   out_color_matrix  <string>     ..FV.... set output YCbCr type
   in_range          <int>        ..FV.... set input color range (from 0 to 2) (default auto)
      auto                         ..FV....
+     unknown                      ..FV....
      full                         ..FV....
+     limited                      ..FV....
      jpeg                         ..FV....
      mpeg                         ..FV....
      tv                           ..FV....
      pc                           ..FV....
   out_range         <int>        ..FV.... set output color range (from 0 to 2) (default auto)
      auto                         ..FV....
+     unknown                      ..FV....
      full                         ..FV....
+     limited                      ..FV....
      jpeg                         ..FV....
      mpeg                         ..FV....
      tv                           ..FV....
@@ -8726,14 +8771,18 @@ scale2ref AVOptions:
   out_color_matrix  <string>     ..FV.... set output YCbCr type
   in_range          <int>        ..FV.... set input color range (from 0 to 2) (default auto)
      auto                         ..FV....
+     unknown                      ..FV....
      full                         ..FV....
+     limited                      ..FV....
      jpeg                         ..FV....
      mpeg                         ..FV....
      tv                           ..FV....
      pc                           ..FV....
   out_range         <int>        ..FV.... set output color range (from 0 to 2) (default auto)
      auto                         ..FV....
+     unknown                      ..FV....
      full                         ..FV....
+     limited                      ..FV....
      jpeg                         ..FV....
      mpeg                         ..FV....
      tv                           ..FV....
@@ -8840,6 +8889,18 @@ setfield AVOptions:
 
 setpts AVOptions:
   expr              <string>     ..FVA... Expression determining the frame timestamp (default "PTS")
+
+setrange AVOptions:
+  range             <int>        ..FV.... select color range (from -1 to 2) (default auto)
+     auto                         ..FV.... keep the same color range
+     unspecified                  ..FV....
+     unknown                      ..FV....
+     limited                      ..FV....
+     tv                           ..FV....
+     mpeg                         ..FV....
+     full                         ..FV....
+     pc                           ..FV....
+     jpeg                         ..FV....
 
 setsar AVOptions:
   sar               <string>     ..FV.... set sample (pixel) aspect ratio (default "0")
@@ -9265,6 +9326,7 @@ tile AVOptions:
   padding           <int>        ..FV.... set inner border thickness in pixels (from 0 to 1024) (default 0)
   color             <color>      ..FV.... set the color of the unused area (default "black")
   overlap           <int>        ..FV.... set how many frames to overlap for each render (from 0 to INT_MAX) (default 0)
+  init_padding      <int>        ..FV....  set how many frames to initially pad (from 0 to INT_MAX) (default 0)
 
 tinterlace AVOptions:
   mode              <int>        ..FV.... select interlace mode (from 0 to 7) (default merge)
@@ -12092,6 +12154,7 @@ File formats:
  D  mxg             MxPEG clip
  D  nc              NC camera feed
  D  nistsphere      NIST SPeech HEader REsources
+ D  nsp             Computerized Speech Lab NSP
  D  nsv             Nullsoft Streaming Video
   E null            raw null video
  DE nut             NUT
@@ -12566,6 +12629,7 @@ File formats:
  D  mxg             MxPEG clip
  D  nc              NC camera feed
  D  nistsphere      NIST SPeech HEader REsources
+ D  nsp             Computerized Speech Lab NSP
  D  nsv             Nullsoft Streaming Video
  D  nut             NUT
  D  nuv             NuppelVideo
@@ -12719,7 +12783,7 @@ Filters:
  ... agate             A->A       Audio gate.
  ... ainterleave       N->A       Temporally interleave audio inputs.
  ... alimiter          A->A       Audio lookahead limiter.
- ... allpass           A->A       Apply a two-pole all-pass filter.
+ ..C allpass           A->A       Apply a two-pole all-pass filter.
  ... aloop             A->A       Loop audio samples.
  ... amerge            N->A       Merge two or more audio streams into a single multi-channel stream.
  T.. ametadata         A->A       Manipulate audio frame metadata.
@@ -12746,10 +12810,10 @@ Filters:
  ..C astreamselect     N->N       Select audio streams
  ..C atempo            A->A       Adjust audio tempo.
  ... atrim             A->A       Pick one continuous section from the input, drop the rest.
- ... bandpass          A->A       Apply a two-pole Butterworth band-pass filter.
- ... bandreject        A->A       Apply a two-pole Butterworth band-reject filter.
- ... bass              A->A       Boost or cut lower frequencies.
- ... biquad            A->A       Apply a biquad IIR filter with the given coefficients.
+ ..C bandpass          A->A       Apply a two-pole Butterworth band-pass filter.
+ ..C bandreject        A->A       Apply a two-pole Butterworth band-reject filter.
+ ..C bass              A->A       Boost or cut lower frequencies.
+ ..C biquad            A->A       Apply a biquad IIR filter with the given coefficients.
  ... bs2b              A->A       Bauer stereo-to-binaural filter.
  ... channelmap        A->A       Remap audio channels.
  ... channelsplit      A->N       Split audio into per-channel streams.
@@ -12762,17 +12826,17 @@ Filters:
  ... dynaudnorm        A->A       Dynamic Audio Normalizer.
  ... earwax            A->A       Widen the stereo image.
  ... ebur128           A->N       EBU R128 scanner.
- ... equalizer         A->A       Apply two-pole peaking equalization (EQ) filter.
+ ..C equalizer         A->A       Apply two-pole peaking equalization (EQ) filter.
  ... extrastereo       A->A       Increase difference between stereo audio channels.
  ..C firequalizer      A->A       Finite Impulse Response Equalizer.
  ... flanger           A->A       Apply a flanging effect to the audio.
  ... haas              A->A       Apply Haas Stereo Enhancer.
  ... hdcd              A->A       Apply High Definition Compatible Digital (HDCD) decoding.
  .S. headphone         N->A       Apply headphone binaural spatialization with HRTFs in additional streams.
- ... highpass          A->A       Apply a high-pass filter with 3dB point frequency.
+ ..C highpass          A->A       Apply a high-pass filter with 3dB point frequency.
  ... join              N->A       Join multiple audio streams into multi-channel output.
  ... loudnorm          A->A       EBU R128 loudness normalization
- ... lowpass           A->A       Apply a low-pass filter with 3dB point frequency.
+ ..C lowpass           A->A       Apply a low-pass filter with 3dB point frequency.
  ... mcompand          A->A       Multiband Compress or expand audio dynamic range.
  ... pan               A->A       Remix channels with coefficients (panning).
  ... replaygain        A->A       ReplayGain scanner.
@@ -12787,7 +12851,7 @@ Filters:
  ... stereowiden       A->A       Apply stereo widening effect.
  ... superequalizer    A->A       Apply 18 band equalization filter.
  .S. surround          A->A       Apply audio surround upmix filter.
- ... treble            A->A       Boost or cut upper frequencies.
+ ..C treble            A->A       Boost or cut upper frequencies.
  ... tremolo           A->A       Apply tremolo effect.
  ... vibrato           A->A       Apply vibrato effect.
  T.C volume            A->A       Change input volume.
@@ -12821,7 +12885,7 @@ Filters:
  TS. colormatrix       V->V       Convert color matrix.
  TS. colorspace        V->V       Convert between colorspaces.
  TS. convolution       V->V       Apply convolution filter.
- T.. convolve          VV->V      Convolve first video stream with second video stream.
+ TS. convolve          VV->V      Convolve first video stream with second video stream.
  ... copy              V->V       Copy the input video unchanged to the output.
  ... cover_rect        V->V       Find and cover a user specified object.
  ..C crop              V->V       Crop the input video.
@@ -12857,12 +12921,13 @@ Filters:
  ... fieldhint         V->V       Field matching using hints.
  ... fieldmatch        N->V       Field matching for inverse telecine.
  T.. fieldorder        V->V       Set the field order.
+ T.. fillborders       V->V       Fill borders of the input video.
  ... find_rect         V->V       Find a user specified object.
  T.. floodfill         V->V       Fill area with same color with another color.
  ... format            V->V       Convert the input video to one of the specified pixel formats.
  ... fps               V->V       Force constant framerate.
  ... framepack         VV->V      Generate a frame packed stereoscopic video.
- ... framerate         V->V       Upsamples or downsamples progressive source between specified frame rates.
+ .S. framerate         V->V       Upsamples or downsamples progressive source between specified frame rates.
  T.. framestep         V->V       Select one frame every N frames.
  ... frei0r            V->V       Apply a frei0r effect.
  T.. fspp              V->V       Apply Fast Simple Post-processing filter.
@@ -12956,6 +13021,7 @@ Filters:
  ... setdar            V->V       Set the frame display aspect ratio.
  ... setfield          V->V       Force field for the output video frame.
  ... setpts            V->V       Set PTS for the output video frame.
+ ... setrange          V->V       Force color range for the output video frame.
  ... setsar            V->V       Set the pixel sample aspect ratio.
  ... settb             V->V       Set timebase for the video output link.
  ... showinfo          V->V       Show textual information for each video frame.

@@ -178,7 +178,7 @@ if 'NZBOP_SCRIPTDIR' in os.environ and not os.environ['NZBOP_VERSION'][0:5] < '1
     # All checks done, now launching the script.
     settings = ReadSettings(MP4folder, "autoProcess.ini")
 
-    output = True;
+    successful_process = False
     if shouldConvert:
         if output_dir:
             settings.output_dir = output_dir
@@ -206,8 +206,9 @@ if 'NZBOP_SCRIPTDIR' in os.environ and not os.environ['NZBOP_VERSION'][0:5] < '1
                     if MkvtoMp4(settings, logger=log).validSource(inputfile):
                         try:
                             output = converter.process(inputfile)
-                            if output == True:
+                            if output:
                                 log.info("Successfully processed %s." % inputfile)
+                                successful_process = True
                             else:
                                 log.exception( "File Processing Failed" )
                         except:
@@ -220,9 +221,9 @@ if 'NZBOP_SCRIPTDIR' in os.environ and not os.environ['NZBOP_VERSION'][0:5] < '1
                             break
         if converter.output_dir:
             path = converter.output_dir
-    if output == False:
-        sys.exit( POSTPROCESS_ERROR )
 
+    if successful_process == False: #This means that there were no files that could be converted, i.e: probably an iso
+        sys.exit( POSTPROCESS_ERROR )
     elif (category.lower() == categories[0]):
         #DEBUG#print "Sickbeard Processing Activated"
         autoProcessTV.processEpisode(path, settings, nzb)
