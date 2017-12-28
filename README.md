@@ -8,35 +8,33 @@ Cuvid/NVDEC only support pixel formats with 420 chroma, so it will not work with
 
 Brief explanation of added settings:
 
-- 'burn_in_forced_subs' = This will attempt to find any forced subtitle and encode/"burn" it into the video. This is useful for media players that have trouble auto-selecting embedded forced subtitles from an .mp4. -- Looking at you, Plex. :p
+- `burn_in_forced_subs` = This will attempt to find any forced subtitle and encode/"burn" it into the video. This is useful for media players that have trouble auto-selecting embedded forced subtitles from an .mp4. -- Looking at you, Plex. :p
   This looks for the 'forced' flag in the subtitle metadata first, but failing that will go digging through the title metadata where the text may say "forced", "english subs for non-english parts", "non-english parts", or something of that nature. 
   This part uses a whitelist method that only flags a subtitle stream as forced if it matches one of the items on the whitelist.
-  Enabling this option will discard all subtitle streams at the moment due to a weird problem I'm having on some media where ffmpeg will get stuck on the 2-3rd frame while encoding the video stream, soaking up all the RAM it can find until the computer runs out, and then a crash occurs. 
-  Disabling the copy/convert process of the other subtitle streams seems to avoid this problem. 
-  Unfortunately this will not work in every case, but it seems to get most modern tv shows/movies.
-- 'sample_rate' = By default ffmpeg will upsample to 96 KHz with some audio filters (loudnorm being an example). Internet explorer/Firefox/edge will not play any video with 96 KHz audio, so this will allow you to set it to something lower like 48KHz.
-- 'handle_m2ts_files' = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the remaining m2ts file to mp4. Default is disabled. 
-- 'resolution-bitrate-restriction' = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
+  Enabling this option will discard all subtitle streams as overlaying subtitles over burned in subtitles is kind of a bad idea.
+- `sample_rate` = By default ffmpeg will upsample to 96 KHz with some audio filters (loudnorm being an example). Internet explorer/Firefox/edge will not play any video with 96 KHz audio, so this will allow you to set it to something lower like 48KHz.
+- `handle_m2ts_files` = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the remaining m2ts file to mp4. Default is disabled. 
+- `resolution-bitrate-restriction` = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
   Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 
   That line will restrict 1280x720 to a bitrate of 6000, 1920x1080 to a bitrate of 10000 and 4k to a bitrate of 40000
   This will override the bitrate set under video-bitrate
-- 'qmin' = minimum video quantizer scale (VBR) (from -1 to 69) (default 2) - Must be set when nvenc_rate_control is vbr_2pass or vbr_minqp.
-- 'qmax' = maximum video quantizer scale (VBR) (from -1 to 1024) (default 31)
-- 'global_quality' = Must be set when nvenc_rate_control is constqp, interally this uses the -qp flag when nvenc is enabled
-- 'maxrate' = maximum bitrate (in kb/s). Used for VBV together with bufsize. (from 0 to INT_MAX) (default 0)
-- 'minrate' = minimum bitrate (in kb/s). Most useful in setting up a CBR encode. It is of little use otherwise. (from INT_MIN to INT_MAX) (default 0)
-- 'bufsize' = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0) - I usually set this to 5*average bitrate, but mileage will vary.
-- 'nvenc_encoder_gpu' = Selects which NVENC capable GPU to use for encoding. First GPU is 0, second is 1, and so on. Default is any
-- 'nvenc_profile' = h264 options include: baseline, main, high, high444p - default is main
-- 'nvenc_preset' = Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
-- 'nvenc_rate_control' = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass, cbr_ld_hq, cbr_hq, vbr_hq - default constqp
-- 'nvenc_temporal_aq' = (true/false) Improves output quality slightly, adds 2-5% extra processing time - default false
-- 'nvenc_weighted_prediction' = (true/false) Reduces bitrate needed for scenes that fade to black - default false - WARNING: Currently broken with Nvidia drivers 387.xx and 388.xx, the encoder will eventually halt and throw an error.  385.69 are the most current drivers that work with this, otherwise leave it disabled.
-- 'nvenc_rc_lookahead' = Number of frames to look ahead for rate-control (from -1 to INT_MAX) - default -1
-- 'enable_nvenc_decoder' = (true/false) Enable NVDEC gpu decoding. Default is false
-- 'enable_nvenc_hevc_decoder' = (true/false) Enable NVDEC gpu decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false
-- 'nvenc_decoder_gpu' = Selects which NVENC capable GPU to use for decoding. First GPU is 0, second is 1, and so on. Default is any
-- 'nvenc_hevc_decoder_gpu' = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any. 
+- `qmin` = minimum video quantizer scale (VBR) (from -1 to 69) (default 2) - Must be set when nvenc_rate_control is vbr_2pass or vbr_minqp.
+- `qmax` = maximum video quantizer scale (VBR) (from -1 to 1024) (default 31)
+- `global_quality` = Must be set when nvenc_rate_control is constqp, interally this uses the -qp flag when nvenc is enabled
+- `maxrate` = maximum bitrate (in kb/s). Used for VBV together with bufsize. (from 0 to INT_MAX) (default 0)
+- `minrate` = minimum bitrate (in kb/s). Most useful in setting up a CBR encode. It is of little use otherwise. (from INT_MIN to INT_MAX) (default 0)
+- `bufsize` = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0) - I usually set this to 5*average bitrate, but mileage will vary.
+- `nvenc_encoder_gpu` = Selects which NVENC capable GPU to use for encoding. First GPU is 0, second is 1, and so on. Default is any
+- `nvenc_profile` = h264 options include: baseline, main, high, high444p - default is main
+- `nvenc_preset` = Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
+- `nvenc_rate_control` = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass, cbr_ld_hq, cbr_hq, vbr_hq - default constqp
+- `nvenc_temporal_aq` = (true/false) Improves output quality slightly, adds 2-5% extra processing time - default false
+- `nvenc_weighted_prediction` = (true/false) Reduces bitrate needed for scenes that fade to black - default false - WARNING: Currently broken with Nvidia drivers 387.xx and 388.xx, the encoder will eventually halt and throw an error.  385.69 are the most current drivers that work with this, otherwise leave it disabled.
+- `nvenc_rc_lookahead` = Number of frames to look ahead for rate-control (from -1 to INT_MAX) - default -1
+- `enable_nvenc_decoder` = (true/false) Enable NVDEC gpu decoding. Default is false
+- `enable_nvenc_hevc_decoder` = (true/false) Enable NVDEC gpu decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false
+- `nvenc_decoder_gpu` = Selects which NVENC capable GPU to use for decoding. First GPU is 0, second is 1, and so on. Default is any
+- `nvenc_hevc_decoder_gpu` = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any. 
 
 If you have multiple nvidia cards you can decode on one and encode on the other, but it doesn't seem to speed up the process at all.
 Decoding by itself does not count towards the nvenc 2 stream limit.
