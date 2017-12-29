@@ -15,23 +15,23 @@ Brief explanation of added settings:
 - `sample_rate` = By default ffmpeg will upsample to 96 KHz with some audio filters (loudnorm being an example). Internet explorer/Firefox/edge will not play any video with 96 KHz audio, so this will allow you to set it to something lower like 48KHz.
 - `handle_m2ts_files` = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the remaining m2ts file to mp4. Default is disabled. 
 - `resolution-bitrate-restriction` = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
-  Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 
-  That line will restrict 1280x720 to a bitrate of 6000, 1920x1080 to a bitrate of 10000 and 4k to a bitrate of 40000
-  This will override the bitrate set under video-bitrate
+- Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 
+- That line will restrict 1280x720 to a bitrate of 6000, 1920x1080 to a bitrate of 10000 and 4k to a bitrate of 40000
+- This will override the bitrate set under video-bitrate
 - `qmin` = minimum video quantizer scale (VBR) (from -1 to 69) (default 2) - Must be set when nvenc_rate_control is vbr_2pass or vbr_minqp.
 - `qmax` = maximum video quantizer scale (VBR) (from -1 to 1024) (default 31)
 - `global_quality` = Must be set when nvenc_rate_control is constqp, interally this uses the -qp flag when nvenc is enabled
 - `maxrate` = maximum bitrate (in kb/s). Used for VBV together with bufsize. (from 0 to INT_MAX) (default 0)
 - `minrate` = minimum bitrate (in kb/s). Most useful in setting up a CBR encode. It is of little use otherwise. (from INT_MIN to INT_MAX) (default 0)
-- `bufsize` = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0) - I usually set this to 5*average bitrate, but mileage will vary.
+- `bufsize` = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0) - I usually set this to 4*average bitrate, but mileage will vary.
 - `nvenc_encoder_gpu` = Selects which NVENC capable GPU to use for encoding. First GPU is 0, second is 1, and so on. Default is any
-- `nvenc_profile` = h264 options include: baseline, main, high, high444p - default is main
+- `nvenc_profile` = h264 options include: baseline, main, high, high444p - default is main, most clients support high but relatively few support high444p
 - `nvenc_preset` = Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
 - `nvenc_rate_control` = Options include: constqp, vbr, cbr, vbr_minqp, ll_2pass_quality, ll_2pass_size, vbr_2pass, cbr_ld_hq, cbr_hq, vbr_hq - default constqp
 - `nvenc_temporal_aq` = (true/false) Improves output quality slightly, adds 2-5% extra processing time - default false
-- `nvenc_weighted_prediction` = (true/false) Reduces bitrate needed for scenes that fade to black - default false - WARNING: Currently broken with Nvidia drivers 387.xx and 388.xx, the encoder will eventually halt and throw an error.  385.69 are the most current drivers that work with this, otherwise leave it disabled.
-- `nvenc_rc_lookahead` = Number of frames to look ahead for rate-control (from -1 to INT_MAX) - default -1
-- `enable_nvenc_decoder` = (true/false) Enable NVDEC gpu decoding. Default is false
+- `nvenc_weighted_prediction` = (true/false) Reduces bitrate needed for scenes that fade to black - default false - **WARNING**: Currently broken with Nvidia drivers 387.xx and 388.xx, the encoder will eventually halt and throw an error.  385.69 are the most current drivers that work with this, otherwise leave it disabled.
+- `nvenc_rc_lookahead` = Number of frames to look ahead for rate-control (from -1 to 32) - default -1
+- `enable_nvenc_decoder` = (true/false) Enable NVDEC gpu decoding. Default is false - This is anywhere from 10-40% faster decoding than dxva2 but vastly more buggy - many dropped frames on certain videos.
 - `enable_nvenc_hevc_decoder` = (true/false) Enable NVDEC gpu decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false
 - `nvenc_decoder_gpu` = Selects which NVENC capable GPU to use for decoding. First GPU is 0, second is 1, and so on. Default is any
 - `nvenc_hevc_decoder_gpu` = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any. 
