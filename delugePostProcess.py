@@ -78,13 +78,12 @@ if settings.deluge['convert']:
 
     for filename in files:
         inputfile = os.path.join(path, filename)
-        if os.path.getsize(inputfile) > 50000000:
-            if MkvtoMp4(settings).validSource(inputfile):
-                log.info("Converting file %s at location %s." % (inputfile, settings.output_dir))
-                try:
-                    output = converter.process(inputfile)
-                except:
-                    log.exception("Error converting file %s." % inputfile)
+        if MkvtoMp4(settings).validSource(inputfile):
+            log.info("Converting file %s at location %s." % (inputfile, settings.output_dir))
+            try:
+                output = converter.process(inputfile)
+            except:
+                log.exception("Error converting file %s." % inputfile)
 
     path = converter.output_dir
 else:
