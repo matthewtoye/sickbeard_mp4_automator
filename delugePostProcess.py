@@ -44,11 +44,9 @@ torrent_data = client.call('core.get_torrent_status', torrent_id, ['files', 'lab
 torrent_files = torrent_data['files']
 category = torrent_data['label'].lower()
 
-files = []
-log.debug("List of files in torrent:")
-for contents in torrent_files:
-    files.append(contents['path'])
-    log.debug(contents['path'])
+log.log("List of files in torrent:")
+files = os.listdir( path )
+log.log( files )
 
 if category.lower() not in categories:
     log.error("No valid category detected.")
