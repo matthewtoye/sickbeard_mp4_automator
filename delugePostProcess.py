@@ -46,7 +46,8 @@ category = torrent_data['label'].lower()
 
 log.log("List of files in torrent:")
 files = os.listdir( path )
-log.log( files )
+for filename in files:
+    log.log( "Filename: %s" % filename )
 
 if category.lower() not in categories:
     log.error("No valid category detected.")
