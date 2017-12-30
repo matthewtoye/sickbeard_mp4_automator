@@ -45,10 +45,10 @@ torrent_files = torrent_data['files']
 category = torrent_data['label'].lower()
 
 files = []
-log.info("List of files in torrent:")
+log.debug("List of files in torrent:")
 for contents in torrent_files:
     files.append(contents['path'])
-    log.info(contents['path'])
+    log.debug(contents['path'])
 
 if category.lower() not in categories:
     log.error("No valid category detected.")
@@ -62,7 +62,7 @@ if settings.deluge['convert']:
     # Check for custom Deluge output_dir
     if settings.deluge['output_dir']:
         settings.output_dir = settings.deluge['output_dir']
-        log.info("Overriding output_dir to %s." % settings.deluge['output_dir'])
+        log.debug("Overriding output_dir to %s." % settings.deluge['output_dir'])
 
     # Perform conversion.
     settings.delete = False
@@ -83,7 +83,7 @@ if settings.deluge['convert']:
             try:
                 output = converter.process(inputfile)
             except:
-                log.info("Error converting file %s." % inputfile)
+                log.exception("Error converting file %s." % inputfile)
 
     path = converter.output_dir
 else:
