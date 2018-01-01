@@ -55,7 +55,7 @@ time.sleep(120) # delays for 120 seconds for extraction
 
 log.info("List of files in torrent post-extraction:")
 files = []
-for (dirpath, dirnames, filenames) in walk(path):
+for (dirpath, dirnames, filenames) in os.walk(path):
     files.extend(filenames)
 for filename in files:
     log.info( "Filename: %s" % filename )
