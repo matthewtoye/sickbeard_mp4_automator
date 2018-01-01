@@ -8,6 +8,7 @@ from mkvtomp4 import MkvtoMp4
 from deluge_client import DelugeRPCClient
 import logging
 from logging.config import fileConfig
+import time
 
 fileConfig(os.path.join(os.path.dirname(sys.argv[0]), 'logging.ini'), defaults={'logfilename': os.path.join(os.path.dirname(sys.argv[0]), 'info.log').replace("\\", "/")})
 log = logging.getLogger("delugePostProcess")
@@ -44,10 +45,24 @@ torrent_data = client.call('core.get_torrent_status', torrent_id, ['files', 'lab
 torrent_files = torrent_data['files']
 category = torrent_data['label'].lower()
 
-log.info("List of files in torrent:")
+preextractfiles = []
+log.info("List of files in torrent pre-extraction:")
+for contents in torrent_files:
+    files.append(contents['path'])
+    log.debug(contents['path'])
+
+time.sleep(120) # delays for 120 seconds for extraction
+
+log.info("List of files in torrent post-extraction:")
 files = os.listdir( path )
 for filename in files:
     log.info( "Filename: %s" % filename )
+
+filestoconvert = (list(set(files) - set(preextractfiles)))
+if filestoconvert is not None:
+    files = filestoconvert
+else:
+    files = preextractfiles
 
 if category.lower() not in categories:
     log.error("No valid category detected.")
@@ -97,6 +112,11 @@ else:
         shutil.copy(inputfile, newpath)
     path = newpath
     delete_dir = newpath
+
+if filestoconvert is not None:
+    for xy in filestoconvert:
+        self.removeFile(xy)
+        self.log.error("%s deleted." % xy)
 
 # Send to Sickbeard
 if (category == categories[0]):
