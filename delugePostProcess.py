@@ -54,15 +54,21 @@ for contents in torrent_files:
 time.sleep(120) # delays for 120 seconds for extraction
 
 log.info("List of files in torrent post-extraction:")
-files = os.listdir( path )
+files = []
+for (dirpath, dirnames, filenames) in walk(path):
+    files.extend(filenames)
 for filename in files:
     log.info( "Filename: %s" % filename )
 
 filestoconvert = (list(set(files) - set(preextractfiles)))
 if filestoconvert is not None:
     files = filestoconvert
+    for filename in files:
+        log.info( "Filenames to convert: %s" % filename )
 else:
     files = preextractfiles
+    for filename in files:
+        log.info( "Filenames from torrent to convert: %s" % filename )
 
 if category.lower() not in categories:
     log.error("No valid category detected.")
