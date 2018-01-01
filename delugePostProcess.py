@@ -48,8 +48,8 @@ category = torrent_data['label'].lower()
 preextractfiles = []
 log.info("List of files in torrent pre-extraction:")
 for contents in torrent_files:
-    files.append(contents['path'])
-    log.debug(contents['path'])
+    preextractfiles.append(contents['path'])
+    log.info(contents['path'])
 
 time.sleep(120) # delays for 120 seconds for extraction
 
