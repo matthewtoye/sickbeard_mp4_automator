@@ -8,7 +8,6 @@ from mkvtomp4 import MkvtoMp4
 from deluge_client import DelugeRPCClient
 import logging
 from logging.config import fileConfig
-import time
 
 fileConfig(os.path.join(os.path.dirname(sys.argv[0]), 'logging.ini'), defaults={'logfilename': os.path.join(os.path.dirname(sys.argv[0]), 'info.log').replace("\\", "/")})
 log = logging.getLogger("delugePostProcess")
@@ -45,30 +44,11 @@ torrent_data = client.call('core.get_torrent_status', torrent_id, ['files', 'lab
 torrent_files = torrent_data['files']
 category = torrent_data['label'].lower()
 
-preextractfiles = []
-log.info("List of files in torrent pre-extraction:")
-for contents in torrent_files:
-    preextractfiles.append(contents['path'])
-    log.info(contents['path'])
-
-time.sleep(120) # delays for 120 seconds for extraction
-
-log.info("List of files in torrent post-extraction:")
 files = []
-for (dirpath, dirnames, filenames) in os.walk(path):
-    files.extend(filenames)
-for filename in files:
-    log.info( "Filename: %s" % filename )
-
-filestoconvert = (list(set(files) - set(preextractfiles)))
-if filestoconvert is not None:
-    files = filestoconvert
-    for filename in files:
-        log.info( "Filenames to convert: %s" % filename )
-else:
-    files = preextractfiles
-    for filename in files:
-        log.info( "Filenames from torrent to convert: %s" % filename )
+log.info("List of files in torrent:")
+for contents in torrent_files:
+    files.append(contents['path'])
+    log.info(contents['path'])
 
 if category.lower() not in categories:
     log.error("No valid category detected.")
@@ -82,7 +62,7 @@ if settings.deluge['convert']:
     # Check for custom Deluge output_dir
     if settings.deluge['output_dir']:
         settings.output_dir = settings.deluge['output_dir']
-        log.debug("Overriding output_dir to %s." % settings.deluge['output_dir'])
+        log.info("Overriding output_dir to %s." % settings.deluge['output_dir'])
 
     # Perform conversion.
     settings.delete = False
@@ -103,7 +83,7 @@ if settings.deluge['convert']:
             try:
                 output = converter.process(inputfile)
             except:
-                log.exception("Error converting file %s." % inputfile)
+                log.info("Error converting file %s." % inputfile)
 
     path = converter.output_dir
 else:
@@ -118,11 +98,6 @@ else:
         shutil.copy(inputfile, newpath)
     path = newpath
     delete_dir = newpath
-
-if filestoconvert is not None:
-    for xy in filestoconvert:
-        self.removeFile(xy)
-        self.log.error("%s deleted." % xy)
 
 # Send to Sickbeard
 if (category == categories[0]):
