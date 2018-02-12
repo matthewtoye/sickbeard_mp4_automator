@@ -209,23 +209,23 @@ class MediaStreamInfo(object):
                 self.pix_fmt = val
 
         if self.type == 'subtitle':
-            if key == 'DISPOSITION:forced': # Give higher preference for proper usage of forced tag
+            if key == 'DISPOSITION:forced': # Give higher preference for proper usage of forced tag, unfortunately this is not used very often.
                 self.sub_forced = self.parse_int(val)
                 if self.sub_forced == 1:
                     self.sub_forced = 2
             if key == 'DISPOSITION:default':
                 self.sub_default = self.parse_int(val)
-            if key == 'title': #Some videos just mention in the title if the sub is forced or not. 
+            if key == 'title': #Some videos just casually mention in the title if the sub is forced or not. 
                 possible_ways_of_saying_forced = { "forced", "english subs for non-english parts", "force", "non-english parts",
                                                    "foreign parts only", "non english parts", "non english part", "foreign parts", "valyrian dialogue" }
                                                    #unfortunately this is not standardized at all, and there are probably 30 other ways that this is labeled
                 newval = val.lower()
+                logger.info( "Title name: %s" %s ) #Just to check later and find the other methods of saying alien language.
                 if newval in possible_ways_of_saying_forced or "forced" in newval or "alien only" in newval:
                     self.sub_forced = 1
             if key == 'duration' and val != 'N/A': #Sometimes there are 2 english subs, one of which has a much shorter duration than the other.
                                   #This shorter duration subtitle tends to be the forced subs, and we will use this in a last ditch effort
                                   # to figure out which subtitles need to be encoded into the video. 
-
                 self.sub_force_guess = val
 
     def __repr__(self):

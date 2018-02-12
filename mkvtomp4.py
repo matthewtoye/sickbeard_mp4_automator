@@ -590,11 +590,11 @@ class MkvtoMp4:
         subtitle_settings = {}
         l = 0
         self.log.info("Reading subtitle streams.")
-        forced_sub = 0
+        forced_sub = 0 # This is the index of the subtitle stream in the entire file, overlay uses this index
         guessed_forced_sub = 0
         guessed_subtitle_number  = -1
         overlay_stream = ""
-        subtitle_number = -1
+        subtitle_number = -1 # Subtitle_used is the index of the subtitle stream compared to only other subtitles. -vf to overlay uses this.
         subtitle_used = subtitle_number
         shortest_duration_subtitle_stream = 86400 # There probably aren't too many movies that are 24 hours long.
         longest_duration_subtitle_stream = 1
@@ -626,11 +626,11 @@ class MkvtoMp4:
                 forced_sub = s.index
                 subtitle_used = subtitle_number
                 break
-            elif overrideLang == True: # If there is no audio stream in the desired language, burn in the first subtitle stream that matches the users language. 
-                forced_sub = s.index  
+            elif overrideLang == True: # If there is no audio stream in the desired language,
+                forced_sub = s.index   # burn in the first subtitle stream that matches the users language.  
                 subtitle_used = subtitle_number
                 break
-            elif s.sub_force_guess:## Finally, throw a guess at it if there are 2 desired language subtitle streams.
+            elif s.sub_force_guess:# Finally, throw a guess at it if there are 2 desired language subtitle streams.
                 s.sub_force_guess = s.sub_force_guess[:-3]
                 try:
                     duration = datetime.datetime.strptime(s.sub_force_guess,'%H:%M:%S.%f')
@@ -642,14 +642,13 @@ class MkvtoMp4:
                     if total_seconds > longest_duration_subtitle_stream:
                         longest_duration_subtitle_stream = total_seconds
                 except:
-                    self.log.info( "Couldn't use experimental forced subtitle duration." )
+                    self.log.info( "Couldn't use experimental forced subtitle duration. Probably due to odd time formatting - Attempted to parse time format from %s" % s.sub_force-guess )
 
         if forced_sub == 0 and desired_language_streams > 1 and longest_duration_subtitle_stream > 1 and \
             ( float( shortest_duration_subtitle_stream ) / float( longest_duration_subtitle_stream ) ) < 0.75: # This is a sanity check just in case there is a video with multiple
             forced_sub = guessed_forced_sub # native-speaking language subtitle streams and the 2nd one just happens to be a director's commentary instead of foreign language subtitles.
             subtitle_used = guessed_subtitle_number # If the film has >75% forced subtitles then it's probably going to be flagged with overrideLang = true
             self.log.info( "Used experimental forced subtitle guess" ) #Just to check when it is used. 
-
 
         for s in info.subtitle:
             if forced_sub > 0 and s.index != forced_sub and self.burn_in_forced_subs == True:
@@ -658,7 +657,6 @@ class MkvtoMp4:
                 vcodec = self.video_codec[0]
             # Make sure its not an image based codec
             if s.codec.lower() not in bad_subtitle_codecs and self.embedsubs:
-
                 # Proceed if no whitelist is set, or if the language is in the whitelist
                 if self.swl is None or s.metadata['language'].lower() in self.swl:
                     subtitle_settings.update({l: {
@@ -671,7 +669,7 @@ class MkvtoMp4:
                         'burn_in_forced_subs': self.burn_in_forced_subs,
                         'subtitle_burn': drive_letter_no_colon + r"\:" + directory + "\\\\" + filename + "." + input_extension + \
                             ":si=" + str( subtitle_used ) + "'" #FFmpeg requires a very specific string of letters for -vf subtitles=
-                                                                #TODO: Check if this works on something other than windows.
+                                                                #TODO: Check if this works on something other than windows- ie: escape character shenaningans.
                     }})
                     self.log.info("Creating subtitle stream %s from source stream %s." % (l, s.index))
                     l = l + 1
@@ -828,13 +826,17 @@ class MkvtoMp4:
             del options['video']['bitrate']
             options['video']['crf'] = self.vcrf
 
-        options['postopts'].extend([ '-max_muxing_queue_size', '2048' ] ) 
+        options['postopts'].extend([ '-max_muxing_queue_size', '2048' ] )  
+        # Some ffmpeg filters are in a state of internal API transition with how they handle certain magic
+        # that I don't understand, but read about and nodded about on the ffmpeg mailing list.
+        # Allowing a higher queue size fixes whatever wizardry is happening, and shouldn't be needed in a year or so. 02/11/2018
 
         if len(overlay_stream) > 0:
-            options['preopts'].remove( '-fix_sub_duration' ) #fix_sub_duration really screws up the duration of overlaid "picture" subtitles, as they do not stay on the screen long enough. Turn it off.
+            options['preopts'].remove( '-fix_sub_duration' ) #fix_sub_duration really screws up the duration of overlaid "picture" subtitles,
+                           #as they stay on the screen for less than a second. This doesn't have any negative consequences that I've noticed.
             if vwidth != None:
-                del options['video']['map'] #The video stream is remapped to [video] in order to support scaling picture subtitles to another resolution.
-            options['video']['filter_complex'] = overlay_stream
+                del options['video']['map'] #The video stream formally known as [v:(number)] is remapped to [video] in order to support scaling picture subtitles to another resolution.
+            options['video']['filter_complex'] = overlay_stream # I couldn't quite get it to work correctly without doing this. 
 
         if self.preopts:
             options['preopts'].extend(self.preopts)
