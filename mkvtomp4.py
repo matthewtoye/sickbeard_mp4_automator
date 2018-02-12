@@ -642,7 +642,7 @@ class MkvtoMp4:
                     if total_seconds > longest_duration_subtitle_stream:
                         longest_duration_subtitle_stream = total_seconds
                 except:
-                    self.log.info( "Couldn't use experimental forced subtitle duration. Probably due to odd time formatting - Attempted to parse time format from %s" % s.sub_force-guess )
+                    self.log.info( "Couldn't use experimental forced subtitle duration. Probably due to odd time formatting - Attempted to parse time format from %s" % s.sub_force_guess )
 
         if forced_sub == 0 and desired_language_streams > 1 and longest_duration_subtitle_stream > 1 and \
             ( float( shortest_duration_subtitle_stream ) / float( longest_duration_subtitle_stream ) ) < 0.75: # This is a sanity check just in case there is a video with multiple
