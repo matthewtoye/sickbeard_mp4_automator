@@ -438,6 +438,9 @@ class MkvtoMp4:
         else:
             vprofile = None
 
+        if vcodec == 'nvenc_h264' and pix_fmt == 'yuv420': #yuv420 + nvenc has aliasing that is annoying once it is pointed out, nv12 does not and supports the same colors.
+            pix_fmt = 'nv12'
+
         # Audio streams
         self.log.info("Reading audio streams.")
 
@@ -920,14 +923,6 @@ class MkvtoMp4:
         # Add width option
         if vwidth:
             options['video']['width'] = vwidth
-
-        # Add pix_fmt
-        if self.pix_fmt:
-            if vcodec != 'nvenc_h264':
-                options['video']['pix_fmt'] = self.pix_fmt[0]
-            else:
-            #yuv420 + nvenc has odd aliasing, nv12 does not and supports the same colors.
-                options['video']['pix_fmt'] = "nv12"
         # Add Nvidia specific options
         if self.nvenc_profile:
             options['video']['nvenc_profile'] = self.nvenc_profile
