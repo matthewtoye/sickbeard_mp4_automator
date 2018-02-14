@@ -39,6 +39,7 @@ class MkvtoMp4:
                  nvenc_weighted_prediction=False,
                  nvenc_rc_lookahead=None,
                  handle_m2ts_files=False,
+                 video_profile=None,
                  h264_level=None,
                  qsv_decoder=True,
                  hevc_qsv_decoder=False,
@@ -123,6 +124,7 @@ class MkvtoMp4:
         self.nvenc_weighted_prediction = nvenc_weighted_prediction
         self.nvenc_rate_control = nvenc_rate_control
         self.nvenc_rc_lookahead = nvenc_rc_lookahead
+        self.video_profile = video_profile
         self.h264_level = h264_level
         self.handle_m2ts_files = handle_m2ts_files
         self.qsv_decoder = qsv_decoder
@@ -202,6 +204,7 @@ class MkvtoMp4:
         self.nvenc_rate_control = settings.nvenc_rate_control
         self.nvenc_rc_lookahead = settings.nvenc_rc_lookahead
         self.handle_m2ts_files = settings.handle_m2ts_files
+        self.video_profile = settings.vprofile
         self.h264_level = settings.h264_level
         self.qsv_decoder = settings.qsv_decoder
         self.hevc_qsv_decoder = settings.hevc_qsv_decoder
@@ -398,7 +401,13 @@ class MkvtoMp4:
 
         self.log.info("Pix Fmt: %s." % info.video.pix_fmt)
         if self.pix_fmt and info.video.pix_fmt.lower() not in self.pix_fmt:
+            self.log.debug("Overriding video pix_fmt. Codec cannot be copied because pix_fmt is not approved.")
             vcodec = self.video_codec[0]
+            pix_fmt = self.pix_fmt[0]
+            if self.video_profile:
+                vprofile = self.video_profile[0]
+        else:
+            pix_fmt = None
 
         if self.video_bitrate is not None and vbr > self.video_bitrate:
             self.log.debug("Overriding video bitrate. Codec cannot be copied because video bitrate is too high.")
@@ -418,6 +427,16 @@ class MkvtoMp4:
 
         self.log.debug("Video codec: %s." % vcodec)
         self.log.debug("Video bitrate: %s." % vbitrate)
+
+        self.log.info("Profile: %s." % info.video.profile)
+        if self.video_profile and info.video.profile.lower().replace(" ", "") not in self.video_profile:
+            self.log.debug("Video profile is not supported. Video stream can no longer be copied.")
+            vcodec = self.video_codec[0]
+            vprofile = self.video_profile[0]
+            if self.pix_fmt:
+                pix_fmt = self.pix_fmt[0]
+        else:
+            vprofile = None
 
         # Audio streams
         self.log.info("Reading audio streams.")
@@ -813,7 +832,10 @@ class MkvtoMp4:
                 'maxrate': self.maxrate,
                 'minrate': self.minrate,
                 'bufsize': self.bufsize,
-                'vsync': self.vsync
+                'vsync': self.vsync,
+                'level': self.h264_level,
+                'profile': vprofile,
+                'pix_fmt': pix_fmt
             },
             'audio': audio_settings,
             'subtitle': subtitle_settings,
