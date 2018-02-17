@@ -158,3 +158,12 @@ host = localhost
 port = 32400
 refresh = True
 token =
+
+[Opensubtitles]
+username = 
+password = 
+only_foreign = true
+is_vip = false
+
+[Podnapisi]
+only_foreign = true

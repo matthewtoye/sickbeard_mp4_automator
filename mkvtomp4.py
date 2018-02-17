@@ -67,6 +67,8 @@ class MkvtoMp4:
                  sdl=None,
                  scodec=['mov_text'],
                  subencoding='utf-8',
+                 opensubtitles = None,
+                 podnapisi = None,
                  downloadsubs=True,
                  processMP4=False,
                  forceConvert=False,
@@ -160,6 +162,8 @@ class MkvtoMp4:
         self.embedsubs = embedsubs
         self.embedonlyinternalsubs = embedonlyinternalsubs
         self.subencoding = subencoding
+        self.opensubtitles = opensubtitles
+        self.podnapisi = podnapisi
 
         # Import settings
         if settings is not None:
@@ -239,6 +243,8 @@ class MkvtoMp4:
         self.embedsubs = settings.embedsubs
         self.embedonlyinternalsubs = settings.embedonlyinternalsubs
         self.subencoding = settings.subencoding
+        self.opensubtitles = settings.opensubtitles
+        self.podnapisi = settings.podnapisi
 
         self.log.debug("Settings imported.")
 
@@ -766,8 +772,11 @@ class MkvtoMp4:
                 pass
 
             try:
+                provider_settings = {'opensubtitles': self.opensubtitles,
+                                 'podnapisi': self.podnapisi }
+
                 video = subliminal.scan_video(os.path.abspath(inputfile), subtitles=True, embedded_subtitles=True)
-                subtitles = subliminal.download_best_subtitles([video], languages, hearing_impaired=False, providers=self.subproviders)
+                subtitles = subliminal.download_best_subtitles([video], languages, hearing_impaired=False, providers=self.subproviders, provider_configs = provider_settings )
                 try:
                     subliminal.save_subtitles(video, subtitles[video])
                 except:

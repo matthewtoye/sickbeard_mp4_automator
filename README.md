@@ -35,6 +35,8 @@ Brief explanation of added settings:
 - `enable_nvenc_hevc_decoder` = (true/false) Enable NVDEC gpu decoding of HEVC/VP9. Only supported by Geforce 950/960/1050/1060/1070/1080 and Pascal quadros. Default is false
 - `nvenc_decoder_gpu` = Selects which NVENC capable GPU to use for decoding. First GPU is 0, second is 1, and so on. Default is any
 - `nvenc_hevc_decoder_gpu` = Selects which NVENC capable GPU to use for hevc decoding. First GPU is 0, second is 1, and so on. Default is any. 
+- `opensubtitles` = This section is for opensubtitles login information, will be used in the future for downloading subs and burning them in.
+- `podnapisi` = Enables foreign only subtitles, to be used with burning in subs.
 
 If you have multiple nvidia cards you can decode on one and encode on the other, but it doesn't seem to speed up the process at all.
 Decoding by itself does not count towards the nvenc 2 stream limit.

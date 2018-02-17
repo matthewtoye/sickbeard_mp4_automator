@@ -204,8 +204,16 @@ class ReadSettings:
                          'port': '32400',
                          'refresh': 'true',
                          'token': ''}
+        
+        #Subtitle providers
+        opensubtitles_defaults = {'username': '',
+                                  'password': '',
+                                  'only_foreign': 'true',
+                                  'is_vip': 'false' }
 
-        defaults = {'SickBeard': sb_defaults, 'CouchPotato': cp_defaults, 'Sonarr': sonarr_defaults, 'Radarr': radarr_defaults, 'MP4': mp4_defaults, 'uTorrent': utorrent_defaults, 'SABNZBD': sab_defaults, 'Sickrage': sr_defaults, 'Deluge': deluge_defaults, 'Plex': plex_defaults}
+        podnapisi_defaults = {'only_foreign':'true'}
+
+        defaults = {'SickBeard': sb_defaults, 'CouchPotato': cp_defaults, 'Sonarr': sonarr_defaults, 'Radarr': radarr_defaults, 'MP4': mp4_defaults, 'uTorrent': utorrent_defaults, 'SABNZBD': sab_defaults, 'Sickrage': sr_defaults, 'Deluge': deluge_defaults, 'Plex': plex_defaults, 'Opensubtitles': opensubtitles_defaults, 'Podnapisi': podnapisi_defaults }
         write = False  # Will be changed to true if a value is missing from the config file and needs to be written
 
         config = configparser.SafeConfigParser()
@@ -724,6 +732,18 @@ class ReadSettings:
         self.Plex['token'] = config.get(section, "token")
         if self.Plex['token'] == '':
             self.Plex['token'] = None
+
+        section = "Opensubtitles"
+        self.opensubtitles = {}
+        self.opensubtitles['username'] = config.get(section, "username")
+        self.opensubtitles['password'] = config.get(section, "password")
+        self.opensubtitles['only_foreign'] = config.getboolean(section, "only_foreign")
+        self.opensubtitles['is_vip'] = config.getboolean(section, "is_vip")
+
+        section = "Podnapisi"
+        self.podnapisi = {}
+        self.podnapisi['only_foreign'] = config.getboolean(section, "only_foreign" )
+
 
         # Pass the values on
         self.config = config
