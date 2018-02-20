@@ -220,7 +220,7 @@ class MediaStreamInfo(object):
                 self.sub_default = self.parse_int(val)
             if key == 'title': #Some videos just casually mention in the title if the sub is forced or not. 
                 possible_ways_of_saying_forced = { "forced", "english subs for non-english parts", "force", "non-english parts",
-                                                   "foreign parts only", "non english parts", "non english part", "foreign parts", "valyrian dialogue" }
+                                                   "foreign parts only", "non english parts", "non english part", "foreign parts", "valyrian", "dothraki" }
                                                    #unfortunately this is not standardized at all, and there are probably 30 other ways that this is labeled
                 newval = val.lower()
                 logger.info( "Title name: %s" % newval ) #Just to check later and find the other methods of saying alien language.
