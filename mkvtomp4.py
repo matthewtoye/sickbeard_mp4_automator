@@ -659,6 +659,7 @@ class MkvtoMp4:
             elif overrideLang == True: # If there is no audio stream in the desired language,
                 forced_sub = s.index   # burn in the first subtitle stream that matches the users language.  
                 subtitle_used = subtitle_number
+                s.sub_forced = 1
                 break
             elif s.sub_force_guess:# Finally, throw a guess at it if there are 2 desired language subtitle streams.
                 s.sub_force_guess = s.sub_force_guess[:-3]
