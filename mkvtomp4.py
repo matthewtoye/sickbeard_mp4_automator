@@ -477,15 +477,16 @@ class MkvtoMp4:
 
             self.log.info("Audio detected for stream #%s: %s [%s]." % (a.index, a.codec, a.metadata['language']))
 
-            if a.codec.lower() == 'truehd': # Need to skip it early so that it flags the next track as default.
-                if num_desired_language_audio_streams < 2 or overrideLang == True:
-                    self.log.info( "MP4 does not support truehd audio, as this is the only audio track in the desired language we will attempt to convert it, but be warned that there may be audio syncing issues.")
-                    self.audio_copyoriginal = False #Need to disable copying this or it will just fail anyway.
-                else: 
-                    self.log.info( "MP4 containers do not support truehd audio, and converting it is inconsistent due to video/audio sync issues. Skipping stream %s as typically the 2nd audio track is the AC3 core of the truehd stream." % a.index )
-                    continue
-            if a.codec.startswith( 'pcm' ): #pcm formats also cannot be container in a .mp4 file
-                self.audio_copyoriginal = False
+            if self.output_extension == 'mp4':
+                if a.codec.lower() == 'truehd': # Need to skip it early so that it flags the next track as default.
+                    if num_desired_language_audio_streams < 2 or overrideLang == True:
+                        self.log.info( "MP4 does not support truehd audio, as this is the only audio track in the desired language we will attempt to convert it, but be warned that there may be audio syncing issues.")
+                        self.audio_copyoriginal = False #Need to disable copying this or it will just fail anyway.
+                    else: 
+                        self.log.info( "MP4 containers do not support truehd audio, and converting it is inconsistent due to video/audio sync issues. Skipping stream %s as typically the 2nd audio track is the AC3 core of the truehd stream." % a.index )
+                        continue
+                if a.codec.startswith( 'pcm' ): #pcm formats also cannot be container in a .mp4 file
+                    self.audio_copyoriginal = False
 
             # Set undefined language to default language if specified
             if self.adl is not None and a.metadata['language'] == 'und':
@@ -593,8 +594,9 @@ class MkvtoMp4:
 
                 if acodec == 'copy' and a.codec == 'aac' and self.aac_adtstoasc:
                     audio_settings[l]['bsf'] = 'aac_adtstoasc'
-                if a.codec.lower() == 'flac' and acodec == 'copy': #flac in mp4 is experimental, ffmpeg requires adding strict -2 to do it.
-                    audio_settings[l]['strict'] = '-2'
+                if self.output_extension == 'mp4':
+                    if a.codec.lower() == 'flac' and acodec == 'copy': #flac in mp4 is experimental, ffmpeg requires adding strict -2 to do it.
+                        audio_settings[l]['strict'] = '-2'
                 l += 1
 
                 #Add the iOS track last instead
@@ -611,7 +613,7 @@ class MkvtoMp4:
                         'language': a.metadata['language'],
                         'disposition': 'none',
                     }})
-                    if a.codec == 'flac': #flac in mp4 is experimental, ffmpeg requires adding strict -2 to do it.
+                    if a.codec == 'flac' and self.output_extension == 'mp4': #flac in mp4 is experimental, ffmpeg requires adding strict -2 to do it.
                         audio_settings[l]['strict'] = '-2'
 
         # Subtitle streams
@@ -773,10 +775,10 @@ class MkvtoMp4:
 
             try:
                 provider_settings = {'opensubtitles': self.opensubtitles,
-                                 'podnapisi': self.podnapisi }
+                                     'podnapisi': self.podnapisi }
 
                 video = subliminal.scan_video(os.path.abspath(inputfile), subtitles=True, embedded_subtitles=True)
-                subtitles = subliminal.download_best_subtitles([video], languages, hearing_impaired=False, providers=self.subproviders, provider_configs = provider_settings )
+                subtitles = subliminal.download_best_subtitles([video], languages, hearing_impaired=False, min_score = 337, providers=self.subproviders, provider_configs = provider_settings )
                 try:
                     subliminal.save_subtitles(video, subtitles[video])
                 except:
@@ -810,12 +812,23 @@ class MkvtoMp4:
 
                                 self.log.info("Creating subtitle stream %s by importing %s." % (l, fname))
 
-                                subtitle_settings.update({l: {
-                                    'path': os.path.join(dirName, fname),
-                                    'source': src,
-                                    'map': 0,
-                                    'codec': 'mov_text',
-                                    'language': lang}})
+                                if forced_sub == 0 and self.burn_in_forced_subs == True:
+                                    subtitle_settings.update({l: {
+                                        'path': os.path.join(dirName, fname),
+                                        'source': src,
+                                        'map': 0,
+                                        'codec': 'mov_text',
+                                        'language': lang,
+                                        'burn_in_forced_subs': self.burn_in_forced_subs,
+                                        'subtitle_burn': os.path.join(dirName, fname)
+                                        }})
+                                else:
+                                    subtitle_settings.update({l: {
+                                        'path': os.path.join(dirName, fname),
+                                        'source': src,
+                                        'map': 0,
+                                        'codec': 'mov_text',
+                                        'language': lang}})
 
                                 self.log.debug("Path: %s." % os.path.join(dirName, fname))
                                 self.log.debug("Source: %s." % src)
