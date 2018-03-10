@@ -624,6 +624,7 @@ class MkvtoMp4:
         guessed_forced_sub = 0
         guessed_subtitle_number  = -1
         overlay_stream = ""
+        subtitle_will_be_burned_in = False
         subtitle_number = -1 # Subtitle_used is the index of the subtitle stream compared to only other subtitles. -vf to overlay uses this.
         subtitle_used = subtitle_number
         shortest_duration_subtitle_stream = 86400 # There probably aren't too many movies that are 24 hours long.
@@ -684,8 +685,10 @@ class MkvtoMp4:
         for s in info.subtitle:
             if forced_sub > 0 and s.index != forced_sub and self.burn_in_forced_subs == True:
                 continue
-            if forced_sub > 0 and self.burn_in_forced_subs == True and vcodec == 'copy':
-                vcodec = self.video_codec[0]
+            if forced_sub > 0 and self.burn_in_forced_subs == True:
+                subtitle_will_be_burned_in = True
+                if vcodec == 'copy':
+                    vcodec = self.video_codec[0]
             # Make sure its not an image based codec
             if s.codec.lower() not in bad_subtitle_codecs and self.embedsubs:
                 # Proceed if no whitelist is set, or if the language is in the whitelist
@@ -905,8 +908,8 @@ class MkvtoMp4:
             options['preopts'].extend(['-vcodec', 'h264_qsv'])
         elif info.video.codec.lower() in nvenc_cuvid_codecs and \
         self.nvenc_cuvid and vcodec != "copy" and not '422' in info.video.pix_fmt and not '444' in info.video.pix_fmt: #Cuvid only supports 420 chroma at the moment. 
-            if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding.
-                options['preopts'].extend(['-hwaccel', 'cuvid' ])
+            if not '10le' in info.video.pix_fmt and not '16le' in info.video.pix_fmt and subtitle_will_be_burned_in == False: #Cannot do full hardware decoding with 10/12 bit video, it must be copied to system memory after decoding.
+                options['preopts'].extend(['-hwaccel', 'cuvid' ])                                                             #Also cannot do full hardware decoding when subtitles are being burned in
                 if info.video.codec.lower() == "hevc" or info.video.codec.lower() == "vp9":
                     if self.nvenc_decoder_hevc_gpu:
                         options['preopts'].extend(['-hwaccel_device', str( self.nvenc_decoder_hevc_gpu )])

@@ -45,7 +45,7 @@ Global options (affect whole program instead of just one file:
 -filter_threads     number of non-complex filter threads
 -filter_complex_threads  number of threads for -filter_complex
 -stats              print progress report during encoding
--max_error_rate ratio of errors (0.0: no errors, 1.0: 100% error  maximum error rate
+-max_error_rate maximum error rate  ratio of errors (0.0: no errors, 1.0: 100% errors) above which ffmpeg returns an error instead of success.
 -bits_per_raw_sample number  set the number of bits per raw sample
 -vol volume         change audio volume (256=normal)
 
@@ -2533,7 +2533,7 @@ h264_qsv encoder AVOptions:
   -pic_timing_sei    <int>        E..V.... Insert picture timing SEI with pic_struct_syntax element (from 0 to 1) (default 1)
   -single_sei_nal_unit <int>        E..V.... Put all the SEI messages into one NALU (from -1 to 1) (default -1)
   -max_dec_frame_buffering <int>        E..V.... Maximum number of frames buffered in the DPB (from 0 to 65535) (default 0)
-  -look_ahead        <int>        E..V.... Use VBR algorithm with look ahead (from 0 to 1) (default 1)
+  -look_ahead        <int>        E..V.... Use VBR algorithm with look ahead (from 0 to 1) (default 0)
   -look_ahead_depth  <int>        E..V.... Depth of look ahead in number frames (from 0 to 100) (default 0)
   -look_ahead_downsampling <int>        E..V.... Downscaling factor for the frames saved for the lookahead analysis (from 0 to 2) (default unknown)
      unknown                      E..V....
@@ -3384,9 +3384,9 @@ http AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.9.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.10.100")
   -referer           <string>     .D...... override referer header
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.9.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.10.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3413,9 +3413,9 @@ https AVOptions:
   -http_proxy        <string>     ED...... set HTTP proxy to tunnel through
   -headers           <string>     ED...... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED...... set a specific content type for the POST messages
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.9.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf/58.10.100")
   -referer           <string>     .D...... override referer header
-  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.9.100")
+  -user-agent        <string>     .D...... override User-Agent header (default "Lavf/58.10.100")
   -multiple_requests <boolean>    ED...... use persistent connections (default false)
   -post_data         <binary>     ED...... set custom HTTP post data
   -cookies           <string>     .D...... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3710,6 +3710,22 @@ cavsvideo demuxer AVOptions:
 CDXL demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 1 to INT_MAX) (default 11025)
   -framerate         <string>     .D...... 
+
+codec2 demuxer AVOptions:
+  -frames_per_packet <int>        .D...... Number of frames to read at a time. Higher = faster decoding, lower granularity (from 1 to INT_MAX) (default 1)
+
+codec2raw demuxer AVOptions:
+  -mode              <int>        .D...... codec2 mode [mandatory] (from -1 to 8) (default -1)
+     3200                         .D...... 3200
+     2400                         .D...... 2400
+     1600                         .D...... 1600
+     1400                         .D...... 1400
+     1300                         .D...... 1300
+     1200                         .D...... 1200
+     700                          .D...... 700
+     700B                         .D...... 700B
+     700C                         .D...... 700C
+  -frames_per_packet <int>        .D...... Number of frames to read at a time. Higher = faster decoding, lower granularity (from 1 to INT_MAX) (default 1)
 
 concat demuxer AVOptions:
   -safe              <boolean>    .D...... enable safe mode (default true)
@@ -4027,8 +4043,8 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf58.9.100")
-  -user-agent        <string>     .D...... override User-Agent header (deprecated, use user_agent) (default "Lavf58.9.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf58.10.100")
+  -user-agent        <string>     .D...... override User-Agent header (deprecated, use user_agent) (default "Lavf58.10.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D......  (from 0 to INT_MAX) (default 0)
@@ -4660,9 +4676,11 @@ dash muxer AVOptions:
   -init_seg_name     <string>     E....... DASH-templated name to used for the initialization segment (default "init-stream$RepresentationID$.m4s")
   -media_seg_name    <string>     E....... DASH-templated name to used for the media segments (default "chunk-stream$RepresentationID$-$Number%05d$.m4s")
   -utc_timing_url    <string>     E....... URL of the page that will return the UTC timestamp in ISO format
+  -method            <string>     E....... set the HTTP method
   -http_user_agent   <string>     E....... override User-Agent field in HTTP header
   -http_persistent   <boolean>    E....... Use persistent HTTP connections (default false)
   -hls_playlist      <boolean>    E....... Generate HLS playlist files(master.m3u8, media_%d.m3u8) (default false)
+  -streaming         <boolean>    E....... Enable/Disable streaming mode of output. Each frame will be moof fragment (default false)
 
 f4v muxer AVOptions:
   -movflags          <flags>      E....... MOV muxer flags (default 0)
@@ -5256,8 +5274,8 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D...... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D...... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED...... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user_agent        <string>     .D...... override User-Agent header (default "Lavf58.9.100")
-  -user-agent        <string>     .D...... override User-Agent header (deprecated, use user_agent) (default "Lavf58.9.100")
+  -user_agent        <string>     .D...... override User-Agent header (default "Lavf58.10.100")
+  -user-agent        <string>     .D...... override User-Agent header (deprecated, use user_agent) (default "Lavf58.10.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E....... set reference stream (default "auto")
@@ -11748,6 +11766,7 @@ Codecs:
  D.A.L. binkaudio_rdft       Bink Audio (RDFT)
  D.A.L. bmv_audio            Discworld II BMV audio
  ..A.L. celt                 Constrained Energy Lapped Transform (CELT)
+ ..A.L. codec2               codec2 (very low bitrate speech codec)
  DEA.L. comfortnoise         RFC 3389 Comfort Noise
  D.A.L. cook                 Cook / Cooker / Gecko (RealAudio G2)
  D.A.L. dolby_e              Dolby E
@@ -12068,8 +12087,8 @@ IO... gray12be               1            12
 IO... gray12le               1            12
 IO... gray10be               1            10
 IO... gray10le               1            10
-I.... p016le                 3            24
-I.... p016be                 3            24
+IO... p016le                 3            24
+IO... p016be                 3            24
 ..H.. d3d11                  0             0
 IO... gray9be                1             9
 IO... gray9le                1             9
@@ -12143,6 +12162,8 @@ File formats:
  D  cdg             CD Graphics
  D  cdxl            Commodore CDXL video
  D  cine            Phantom Cine
+ DE codec2          codec2 .c2 muxer
+ DE codec2raw       raw codec2 muxer
  D  concat          Virtual concatenation script
   E crc             CRC testing
   E dash            DASH Muxer
@@ -12452,6 +12473,8 @@ File formats:
   E caca            caca (color ASCII art) output device
   E caf             Apple CAF (Core Audio Format)
   E cavsvideo       raw Chinese AVS (Audio Video Standard) video
+  E codec2          codec2 .c2 muxer
+  E codec2raw       raw codec2 muxer
   E crc             CRC testing
   E dash            DASH Muxer
   E data            raw data
@@ -12644,6 +12667,8 @@ File formats:
  D  cdg             CD Graphics
  D  cdxl            Commodore CDXL video
  D  cine            Phantom Cine
+ D  codec2          codec2 .c2 demuxer
+ D  codec2raw       raw codec2 demuxer
  D  concat          Virtual concatenation script
  D  data            raw data
  D  daud            D-Cinema audio
@@ -13228,7 +13253,7 @@ Filters:
  ... ahistogram        A->V       Convert input audio to histogram video output.
  ... aphasemeter       A->N       Convert input audio to phase meter video output.
  ... avectorscope      A->V       Convert input audio to vectorscope video output.
- ... concat            N->N       Concatenate audio and video streams.
+ ..C concat            N->N       Concatenate audio and video streams.
  ... showcqt           A->V       Convert input audio to a CQT (Constant/Clamped Q Transform) spectrum video output.
  ... showfreqs         A->V       Convert input audio to a frequencies video output.
  .S. showspectrum      A->V       Convert input audio to a spectrum video output.
@@ -13248,7 +13273,7 @@ Filters:
 Encoder nvenc_h264 [NVIDIA NVENC H.264 encoder]:
     General capabilities: delay 
     Threading capabilities: none
-    Supported pixel formats: yuv420p nv12 p010le yuv444p yuv444p16le bgr0 rgb0 cuda d3d11
+    Supported pixel formats: yuv420p nv12 p010le yuv444p p016le yuv444p16le bgr0 rgb0 cuda d3d11
 nvenc_h264 AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
      default                      E..V.... 
@@ -13339,7 +13364,7 @@ nvenc_h264 AVOptions:
 Encoder nvenc_hevc [NVIDIA NVENC hevc encoder]:
     General capabilities: delay 
     Threading capabilities: none
-    Supported pixel formats: yuv420p nv12 p010le yuv444p yuv444p16le bgr0 rgb0 cuda d3d11
+    Supported pixel formats: yuv420p nv12 p010le yuv444p p016le yuv444p16le bgr0 rgb0 cuda d3d11
 nvenc_hevc AVOptions:
   -preset            <int>        E..V.... Set the encoding preset (from 0 to 11) (default medium)
      default                      E..V.... 
