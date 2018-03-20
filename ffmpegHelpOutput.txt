@@ -488,6 +488,7 @@ AVCodecContext AVOptions:
      mpeg4_main                   E..V....
      mpeg4_asp                    E..V....
      main10                       E..V....
+     msbc                         E...A...
   -level             <int>        E..VA... (from INT_MIN to INT_MAX) (default unknown)
      unknown                      E..VA...
   -lowres            <int>        .D.VA... decode at 1= 1/2, 2=1/4, 3=1/8 resolutions (from 0 to INT_MAX) (default 0)
@@ -1990,6 +1991,10 @@ FLAC encoder AVOptions:
 
 Opus encoder AVOptions:
   -opus_delay        <float>      E...A... Maximum delay in milliseconds (from 2.5 to 360) (default 360)
+
+sbc encoder AVOptions:
+  -sbc_delay         <duration>   E...A... set maximum algorithmic latency (default 0.013)
+  -msbc              <boolean>    E...A... use mSBC mode (wideband speech mono SBC) (default false)
 
 WavPack encoder AVOptions:
   -joint_stereo      <boolean>    E...A...  (default auto)
@@ -6342,6 +6347,9 @@ dcshift AVOptions:
   shift             <double>     ..F.A... set DC shift (from -1 to 1) (default 0)
   limitergain       <double>     ..F.A... set limiter gain (from 0 to 1) (default 0)
 
+drmeter AVOptions:
+  length            <double>     ..F.A... set the window length (from 0.01 to 10) (default 3)
+
 dynaudnorm AVOptions:
   f                 <int>        ..F.A... set the frame length in msec (from 10 to 8000) (default 500)
   g                 <int>        ..F.A... set the filter size (from 3 to 301) (default 31)
@@ -8023,10 +8031,6 @@ framerate AVOptions:
 
 framestep AVOptions:
   step              <int>        ..FV.... set frame step (from 1 to INT_MAX) (default 1)
-
-frei0r AVOptions:
-  filter_name       <string>     ..FV....
-  filter_params     <string>     ..FV....
 
 fspp AVOptions:
   quality           <int>        ..FV.... set quality (from 4 to 5) (default 4)
@@ -10210,12 +10214,6 @@ color AVOptions:
   d                 <duration>   ..FV.... set video duration (default -0.000001)
   sar               <rational>   ..FV.... set video sample aspect ratio (from 0 to INT_MAX) (default 1/1)
 
-frei0r_src AVOptions:
-  size              <image_size> ..FV.... Dimensions of the generated video. (default "320x240")
-  framerate         <video_rate> ..FV.... (default "25")
-  filter_name       <string>     ..FV....
-  filter_params     <string>     ..FV....
-
 haldclutsrc AVOptions:
   level             <int>        ..FV.... set level (from 2 to 8) (default 6)
   rate              <video_rate> ..FV.... set video rate (default "25")
@@ -10982,6 +10980,7 @@ Encoders:
  A..... real_144             RealAudio 1.0 (14.4K) (codec ra_144)
  A..... roq_dpcm             id RoQ DPCM
  A..X.. s302m                SMPTE 302M
+ A..... sbc                  SBC (low-complexity subband codec)
  A..X.. sonic                Sonic
  A..X.. sonicls              Sonic lossless
  A..... libspeex             libspeex Speex (codec speex)
@@ -11413,6 +11412,7 @@ Decoders:
  A....D ralf                 RealAudio Lossless
  A....D roq_dpcm             DPCM id RoQ
  A....D s302m                SMPTE 302M
+ A....D sbc                  SBC (low-complexity subband codec)
  A....D sdx2_dpcm            DPCM Squareroot-Delta-Exact
  A....D shorten              Shorten
  A....D sipr                 RealAudio SIPR / ACELP.NET
@@ -11849,6 +11849,7 @@ Codecs:
  D.A..S ralf                 RealAudio Lossless
  DEA.L. roq_dpcm             DPCM id RoQ
  DEA..S s302m                SMPTE 302M
+ DEA.L. sbc                  SBC (low-complexity subband codec)
  D.A.L. sdx2_dpcm            DPCM Squareroot-Delta-Exact
  D.A..S shorten              Shorten
  D.A.L. sipr                 RealAudio SIPR / ACELP.NET
@@ -12356,6 +12357,7 @@ File formats:
  DE s8              PCM signed 8-bit
  D  sami            SAMI subtitle format
  DE sap             SAP output
+ DE sbc             raw SBC
  D  sbg             SBaGen binaural beats script
  DE scc             Scenarist Closed Captions
   E sdl,sdl2        SDL2 output device
@@ -12570,6 +12572,7 @@ File formats:
   E s32le           PCM signed 32-bit little-endian
   E s8              PCM signed 8-bit
   E sap             SAP output
+  E sbc             raw SBC
   E scc             Scenarist Closed Captions
   E sdl,sdl2        SDL2 output device
   E segment         segment
@@ -12830,6 +12833,7 @@ File formats:
  D  s8              PCM signed 8-bit
  D  sami            SAMI subtitle format
  D  sap             SAP input
+ D  sbc             raw SBC (low-complexity subband codec)
  D  sbg             SBaGen binaural beats script
  D  scc             Scenarist Closed Captions
  D  sdp             SDP
@@ -12980,6 +12984,7 @@ Filters:
  ... crossfeed         A->A       Apply headphone crossfeed filter.
  ... crystalizer       A->A       Simple expand audio dynamic range filter.
  T.. dcshift           A->A       Apply a DC shift to the audio.
+ ... drmeter           A->A       Measure audio dynamic range.
  ... dynaudnorm        A->A       Dynamic Audio Normalizer.
  ... earwax            A->A       Widen the stereo image.
  ... ebur128           A->N       EBU R128 scanner.
@@ -13089,7 +13094,6 @@ Filters:
  ... framepack         VV->V      Generate a frame packed stereoscopic video.
  .S. framerate         V->V       Upsamples or downsamples progressive source between specified frame rates.
  T.. framestep         V->V       Select one frame every N frames.
- ... frei0r            V->V       Apply a frei0r effect.
  T.. fspp              V->V       Apply Fast Simple Post-processing filter.
  TS. gblur             V->V       Apply Gaussian Blur filter.
  TS. geq               V->V       Apply generic equation to each pixel.
@@ -13235,7 +13239,6 @@ Filters:
  ... allyuv            |->V       Generate all yuv colors.
  ... cellauto          |->V       Create pattern generated by an elementary cellular automaton.
  ..C color             |->V       Provide an uniformly colored input.
- ... frei0r_src        |->V       Generate a frei0r source.
  ... haldclutsrc       |->V       Provide an identity Hald CLUT.
  ... life              |->V       Create life.
  ... mandelbrot        |->V       Render a Mandelbrot fractal.

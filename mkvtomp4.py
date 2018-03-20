@@ -1,19 +1,14 @@
 from __future__ import unicode_literals
-
-import json
-import logging
 import os
-import shutil
-import sys
 import time
-
+import json
+import sys
+import shutil
+import logging
+from converter import Converter, FFMpegConvertError
+from extensions import valid_input_extensions, valid_output_extensions, bad_subtitle_codecs, valid_subtitle_extensions, subtitle_codec_extensions
 from babelfish import Language
 import datetime
-
-import languagecode
-from converter import Converter, FFMpegConvertError
-from extensions import valid_input_extensions, valid_output_extensions, bad_subtitle_codecs, valid_subtitle_extensions, \
-    subtitle_codec_extensions
 
 
 class MkvtoMp4:
@@ -459,24 +454,24 @@ class MkvtoMp4:
         num_desired_language_audio_streams = 0
         for a in info.audio:
             try:
-                a.metadata['language'] = languagecode.validateLangCode(a.metadata['language'])
+                if a.metadata['language'].strip() == "" or a.metadata['language'] is None:
+                    a.metadata['language'] = 'und'
             except KeyError:
                 a.metadata['language'] = 'und'
-
-            if (a.metadata['language'] == 'und' and self.adl != 'und') or (
-                    self.awl != 'und' and a.metadata['language'] in self.awl):
+            if (a.metadata['language'] == 'und' and self.adl) or (self.awl and a.metadata['language'].lower() in self.awl):
                 overrideLang = False
                 num_desired_language_audio_streams +=1
 
         if overrideLang:
-            self.awl = 'und'
+            self.awl = None
             self.log.info("No audio streams detected in any appropriate language, relaxing restrictions so there will be some audio stream present.")
 
         audio_settings = {}
         l = 0
         for a in info.audio:
             try:
-                a.metadata['language'] = languagecode.validateLangCode(a.metadata['language'])
+                if a.metadata['language'].strip() == "" or a.metadata['language'] is None:
+                    a.metadata['language'] = 'und'
             except KeyError:
                 a.metadata['language'] = 'und'
 
@@ -494,7 +489,7 @@ class MkvtoMp4:
                     self.audio_copyoriginal = False
 
             # Set undefined language to default language if specified
-            if self.adl != 'und' and a.metadata['language'] == 'und':
+            if self.adl is not None and a.metadata['language'] == 'und':
                 self.log.debug("Undefined language detected, defaulting to [%s]." % self.adl)
                 a.metadata['language'] = self.adl
 
@@ -506,7 +501,7 @@ class MkvtoMp4:
 
             # Proceed if no whitelist is set, or if the language is in the whitelist
             iosdata = None
-            if self.awl == 'und' or a.metadata['language'] in self.awl:
+            if self.awl is None or a.metadata['language'].lower() in self.awl:
                 # Create iOS friendly audio stream if the default audio stream has too many channels (iOS only likes AAC stereo)
                 if self.iOS and a.audio_channels > 2:
                     iOSbitrate = 256 if (self.audio_bitrate * 2) > 384 else (self.audio_bitrate * 2)
@@ -638,12 +633,13 @@ class MkvtoMp4:
         for s in info.subtitle:
             subtitle_number += 1
             try:
-                s.metadata['language'] = languagecode.validateLangCode(s.metadata['language'])
+                if s.metadata['language'].strip() == "" or s.metadata['language'] is None:
+                    s.metadata['language'] = 'und'
             except KeyError:
                 s.metadata['language'] = 'und'
             self.log.info("Subtitle detected for stream #%s: %s [%s]." % (s.index, s.codec, s.metadata['language']))
             # Set undefined language to default language if specified
-            if self.sdl != 'und' and s.metadata['language'] == 'und':
+            if self.sdl is not None and s.metadata['language'] == 'und':
                 self.log.debug("Undefined language detected, defaulting to [%s]." % self.sdl)
                 s.metadata['language'] = self.sdl
             if s.metadata['language'].lower() not in self.swl:
@@ -696,7 +692,7 @@ class MkvtoMp4:
             # Make sure its not an image based codec
             if s.codec.lower() not in bad_subtitle_codecs and self.embedsubs:
                 # Proceed if no whitelist is set, or if the language is in the whitelist
-                if self.swl == 'und' or s.metadata['language'] in self.swl:
+                if self.swl is None or s.metadata['language'].lower() in self.swl:
                     subtitle_settings.update({l: {
                         'map': s.index,
                         'codec': self.scodec[0],
@@ -717,7 +713,7 @@ class MkvtoMp4:
                 else: # The resolution has changed, we must use scale2ref to resize the picture subtitles or they'll end up in weird places.
                     overlay_stream = "[0:%s][video]scale2ref[sub][video];[video][sub]overlay" % ( s.index )
             elif s.codec.lower() not in bad_subtitle_codecs and not self.embedsubs:
-                if self.swl == 'und' or s.metadata['language'] in self.swl:
+                if self.swl is None or s.metadata['language'].lower() in self.swl:
                     for codec in self.scodec:
                         ripsub = {0: {
                             'map': s.index,
@@ -759,11 +755,11 @@ class MkvtoMp4:
         # Attempt to download subtitles if they are missing using subliminal
         languages = set()
         try:
-            if self.swl != 'und':
-                for alpha3t in self.swl:
-                    languages.add(Language.fromalpha3t(alpha3t))
-            elif self.sdl != 'und':
-                languages.add(Language.fromalpha3t(self.sdl))
+            if self.swl:
+                for alpha3 in self.swl:
+                    languages.add(Language(alpha3))
+            elif self.sdl:
+                languages.add(Language(self.sdl))
             else:
                 self.downloadsubs = False
                 self.log.error("No valid subtitle language specified, cannot download subtitles.")
@@ -805,17 +801,18 @@ class MkvtoMp4:
                     # Watch for appropriate file extension
                     if subextension[1:] in valid_subtitle_extensions:
                         x, lang = os.path.splitext(subname)
-                        # Using babelfish to convert a 2 language code to a 3 language code
+                        lang = lang[1:]
+                        # Using bablefish to convert a 2 language code to a 3 language code
                         if len(lang) is 2:
                             try:
                                 babel = Language.fromalpha2(lang)
-                                lang = babel.alpha3t
+                                lang = babel.alpha3
                             except:
                                 pass
                         # If subtitle file name and input video name are the same, proceed
                         if x == filename:
                             self.log.info("External %s subtitle file detected." % lang)
-                            if self.swl == 'und' or lang in self.swl:
+                            if self.swl is None or lang in self.swl:
 
                                 self.log.info("Creating subtitle stream %s by importing %s." % (l, fname))
 
@@ -840,7 +837,7 @@ class MkvtoMp4:
                                 self.log.debug("Path: %s." % os.path.join(dirName, fname))
                                 self.log.debug("Source: %s." % src)
                                 self.log.debug("Codec: mov_text.")
-                                self.log.debug("Language: %s." % lang)
+                                self.log.debug("Langauge: %s." % lang)
 
                                 l = l + 1
                                 src = src + 1
