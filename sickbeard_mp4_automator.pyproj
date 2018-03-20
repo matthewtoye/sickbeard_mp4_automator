@@ -37,6 +37,7 @@
     <Compile Include="converter\__init__.py" />
     <Compile Include="delugePostProcess.py" />
     <Compile Include="extensions.py" />
+    <Compile Include="languagecode.py" />
     <Compile Include="manual.py" />
     <Compile Include="mkvtomp4.py" />
     <Compile Include="mutagen\aac.py" />

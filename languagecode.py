@@ -1,4 +1,7 @@
 from babelfish import Language
+import sys
+
+IS_PY2 = sys.version_info[0] == 2
 
 
 def getAlpha3TCode(code):  # We need to make sure that language codes are alpha3T
@@ -40,8 +43,11 @@ def validateLangCode(code):
         if isinstance(code, list):
             lang = filter(lambda x: x != 'und', list(set(map(getAlpha3TCode, code))))
             lang = 'und' if lang == [] else lang
-
-        elif isinstance(code, basestring):
-            lang = getAlpha3TCode(code)
+        elif IS_PY2:
+            if isinstance(code, basestring):
+                lang = getAlpha3TCode(code)
+        else:
+            if isinstance(code, bytes):
+                lang = getAlpha3TCode(code)
 
     return lang
