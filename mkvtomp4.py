@@ -392,10 +392,31 @@ class MkvtoMp4:
         except:
             vbr = info.format.bitrate / 1000
 
-        count = 1
+        count = 1 # TODO: duplicate less code when not lazy
         while ( count < len( self.video_bitrate_restriction ) ):
             if int(self.video_bitrate_restriction[count - 1]) >= info.video.video_width:
                 self.video_bitrate = self.video_bitrate_restriction[count]
+                break
+            count+=2
+
+        count = 1
+        while ( count < len( self.minrate ) ):
+            if int(self.minrate[count - 1]) >= info.video.video_width:
+                self.minrate = self.minrate[count]
+                break
+            count+=2
+
+        count = 1
+        while ( count < len( self.maxrate ) ):
+            if int(self.maxrate[count - 1]) >= info.video.video_width:
+                self.maxrate = self.maxrate[count]
+                break
+            count+=2
+
+        count = 1
+        while ( count < len( self.bufsize ) ):
+            if int(self.bufsize[count - 1]) >= info.video.video_width:
+                self.bufsize = self.bufsize[count]
                 break
             count+=2
 

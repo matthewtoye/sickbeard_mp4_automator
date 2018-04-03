@@ -15,15 +15,15 @@ Brief explanation of added settings:
 - `sample_rate` = By default ffmpeg will upsample to 96 KHz with some audio filters (loudnorm being an example). Internet explorer/Firefox/edge will not play any video with 96 KHz audio, so this will allow you to set it to something lower like 48KHz.
 - `handle_m2ts_files` = This will allow the script to process m2ts files by going through the folder where they are located, searching for the largest .m2ts file. Typically, the largest .m2ts file is the entire film without the extras. The script will delete all other m2ts files in the folder and convert the remaining m2ts file to mp4. Default is disabled. 
 - `resolution-bitrate-restriction` = Source bitrate restriction based on horizontal resolution. It MUST be done like this - horizontal resolution,bitrate, horizontal resolution,bitrate - With the lowest horizontal resolution first. 
-- Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4000,40000 
+- Full Example: resolution-bitrate-restriction = 1280,6000,1920,10000,4096,40000 
 - That line will restrict 1280x720 to a bitrate of 6000, 1920x1080 to a bitrate of 10000 and 4k to a bitrate of 40000
 - This will override the bitrate set under video-bitrate
 - `qmin` = minimum video quantizer scale (VBR) (from -1 to 69) (default 2) - Must be set when nvenc_rate_control is vbr_2pass or vbr_minqp.
 - `qmax` = maximum video quantizer scale (VBR) (from -1 to 1024) (default 31)
 - `global_quality` = Must be set when nvenc_rate_control is constqp, interally this uses the -qp flag when nvenc is enabled
-- `maxrate` = maximum bitrate (in kb/s). Used for VBV together with bufsize. (from 0 to INT_MAX) (default 0)
-- `minrate` = minimum bitrate (in kb/s). Most useful in setting up a CBR encode. It is of little use otherwise. (from INT_MIN to INT_MAX) (default 0)
-- `bufsize` = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0) - I usually set this to 4*average bitrate, but mileage will vary.
+- `maxrate` = maximum bitrate (in kb/s). Used for VBV together with bufsize. (from 0 to INT_MAX) (default 0), this can also be controlled the same as resolution-bitrate-restriction
+- `minrate` = minimum bitrate (in kb/s). Most useful in setting up a CBR encode. It is of little use otherwise. (from INT_MIN to INT_MAX) (default 0), this can also be controlled the same as resolution-bitrate-restriction
+- `bufsize` = set ratecontrol buffer size (in kb/s) (from INT_MIN to INT_MAX) (default 0) - I usually set this to 4*average bitrate, but mileage will vary, this can also be controlled the same as resolution-bitrate-restriction
 - `nvenc_encoder_gpu` = Selects which NVENC capable GPU to use for encoding. First GPU is 0, second is 1, and so on. Default is any
 - `nvenc_profile` = h264 options include: baseline, main, high, high444p - default is main, most clients support high but relatively few support high444p
 - `nvenc_preset` = Options include: slow, medium, fast, hp, hq, bd, ll, llhq, llhp, lossless, losslesshp - default is medium
