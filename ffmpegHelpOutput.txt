@@ -2010,6 +2010,18 @@ g726le AVOptions:
 VOBSUB subtitle encoder AVOptions:
   -even_rows_fix     <boolean>    E....S... Make number of rows even (workaround for some players) (default false)
 
+libaom-av1 encoder AVOptions:
+  -cpu-used          <int>        E..V..... Quality/Speed ratio modifier (from -8 to 8) (default 1)
+  -auto-alt-ref      <int>        E..V..... Enable use of alternate reference frames (2-pass only) (from -1 to 2) (default -1)
+  -lag-in-frames     <int>        E..V..... Number of frames to look ahead at for alternate reference frame selection (from -1 to INT_MAX) (default -1)
+  -error-resilience  <flags>      E..V..... Error resilience configuration (default 0)
+     default                      E..V..... Improve resiliency against losses of whole frames
+     partitions                   E..V..... The frame partitions are independently decodable by the bool decoder, meaning that partitions can be decoded even though earlier partitions have been lost. Note that intra predicition is still done over the partition boundary.
+  -crf               <int>        E..V..... Select the quality for constant quality mode (from -1 to 63) (default -1)
+  -static-thresh     <int>        E..V..... A change threshold on blocks below which they will be skipped by the encoder (from 0 to INT_MAX) (default 0)
+  -drop-threshold    <int>        E..V..... Frame drop threshold (from INT_MIN to INT_MAX) (default 0)
+  -noise-sensitivity <int>        E..V..... Noise sensitivity (from 0 to 4) (default 0)
+
 libfdk_aac AVOptions:
   -afterburner       <int>        E...A.... Afterburner (improved quality) (from 0 to 1) (default 1)
   -eld_sbr           <int>        E...A.... Enable SBR for ELD (for SBR in other configurations, use the -profile parameter) (from 0 to 1) (default 0)
@@ -2564,6 +2576,7 @@ h264_qsv encoder AVOptions:
      main                         E..V.....
      high                         E..V.....
   -a53cc             <int>        E..V..... Use A53 Closed Captions (if available) (from 0 to 1) (default 1)
+  -aud               <int>        E..V..... Insert the Access Unit Delimiter NAL (from 0 to 1) (default 0)
 
 nvenc AVOptions:
   -preset            <int>        E..V..... Set the encoding preset (from 0 to 11) (default medium)
@@ -3390,9 +3403,9 @@ http AVOptions:
   -http_proxy        <string>     ED....... set HTTP proxy to tunnel through
   -headers           <string>     ED....... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED....... set a specific content type for the POST messages
-  -user_agent        <string>     .D....... override User-Agent header (default "Lavf/58.10.100")
+  -user_agent        <string>     .D....... override User-Agent header (default "Lavf/58.11.101")
   -referer           <string>     .D....... override referer header
-  -user-agent        <string>     .D....... override User-Agent header (default "Lavf/58.10.100")
+  -user-agent        <string>     .D....... override User-Agent header (default "Lavf/58.11.101")
   -multiple_requests <boolean>    ED....... use persistent connections (default false)
   -post_data         <binary>     ED....... set custom HTTP post data
   -cookies           <string>     .D....... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3419,9 +3432,9 @@ https AVOptions:
   -http_proxy        <string>     ED....... set HTTP proxy to tunnel through
   -headers           <string>     ED....... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED....... set a specific content type for the POST messages
-  -user_agent        <string>     .D....... override User-Agent header (default "Lavf/58.10.100")
+  -user_agent        <string>     .D....... override User-Agent header (default "Lavf/58.11.101")
   -referer           <string>     .D....... override referer header
-  -user-agent        <string>     .D....... override User-Agent header (default "Lavf/58.10.100")
+  -user-agent        <string>     .D....... override User-Agent header (default "Lavf/58.11.101")
   -multiple_requests <boolean>    ED....... use persistent connections (default false)
   -post_data         <binary>     ED....... set custom HTTP post data
   -cookies           <string>     .D....... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -4049,8 +4062,8 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D....... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D....... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED....... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user_agent        <string>     .D....... override User-Agent header (default "Lavf58.10.100")
-  -user-agent        <string>     .D....... override User-Agent header (deprecated, use user_agent) (default "Lavf58.10.100")
+  -user_agent        <string>     .D....... override User-Agent header (default "Lavf58.11.101")
+  -user-agent        <string>     .D....... override User-Agent header (deprecated, use user_agent) (default "Lavf58.11.101")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D.......  (from 0 to INT_MAX) (default 0)
@@ -5282,8 +5295,8 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D....... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D....... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED....... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user_agent        <string>     .D....... override User-Agent header (default "Lavf58.10.100")
-  -user-agent        <string>     .D....... override User-Agent header (deprecated, use user_agent) (default "Lavf58.10.100")
+  -user_agent        <string>     .D....... override User-Agent header (default "Lavf58.11.101")
+  -user-agent        <string>     .D....... override User-Agent header (deprecated, use user_agent) (default "Lavf58.11.101")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E........ set reference stream (default "auto")
@@ -6011,6 +6024,7 @@ amix AVOptions:
      shortest                     ..F.A.... Duration of shortest input.
      first                        ..F.A.... Duration of first input.
   dropout_transition <float>      ..F.A.... Transition time, in seconds, for volume renormalization when an input stream ends. (from 0 to INT_MAX) (default 2)
+  weights           <string>     ..F.A.... Set weight for each input. (default "1 1")
 
 anequalizer AVOptions:
   params            <string>     ..F.A.... (default "")
@@ -6694,6 +6708,7 @@ silencedetect AVOptions:
   noise             <double>     ..F.A.... set noise tolerance (from 0 to DBL_MAX) (default 0.001)
   d                 <double>     ..F.A.... set minimum duration in seconds (from 0 to 86400) (default 2)
   duration          <double>     ..F.A.... set minimum duration in seconds (from 0 to 86400) (default 2)
+  mono              <boolean>    ..F.A.... check each channel separately (default false)
 
 silenceremove AVOptions:
   start_periods     <int>        ..F.A.... (from 0 to 9000) (default 0)
@@ -10709,7 +10724,7 @@ showvolume AVOptions:
   b                 <int>        ..FV..... set border width (from 0 to 5) (default 1)
   w                 <int>        ..FV..... set channel width (from 80 to 8192) (default 400)
   h                 <int>        ..FV..... set channel height (from 1 to 900) (default 20)
-  f                 <double>     ..FV..... set fade (from 0.001 to 1) (default 0.95)
+  f                 <double>     ..FV..... set fade (from 0 to 1) (default 0.95)
   c                 <string>     ..FV..... set volume color expression (default "PEAK*255+floor((1-PEAK)*255)*256+0xff000000")
   t                 <boolean>    ..FV..... display channel names (default true)
   v                 <boolean>    ..FV..... display volume value (default true)
@@ -10936,6 +10951,7 @@ Encoders:
  V..... apng                 APNG (Animated Portable Network Graphics) image
  V..... asv1                 ASUS V1
  V..... asv2                 ASUS V2
+ V..X.. libaom-av1           libaom AV1 (codec av1)
  V..... avrp                 Avid 1:1 10-bit RGB Packer
  V..X.. avui                 Avid Meridien Uncompressed
  V..... ayuv                 Uncompressed packed MS 4:4:4:4
@@ -11137,6 +11153,7 @@ Decoders:
  V....D asv2                 ASUS V2
  V....D aura                 Auravision AURA
  V....D aura2                Auravision Aura 2
+ V....D libaom-av1           libaom AV1 (codec av1)
  V..... avrn                 Avid AVI Codec
  V....D avrp                 Avid 1:1 10-bit RGB Packer
  V....D avs                  AVS (Audio Video Standard) video
@@ -11469,12 +11486,12 @@ Decoders:
  A....D mp1float             MP1 (MPEG audio layer 1) (codec mp1)
  A....D mp2                  MP2 (MPEG audio layer 2)
  A....D mp2float             MP2 (MPEG audio layer 2) (codec mp2)
- A....D mp3                  MP3 (MPEG audio layer 3)
  A....D mp3float             MP3 (MPEG audio layer 3) (codec mp3)
- A....D mp3adu               ADU (Application Data Unit) MP3 (MPEG audio layer 3)
+ A....D mp3                  MP3 (MPEG audio layer 3)
  A....D mp3adufloat          ADU (Application Data Unit) MP3 (MPEG audio layer 3) (codec mp3adu)
- A....D mp3on4               MP3onMP4
+ A....D mp3adu               ADU (Application Data Unit) MP3 (MPEG audio layer 3)
  A....D mp3on4float          MP3onMP4 (codec mp3on4)
+ A....D mp3on4               MP3onMP4
  A....D als                  MPEG-4 Audio Lossless Coding (ALS) (codec mp4als)
  A....D mpc7                 Musepack SV7 (codec musepack7)
  A....D mpc8                 Musepack SV8 (codec musepack8)
@@ -11600,7 +11617,7 @@ Codecs:
  DEVIL. asv2                 ASUS V2
  D.VIL. aura                 Auravision AURA
  D.VIL. aura2                Auravision Aura 2
- ..V.L. av1                  Alliance for Open Media AV1
+ DEV.L. av1                  Alliance for Open Media AV1 (decoders: libaom-av1 ) (encoders: libaom-av1 )
  D.V... avrn                 Avid AVI Codec
  DEVI.S avrp                 Avid 1:1 10-bit RGB Packer
  D.V.L. avs                  AVS (Audio Video Standard) video
@@ -11910,9 +11927,9 @@ Codecs:
  DEA..S mlp                  MLP (Meridian Lossless Packing)
  D.A.L. mp1                  MP1 (MPEG audio layer 1) (decoders: mp1 mp1float )
  DEA.L. mp2                  MP2 (MPEG audio layer 2) (decoders: mp2 mp2float ) (encoders: mp2 mp2fixed libtwolame )
- DEA.L. mp3                  MP3 (MPEG audio layer 3) (decoders: mp3 mp3float ) (encoders: libmp3lame )
- D.A.L. mp3adu               ADU (Application Data Unit) MP3 (MPEG audio layer 3) (decoders: mp3adu mp3adufloat )
- D.A.L. mp3on4               MP3onMP4 (decoders: mp3on4 mp3on4float )
+ DEA.L. mp3                  MP3 (MPEG audio layer 3) (decoders: mp3float mp3 ) (encoders: libmp3lame )
+ D.A.L. mp3adu               ADU (Application Data Unit) MP3 (MPEG audio layer 3) (decoders: mp3adufloat mp3adu )
+ D.A.L. mp3on4               MP3onMP4 (decoders: mp3on4float mp3on4 )
  D.A..S mp4als               MPEG-4 Audio Lossless Coding (ALS) (decoders: als )
  D.A.L. musepack7            Musepack SV7 (decoders: mpc7 )
  D.A.L. musepack8            Musepack SV8 (decoders: mpc8 )
@@ -12313,7 +12330,7 @@ File formats:
  DE ffmetadata      FFmpeg metadata in text
   E fifo            FIFO queue pseudo-muxer
   E fifo_test       Fifo test muxer
- D  film_cpk        Sega FILM / CPK
+ DE film_cpk        Sega FILM / CPK
  DE filmstrip       Adobe Filmstrip
  DE fits            Flexible Image Transport System
  DE flac            raw FLAC
@@ -12608,6 +12625,7 @@ File formats:
   E ffmetadata      FFmpeg metadata in text
   E fifo            FIFO queue pseudo-muxer
   E fifo_test       Fifo test muxer
+  E film_cpk        Sega FILM / CPK
   E filmstrip       Adobe Filmstrip
   E fits            Flexible Image Transport System
   E flac            raw FLAC
@@ -13381,12 +13399,12 @@ Filters:
  ... spectrumsynth     VV->A      Convert input spectrum videos to audio output.
  ..C amovie            |->N       Read audio from a movie source.
  ..C movie             |->N       Read from a movie source.
+ ... afifo             A->A       Buffer input frames and send them when they are requested.
+ ... fifo              V->V       Buffer input images and send them when they are requested.
  ... abuffer           |->A       Buffer audio frames, and make them accessible to the filterchain.
  ... buffer            |->V       Buffer video frames, and make them accessible to the filterchain.
  ... abuffersink       A->|       Buffer audio frames, and make them available to the end of the filter graph.
  ... buffersink        V->|       Buffer video frames, and make them available to the end of the filter graph.
- ... afifo             A->A       Buffer input frames and send them when they are requested.
- ... fifo              V->V       Buffer input images and send them when they are requested.
 Encoder nvenc_h264 [NVIDIA NVENC H.264 encoder]:
     General capabilities: delay 
     Threading capabilities: none
