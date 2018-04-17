@@ -2523,6 +2523,10 @@ h264_nvenc AVOptions:
      cavlc                        E..V..... 
      ac                           E..V..... 
      vlc                          E..V..... 
+  -b_ref_mode        <int>        E..V..... Use B frames as references (from 0 to 2) (default disabled)
+     disabled                     E..V..... B frames will not be used for reference
+     each                         E..V..... Each B frame will be used for reference
+     middle                       E..V..... Only (number of B frames)/2 will be used for reference
 
 h264_qsv encoder AVOptions:
   -async_depth       <int>        E..V..... Maximum processing parallelism (from 0 to INT_MAX) (default 4)
@@ -2664,6 +2668,10 @@ nvenc AVOptions:
      cavlc                        E..V..... 
      ac                           E..V..... 
      vlc                          E..V..... 
+  -b_ref_mode        <int>        E..V..... Use B frames as references (from 0 to 2) (default disabled)
+     disabled                     E..V..... B frames will not be used for reference
+     each                         E..V..... Each B frame will be used for reference
+     middle                       E..V..... Only (number of B frames)/2 will be used for reference
 
 nvenc_h264 AVOptions:
   -preset            <int>        E..V..... Set the encoding preset (from 0 to 11) (default medium)
@@ -2751,6 +2759,10 @@ nvenc_h264 AVOptions:
      cavlc                        E..V..... 
      ac                           E..V..... 
      vlc                          E..V..... 
+  -b_ref_mode        <int>        E..V..... Use B frames as references (from 0 to 2) (default disabled)
+     disabled                     E..V..... B frames will not be used for reference
+     each                         E..V..... Each B frame will be used for reference
+     middle                       E..V..... Only (number of B frames)/2 will be used for reference
 
 nvenc_hevc AVOptions:
   -preset            <int>        E..V..... Set the encoding preset (from 0 to 11) (default medium)
@@ -3403,9 +3415,9 @@ http AVOptions:
   -http_proxy        <string>     ED....... set HTTP proxy to tunnel through
   -headers           <string>     ED....... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED....... set a specific content type for the POST messages
-  -user_agent        <string>     .D....... override User-Agent header (default "Lavf/58.11.101")
+  -user_agent        <string>     .D....... override User-Agent header (default "Lavf/58.13.100")
   -referer           <string>     .D....... override referer header
-  -user-agent        <string>     .D....... override User-Agent header (default "Lavf/58.11.101")
+  -user-agent        <string>     .D....... override User-Agent header (default "Lavf/58.13.100")
   -multiple_requests <boolean>    ED....... use persistent connections (default false)
   -post_data         <binary>     ED....... set custom HTTP post data
   -cookies           <string>     .D....... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -3432,9 +3444,9 @@ https AVOptions:
   -http_proxy        <string>     ED....... set HTTP proxy to tunnel through
   -headers           <string>     ED....... set custom HTTP headers, can override built in default headers
   -content_type      <string>     ED....... set a specific content type for the POST messages
-  -user_agent        <string>     .D....... override User-Agent header (default "Lavf/58.11.101")
+  -user_agent        <string>     .D....... override User-Agent header (default "Lavf/58.13.100")
   -referer           <string>     .D....... override referer header
-  -user-agent        <string>     .D....... override User-Agent header (default "Lavf/58.11.101")
+  -user-agent        <string>     .D....... override User-Agent header (default "Lavf/58.13.100")
   -multiple_requests <boolean>    ED....... use persistent connections (default false)
   -post_data         <binary>     ED....... set custom HTTP post data
   -cookies           <string>     .D....... set cookies to be sent in applicable future requests, use newline delimited Set-Cookie HTTP field value syntax
@@ -4062,8 +4074,8 @@ RTSP demuxer AVOptions:
   -stimeout          <int>        .D....... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D....... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED....... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user_agent        <string>     .D....... override User-Agent header (default "Lavf58.11.101")
-  -user-agent        <string>     .D....... override User-Agent header (deprecated, use user_agent) (default "Lavf58.11.101")
+  -user_agent        <string>     .D....... override User-Agent header (default "Lavf58.13.100")
+  -user-agent        <string>     .D....... override User-Agent header (deprecated, use user_agent) (default "Lavf58.13.100")
 
 sbg_demuxer AVOptions:
   -sample_rate       <int>        .D.......  (from 0 to INT_MAX) (default 0)
@@ -4686,7 +4698,8 @@ dash muxer AVOptions:
   -adaptation_sets   <string>     E........ Adaptation sets. Syntax: id=0,streams=0,1,2 id=1,streams=3,4 and so on
   -window_size       <int>        E........ number of segments kept in the manifest (from 0 to INT_MAX) (default 0)
   -extra_window_size <int>        E........ number of segments kept outside of the manifest before removing from disk (from 0 to INT_MAX) (default 5)
-  -min_seg_duration  <int>        E........ minimum segment duration (in microseconds) (from 0 to INT_MAX) (default 5e+006)
+  -min_seg_duration  <int>        E........ minimum segment duration (in microseconds) (will be deprecated) (from 0 to INT_MAX) (default 5e+006)
+  -seg_duration      <duration>   E........ segment duration (in seconds, fractional value can be set) (default 5)
   -remove_at_exit    <boolean>    E........ remove all segments when finished (default false)
   -use_template      <boolean>    E........ Use SegmentTemplate instead of SegmentList (default true)
   -use_timeline      <boolean>    E........ Use SegmentTimeline in SegmentTemplate (default true)
@@ -4701,6 +4714,7 @@ dash muxer AVOptions:
   -hls_playlist      <boolean>    E........ Generate HLS playlist files(master.m3u8, media_%d.m3u8) (default false)
   -streaming         <boolean>    E........ Enable/Disable streaming mode of output. Each frame will be moof fragment (default false)
   -timeout           <duration>   E........ set timeout for socket I/O operations (default -0.000001)
+  -index_correction  <boolean>    E........ Enable/Disable segment index correction logic (default false)
 
 f4v muxer AVOptions:
   -movflags          <flags>      E........ MOV muxer flags (default 0)
@@ -4805,6 +4819,7 @@ hls muxer AVOptions:
   -hls_time          <float>      E........ set segment length in seconds (from 0 to FLT_MAX) (default 2)
   -hls_init_time     <float>      E........ set segment length in seconds at init list (from 0 to FLT_MAX) (default 0)
   -hls_list_size     <int>        E........ set maximum number of playlist entries (from 0 to INT_MAX) (default 5)
+  -hls_delete_threshold <int>        E........ set number of unreferenced segments to keep before deleting (from 1 to INT_MAX) (default 1)
   -hls_ts_options    <string>     E........ set hls mpegts list of options for the container format used for hls
   -hls_vtt_options   <string>     E........ set hls vtt list of options for the container format used for hls
   -hls_wrap          <int>        E........ set number after which the index wraps (will be deprecated) (from 0 to INT_MAX) (default 0)
@@ -5295,8 +5310,8 @@ RTSP muxer AVOptions:
   -stimeout          <int>        .D....... set timeout (in microseconds) of socket TCP I/O operations (from INT_MIN to INT_MAX) (default 0)
   -reorder_queue_size <int>        .D....... set number of packets to buffer for handling of reordered packets (from -1 to INT_MAX) (default -1)
   -buffer_size       <int>        ED....... Underlying protocol send/receive buffer size (from -1 to INT_MAX) (default -1)
-  -user_agent        <string>     .D....... override User-Agent header (default "Lavf58.11.101")
-  -user-agent        <string>     .D....... override User-Agent header (deprecated, use user_agent) (default "Lavf58.11.101")
+  -user_agent        <string>     .D....... override User-Agent header (default "Lavf58.13.100")
+  -user-agent        <string>     .D....... override User-Agent header (deprecated, use user_agent) (default "Lavf58.13.100")
 
 segment muxer AVOptions:
   -reference_stream  <string>     E........ set reference stream (default "auto")
@@ -5909,10 +5924,11 @@ afftfilt AVOptions:
   overlap           <float>      ..F.A.... set window overlap (from 0 to 1) (default 0.75)
 
 afir AVOptions:
-  dry               <float>      ..F.A.... set dry gain (from 0 to 1) (default 1)
-  wet               <float>      ..F.A.... set wet gain (from 0 to 1) (default 1)
+  dry               <float>      ..F.A.... set dry gain (from 0 to 10) (default 1)
+  wet               <float>      ..F.A.... set wet gain (from 0 to 10) (default 1)
   length            <float>      ..F.A.... set IR length (from 0 to 1) (default 1)
   again             <boolean>    ..F.A.... enable auto gain (default true)
+  maxir             <float>      ..F.A.... set max ir length (from 0.1 to 60) (default 30)
 
 aformat AVOptions:
   sample_fmts       <string>     ..F.A.... A '|'-separated list of sample formats.
@@ -6511,6 +6527,10 @@ headphone AVOptions:
   type              <int>        ..F.A.... set processing (from 0 to 1) (default freq)
      time                         ..F.A.... time domain
      freq                         ..F.A.... frequency domain
+  size              <int>        ..F.A.... set frame size (from 1024 to 96000) (default 1024)
+  hrir              <int>        ..F.A.... set hrir format (from 0 to 1) (default stereo)
+     stereo                       ..F.A.... hrir files have exactly 2 channels
+     multich                      ..F.A.... single multichannel hrir file
 
 highpass AVOptions:
   frequency         <double>     ..F.A.... set frequency (from 0 to 999999) (default 3000)
@@ -6531,6 +6551,28 @@ highpass AVOptions:
   w                 <double>     ..F.A.... set width (from 0 to 99999) (default 0.707)
   poles             <int>        ..F.A.... set number of poles (from 1 to 2) (default 2)
   p                 <int>        ..F.A.... set number of poles (from 1 to 2) (default 2)
+  channels          <channel_layout> ..F.A.... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A.... set channels to filter (default 0xffffffffffffffff)
+
+highshelf AVOptions:
+  frequency         <double>     ..F.A.... set central frequency (from 0 to 999999) (default 3000)
+  f                 <double>     ..F.A.... set central frequency (from 0 to 999999) (default 3000)
+  width_type        <int>        ..F.A.... set filter-width type (from 1 to 5) (default q)
+     h                            ..F.A.... Hz
+     q                            ..F.A.... Q-Factor
+     o                            ..F.A.... octave
+     s                            ..F.A.... slope
+     k                            ..F.A.... kHz
+  t                 <int>        ..F.A.... set filter-width type (from 1 to 5) (default q)
+     h                            ..F.A.... Hz
+     q                            ..F.A.... Q-Factor
+     o                            ..F.A.... octave
+     s                            ..F.A.... slope
+     k                            ..F.A.... kHz
+  width             <double>     ..F.A.... set shelf transition steep (from 0 to 99999) (default 0.5)
+  w                 <double>     ..F.A.... set shelf transition steep (from 0 to 99999) (default 0.5)
+  gain              <double>     ..F.A.... set gain (from -900 to 900) (default 0)
+  g                 <double>     ..F.A.... set gain (from -900 to 900) (default 0)
   channels          <channel_layout> ..F.A.... set channels to filter (default 0xffffffffffffffff)
   c                 <channel_layout> ..F.A.... set channels to filter (default 0xffffffffffffffff)
 
@@ -6580,6 +6622,28 @@ lowpass AVOptions:
   w                 <double>     ..F.A.... set width (from 0 to 99999) (default 0.707)
   poles             <int>        ..F.A.... set number of poles (from 1 to 2) (default 2)
   p                 <int>        ..F.A.... set number of poles (from 1 to 2) (default 2)
+  channels          <channel_layout> ..F.A.... set channels to filter (default 0xffffffffffffffff)
+  c                 <channel_layout> ..F.A.... set channels to filter (default 0xffffffffffffffff)
+
+lowshelf AVOptions:
+  frequency         <double>     ..F.A.... set central frequency (from 0 to 999999) (default 100)
+  f                 <double>     ..F.A.... set central frequency (from 0 to 999999) (default 100)
+  width_type        <int>        ..F.A.... set filter-width type (from 1 to 5) (default q)
+     h                            ..F.A.... Hz
+     q                            ..F.A.... Q-Factor
+     o                            ..F.A.... octave
+     s                            ..F.A.... slope
+     k                            ..F.A.... kHz
+  t                 <int>        ..F.A.... set filter-width type (from 1 to 5) (default q)
+     h                            ..F.A.... Hz
+     q                            ..F.A.... Q-Factor
+     o                            ..F.A.... octave
+     s                            ..F.A.... slope
+     k                            ..F.A.... kHz
+  width             <double>     ..F.A.... set shelf transition steep (from 0 to 99999) (default 0.5)
+  w                 <double>     ..F.A.... set shelf transition steep (from 0 to 99999) (default 0.5)
+  gain              <double>     ..F.A.... set gain (from -900 to 900) (default 0)
+  g                 <double>     ..F.A.... set gain (from -900 to 900) (default 0)
   channels          <channel_layout> ..F.A.... set channels to filter (default 0xffffffffffffffff)
   c                 <channel_layout> ..F.A.... set channels to filter (default 0xffffffffffffffff)
 
@@ -10728,6 +10792,8 @@ showvolume AVOptions:
   c                 <string>     ..FV..... set volume color expression (default "PEAK*255+floor((1-PEAK)*255)*256+0xff000000")
   t                 <boolean>    ..FV..... display channel names (default true)
   v                 <boolean>    ..FV..... display volume value (default true)
+  dm                <double>     ..FV..... duration for max value display (from 0 to 9000) (default 0)
+  dmc               <color>      ..FV..... set color of the max value line (default "orange")
   o                 <int>        ..FV..... set orientation (from 0 to 1) (default h)
      h                            ..FV..... horizontal
      v                            ..FV..... vertical
@@ -10736,6 +10802,9 @@ showvolume AVOptions:
   m                 <int>        ..FV..... set mode (from 0 to 1) (default p)
      p                            ..FV..... peak
      r                            ..FV..... rms
+  ds                <int>        ..FV..... set display scale (from 0 to 1) (default lin)
+     lin                          ..FV..... linear
+     log                          ..FV..... log
 
 showwaves AVOptions:
   size              <image_size> ..FV..... set video size (default "600x240")
@@ -10990,7 +11059,7 @@ Encoders:
  VF.... libopenjpeg          OpenJPEG JPEG 2000 (codec jpeg2000)
  VF.... jpegls               JPEG-LS
  VF.... ljpeg                Lossless JPEG
- VF.... magicyuv             MagicYUV video
+ VF.X.. magicyuv             MagicYUV video
  VFS... mjpeg                MJPEG (Motion JPEG)
  V..... mjpeg_qsv            MJPEG (Intel Quick Sync Video acceleration) (codec mjpeg)
  V.S... mpeg1video           MPEG-1 video
@@ -13126,9 +13195,11 @@ Filters:
  ... hdcd              A->A       Apply High Definition Compatible Digital (HDCD) decoding.
  .S. headphone         N->A       Apply headphone binaural spatialization with HRTFs in additional streams.
  ..C highpass          A->A       Apply a high-pass filter with 3dB point frequency.
+ ..C highshelf         A->A       Apply a high shelf filter.
  ... join              N->A       Join multiple audio streams into multi-channel output.
  ... loudnorm          A->A       EBU R128 loudness normalization
  ..C lowpass           A->A       Apply a low-pass filter with 3dB point frequency.
+ ..C lowshelf          A->A       Apply a low shelf filter.
  ... mcompand          A->A       Multiband Compress or expand audio dynamic range.
  ... pan               A->A       Remix channels with coefficients (panning).
  ... replaygain        A->A       ReplayGain scanner.
@@ -13353,6 +13424,7 @@ Filters:
  T.. vaguedenoiser     V->V       Apply a Wavelet based Denoiser.
  ... vectorscope       V->V       Video vectorscope.
  T.. vflip             V->V       Flip the input video vertically.
+ ... vfrdet            V->V       Variable frame rate detect filter.
  ... vidstabdetect     V->V       Extract relative transformations, pass 1 of 2 for stabilization (see vidstabtransform for pass 2).
  ... vidstabtransform  V->V       Transform the frames, pass 2 of 2 for stabilization (see vidstabdetect for pass 1).
  T.. vignette          V->V       Make or reverse a vignette effect.
@@ -13495,6 +13567,10 @@ nvenc_h264 AVOptions:
      cavlc                        E..V..... 
      ac                           E..V..... 
      vlc                          E..V..... 
+  -b_ref_mode        <int>        E..V..... Use B frames as references (from 0 to 2) (default disabled)
+     disabled                     E..V..... B frames will not be used for reference
+     each                         E..V..... Each B frame will be used for reference
+     middle                       E..V..... Only (number of B frames)/2 will be used for reference
 
 Encoder nvenc_hevc [NVIDIA NVENC hevc encoder]:
     General capabilities: delay 
