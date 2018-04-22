@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys
 import os
 import time
@@ -208,6 +209,7 @@ def processFile(inputfile, tagdata, relativePath=None):
         converter = MkvtoMp4(settings, logger=log)
         output = converter.process(inputfile, True)
         if output:
+            print("We made it past output")
             if tagmp4 is not None:
                 try:
                     tagmp4.setHD(output['x'], output['y'])
@@ -229,7 +231,56 @@ def processFile(inputfile, tagdata, relativePath=None):
                         post_processor.setTV(tagdata[1], tagdata[2], tagdata[3])
                 post_processor.run_scripts()
 
+def getFileInfo(inputfile):
+    if os.path.isdir(inputfile):
+        cpt = sum([len(files) for r, d, files in os.walk(inputfile)])
+        count = 0
+        once = False
+        print("total files in directory: %s" % (cpt))
+        print("Resetting filesToConvert.log")
+        file = open(os.path.join(os.path.dirname(sys.argv[0]), 'filesToConvert.log'),"w")  
+        file.write("")          
+        file.close()
+        
+        for r, d, f in os.walk(inputfile):
+            for file in f:
+                count += 1
+                updatedCount = percentage(count, cpt)
+                print("Completion: %%%s" % round(updatedCount, 2), end='\r')
+                
+                filepath = os.path.join(r, file)
+                try:
+                    if MkvtoMp4(settings, logger=log).validSource(filepath):
 
+                        reason = MkvtoMp4(settings, logger=log).needConversion(filepath)
+                        if reason:
+                            print("Logging file: %s because of incorrect %s" % (filepath, reason))
+                            file = open(os.path.join(os.path.dirname(sys.argv[0]), 'filesToConvert.log'),"a")
+                            
+                            if once == False:
+                                file.write("%s" % (filepath))
+                                once = True
+                            else:
+                                file.write("\n")
+                                file.write("%s" % (filepath))
+                            file.close()                
+                except Exception as e:
+                    print("An unexpected error occurred, processing of this file has failed")
+                    print(str(e))
+                    
+    elif (os.path.isfile(inputfile) and MkvtoMp4(settings, logger=log).validSource(inputfile)):
+        if MkvtoMp4(settings, logger=log).validSource(inputfile):
+
+            reason = MkvtoMp4(settings, logger=log).needConversion(inputfile, True)
+            if reason:
+                print("Conversion needed on File: %s because of incorrect %s" % (inputfile, reason))
+         
+    else:
+        try:
+            print("File %s is not in the correct format" % (path))
+        except:
+            print("File is not in the correct format")
+      
 def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
     biggest_file_size = 0
     biggest_file_name = ""
@@ -274,6 +325,9 @@ def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
                 print("An unexpected error occurred, processing of this file has failed")
                 print(str(e))
 
+def percentage(part, whole):
+  return 100 * float(part)/float(whole)
+  
 def checkForSpot(maxproc, printlog=True):
   for pos in range(1, maxproc):
     fname='.spot' + str(pos)
@@ -296,6 +350,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Manual conversion and tagging script for sickbeard_mp4_automator")
     parser.add_argument('-i', '--input', help='The source that will be converted. May be a file or a directory')
+    parser.add_argument('-r', '--readonly', action="store_true", help='Read all data from files in the directory provided, and list them in a file')
     parser.add_argument('-c', '--config', help='Specify an alternate configuration file location')
     parser.add_argument('-a', '--auto', action="store_true", help="Enable auto mode, the script will not prompt you for any further input, good for batch files. It will guess the metadata using guessit")
     parser.add_argument('-tv', '--tvdbid', help="Set the TVDB ID for a tv show")
@@ -337,30 +392,37 @@ def main():
             settings = ReadSettings(os.path.dirname(sys.argv[0]), args['config'], logger=log)
         else:
             print('Configuration file "%s" not present, using default autoProcess.ini' % (args['config']))
-    if (args['nomove']):
-        settings.output_dir = None
-        settings.moveto = None
-        print("No-move enabled")
-    elif (args['moveto']):
-        settings.moveto = args['moveto']
-        print("Overriden move-to to " + args['moveto'])
-    if (args['nocopy']):
-        settings.copyto = None
-        print("No-copy enabled")
-    if (args['nodelete']):
-        settings.delete = False
-        print("No-delete enabled")
-    if (args['convertmp4']):
-        settings.processMP4 = True
-        print("Reprocessing of MP4 files enabled")
-    if (args['notag']):
-        settings.tagfile = False
-        print("No-tagging enabled")
-    if (args['nopost']):
-        settings.postprocess = False
-        print("No post processing enabled")
-    if (args['forceConvert']):
-        settings.forceConvert = True
+
+    # IF READONLY IS SET, WE WILL ONLY DO THAT. WE WILL NOT USE ANY OTHER CMD ARGUMENT GIVEN (EXCEPT CONFIG)
+    if (args['readonly']):
+        print("Reading info about files only..Ignoring all other command arguments..")
+        readonly = True
+    else:
+        readonly = False
+        if (args['nomove']):
+            settings.output_dir = None
+            settings.moveto = None
+            print("No-move enabled")
+        elif (args['moveto']):
+            settings.moveto = args['moveto']
+            print("Overriden move-to to " + args['moveto'])
+        if (args['nocopy']):
+            settings.copyto = None
+            print("No-copy enabled")
+        if (args['nodelete']):
+            settings.delete = False
+            print("No-delete enabled")
+        if (args['convertmp4']):
+            settings.processMP4 = True
+            print("Reprocessing of MP4 files enabled")
+        if (args['notag']):
+            settings.tagfile = False
+            print("No-tagging enabled")
+        if (args['nopost']):
+            settings.postprocess = False
+            print("No post processing enabled")
+        if (args['forceConvert']):
+            settings.forceConvert = True
         
 
     # Establish the path we will be working with
@@ -372,35 +434,92 @@ def main():
             pass
     else:
         path = getValue("Enter path to file")
-
-    tvdbid = int(args['tvdbid']) if args['tvdbid'] else None
-    if os.path.isdir(path):
-        walkDir(path, silent, tvdbid=tvdbid, preserveRelative=args['preserveRelative'], tag=settings.tagfile)
-    elif (os.path.isfile(path) and MkvtoMp4(settings, logger=log).validSource(path)):
-        if (not settings.tagfile):
-            tagdata = None
-        elif (args['tvdbid'] and not (args['imdbid'] or args['tmdbid'])):
-            season = int(args['season']) if args['season'] else None
-            episode = int(args['episode']) if args['episode'] else None
-            if (tvdbid and season and episode):
-                tagdata = [3, tvdbid, season, episode]
+    
+    if readonly:
+        getFileInfo(path)
+    else:
+        tvdbid = int(args['tvdbid']) if args['tvdbid'] else None
+        if os.path.isdir(path):
+            walkDir(path, silent, tvdbid=tvdbid, preserveRelative=args['preserveRelative'], tag=settings.tagfile)
+        elif (os.path.isfile(path) and MkvtoMp4(settings, logger=log).validSource(path)):
+            if (not settings.tagfile):
+                tagdata = None
+            elif (args['tvdbid'] and not (args['imdbid'] or args['tmdbid'])):
+                season = int(args['season']) if args['season'] else None
+                episode = int(args['episode']) if args['episode'] else None
+                if (tvdbid and season and episode):
+                    tagdata = [3, tvdbid, season, episode]
+                else:
+                    tagdata = getinfo(path, silent=silent, tvdbid=tvdbid)
+            elif ((args['imdbid'] or args['tmdbid']) and not args['tvdbid']):
+                if (args['imdbid']):
+                    imdbid = args['imdbid']
+                    tagdata = [1, imdbid]
+                elif (args['tmdbid']):
+                    tmdbid = int(args['tmdbid'])
+                    tagdata = [2, tmdbid]
             else:
                 tagdata = getinfo(path, silent=silent, tvdbid=tvdbid)
-        elif ((args['imdbid'] or args['tmdbid']) and not args['tvdbid']):
-            if (args['imdbid']):
-                imdbid = args['imdbid']
-                tagdata = [1, imdbid]
-            elif (args['tmdbid']):
-                tmdbid = int(args['tmdbid'])
-                tagdata = [2, tmdbid]
+            processFile(path, tagdata)
+        elif (os.path.isfile(path)):
+            try:
+                with open(path) as f:
+                    content = f.readlines()
+                    content = [x.strip() for x in content]
+                    contentCopy = list(content)
+                    contentLen = len(content)
+                    print("TOTAL FILES TO CONVERT: %s" % contentLen)
+                    count = 0
+                
+                try:            
+                    for x in content:
+                        currFile = x;
+                        updatedCount = percentage(count, contentLen)
+                        print("Completion: %%%s" % round(updatedCount, 2), end='\r')    
+                        
+                        if MkvtoMp4(settings, logger=log).validSource(currFile):
+                            if (not settings.tagfile):
+                                tagdata = None
+                            elif (args['tvdbid'] and not (args['imdbid'] or args['tmdbid'])):
+                                tvdbid = int(args['tvdbid']) if args['tvdbid'] else None
+                                season = int(args['season']) if args['season'] else None
+                                episode = int(args['episode']) if args['episode'] else None
+                                if (tvdbid and season and episode):
+                                    tagdata = [3, tvdbid, season, episode]
+                                else:
+                                    tagdata = getinfo(currFile, silent=silent, tvdbid=tvdbid)
+                            elif ((args['imdbid'] or args['tmdbid']) and not args['tvdbid']):
+                                if (args['imdbid']):
+                                    imdbid = args['imdbid']
+                                    tagdata = [1, imdbid]
+                                elif (args['tmdbid']):
+                                    tmdbid = int(args['tmdbid'])
+                                    tagdata = [2, tmdbid]
+                            else:
+                                tagdata = getinfo(currFile, silent=silent)
+                            
+                            print("PROCCESSING: %s" % (currFile))
+                            processFile(currFile, tagdata)
+                            
+                            count += 1
+                            print("removing %s from file..list length before: %s" % (currFile, len(contentCopy)))
+                            contentCopy.remove(currFile)
+                            print("list length after: %s" % (len(contentCopy)))
+                            
+                            data = open(path, "w")
+                            for c in contentCopy:
+                                   data.write("%s\n" % (c))
+                            data.close()
+                except Exception as e:
+                    print(e)
+  
+            except:
+                print("File %s is not in the correct format" % (path))
         else:
-            tagdata = getinfo(path, silent=silent, tvdbid=tvdbid)
-        processFile(path, tagdata)
-    else:
-        try:
-            print("File %s is not in the correct format" % (path))
-        except:
-            print("File is not in the correct format")
+            try:
+                print("File %s is not in the correct format" % (path))
+            except:
+                print("File is not in the correct format")
 
 
 if __name__ == '__main__':

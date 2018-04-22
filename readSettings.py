@@ -409,7 +409,31 @@ class ReadSettings:
             except:
                 log.exception("Invalid video bitrate, defaulting to no video bitrate cap.")
                 self.vbitrate = None
-
+        self.vpriority = config.get(section, "video-conversion-priority")
+        if self.vpriority == '':
+            self.vpriority = None
+            log.warning("conversion priority is not set.. setting vpriority to: none")
+        else:
+            try:
+                if self.vpriority.lower() == "codec":
+                    self.vpriority = "codec"
+                    log.warning("conversion priority set to codec.. setting vpriority")
+                elif self.vpriority.lower() == "bitrate":
+                    self.vpriority = "bitrate"
+                    log.warning("conversion priority set to bitrate.. setting vpriority")
+                elif self.vpriority.lower() == "level":
+                    self.vpriority = "level"
+                    log.warning("conversion priority set to level.. setting vpriority")
+                elif self.vpriority.lower() == "extension":
+                    self.vpriority = "extension"
+                    log.warning("conversion priority set to extension.. setting vpriority")
+                else:
+                    self.vpriority = None
+                    log.warning("Invalid type of video conversion priority.. defaulting to None")
+            except:
+                self.vpriority = None
+                log.warning("Invalid type of video conversion priority.. defaulting to None")
+                
         self.vcrf = config.get(section, "video-crf")
         if self.vcrf == '':
             self.vcrf = None

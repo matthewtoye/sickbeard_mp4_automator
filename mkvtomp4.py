@@ -23,6 +23,7 @@ class MkvtoMp4:
                  video_codec=['h264', 'x264'],
                  video_bitrate_restriction=None,
                  video_bitrate=None,
+                 video_conversion_priority=None,                                                
                  vcrf=None,
                  video_width=None,
                  nvenc_profile=None,
@@ -87,6 +88,7 @@ class MkvtoMp4:
         # Setup Logging
         if logger:
             self.log = logger
+            self.log.disabled = False                                    
         else:
             self.log = logging.getLogger(__name__)
 
@@ -111,6 +113,7 @@ class MkvtoMp4:
         self.video_codec = video_codec
         self.video_bitrate_restriction = video_bitrate_restriction
         self.video_bitrate = video_bitrate
+        self.video_conversion_priority = video_conversion_priority                                                                
         self.vcrf = vcrf
         self.video_width = video_width
         self.nvenc_profile = nvenc_profile
@@ -192,6 +195,7 @@ class MkvtoMp4:
         self.video_codec = settings.vcodec
         self.video_bitrate_restriction = settings.video_bitrate_restriction
         self.video_bitrate = settings.vbitrate
+        self.video_conversion_priority = settings.vpriority                                                        
         self.vcrf = settings.vcrf
         self.video_width = settings.vwidth
         self.nvenc_profile = settings.nvenc_profile
@@ -260,11 +264,13 @@ class MkvtoMp4:
             return False
 
         if self.needProcessing(inputfile):
+            self.log.debug("NEED PROCESSING IS TRUE.")
             options = self.generateOptions(inputfile, original=original)
+            self.log.debug("PAST OPTIONS____________")
+            
             if options == None:
                 self.log.debug("Error generating options, possibly due to corrupt input file.")
                 return False
-
             try:
                 if reportProgress:
                     self.log.info(json.dumps(options, sort_keys=False, indent=4))
@@ -282,6 +288,7 @@ class MkvtoMp4:
             self.log.debug("%s created from %s successfully." % (outputfile, inputfile))
 
         else:
+            self.log.debug("NEED PROCESSING IS FALSE.")
             outputfile = inputfile
             if self.output_dir is not None:
                 try:
@@ -369,6 +376,36 @@ class MkvtoMp4:
         self.log.debug("Total audio bitrate is %s." % audio_bitrate)
         self.log.debug("Estimated video bitrate is %s." % (total_bitrate - audio_bitrate))
         return ((total_bitrate - audio_bitrate) / 1000) * .95
+    def needConversion(self, inputfile, loud=False):
+        # Get path information from the input file
+        input_dir, filename, input_extension = self.parseFile(inputfile)
+
+        info = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).probe(inputfile)
+
+        if loud:
+            print("codec: %s\n level: %s\n bitrate: %s" % (info.video.codec, info.video.video_level, (info.format.bitrate / 1000)))
+
+        if (self.video_conversion_priority is None or self.video_conversion_priority == "extension") and input_extension.lower() != "mp4":
+            self.log.debug("Not the correct extension.. converting: %s" % (input_extension.encode(sys.stdout.encoding, errors='ignore')))
+            return "extension. currently: %s" % (input_extension.encode(sys.stdout.encoding, errors='ignore'))
+        
+        if (self.video_conversion_priority is None or self.video_conversion_priority == "codec") and info.video.codec.lower() not in self.video_codec:
+            self.log.debug("Not the right codec.. Converting: %s" % (info.video.codec.lower()))
+            return "codec. currently: %s" % (info.video.codec.lower())
+            
+        if (self.video_conversion_priority is None or self.video_conversion_priority == "level") and info.video.codec.lower() in self.video_codec and self.h264_level and info.video.video_level and (info.video.video_level / 10 > self.h264_level):
+            self.log.debug("Not the right h264 video level.. converting: %s" % (info.video.video_level / 10 <= self.h264_level))
+            return "level. currently: %s" % (info.video.video_level / 10)
+        
+        if (self.video_conversion_priority is None or self.video_conversion_priority == "bitrate"):
+            try:
+                vbr = self.estimateVideoBitrate(info)
+            except:
+                vbr = info.format.bitrate / 1000
+     
+            if self.video_bitrate and vbr > self.video_bitrate:
+                self.log.debug("The bitrate is to high.. converting: %s" % (vbr))
+                return "bitrate. currently: %s" % (vbr)                                                 
 
     # Generate a list of options to be passed to FFMPEG based on selected settings and the source file parameters and streams
     def generateOptions(self, inputfile, original=None):
@@ -1003,6 +1040,31 @@ class MkvtoMp4:
 
         input_dir, filename, input_extension = self.parseFile(inputfile)
         output_dir = input_dir if self.output_dir is None else self.output_dir
+        
+        #TODO, make it work with unix/linux directories...
+        mySplit = input_dir.split('\\')
+        lastDir = ''
+        
+        for i in range(len(mySplit)):
+            remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|')
+            currDir = os.path.join(lastDir, mySplit[i].translate(remove_punctuation_map))
+            lastDir = currDir
+
+            print("Checking if directory is made: %s" % (os.path.join(output_dir, currDir)))
+                
+            mySplit[i] = os.path.normpath(os.path.join(output_dir, currDir))
+            if not os.path.isdir(mySplit[i]):
+                try:
+                    os.makedirs(mySplit[i])
+                except:
+                    log.exception("Error making directory %s." % (mySplit[i]))
+                        
+        #print("Final output directory is: %s" % (os.path.join(output_dir, lastDir)))
+        if os.path.isdir(os.path.join(output_dir, lastDir)):
+            output_dir = os.path.join(output_dir, lastDir)
+            print("Changed output_dir to: %s" % (output_dir))
+        else:
+            print("Something happened while trying to create the folders for output directory.. defaulting to base output folder")
         try:
             outputfile = os.path.join(output_dir.decode(sys.getfilesystemencoding()), filename.decode(sys.getfilesystemencoding()) + "." + self.output_extension).encode(sys.getfilesystemencoding())
         except:
