@@ -503,7 +503,7 @@ class FFMpeg(object):
                 raise Exception('timed out while waiting for ffmpeg')
 
             signal.signal(signal.SIGALRM, on_sigalrm)
-
+        #print("command is: %s" % (cmds))
         try:
             p = self._spawn(cmds)
         except OSError:
@@ -512,12 +512,22 @@ class FFMpeg(object):
         yielded = False
         buf = ''
         total_output = ''
-        pat = re.compile(r'time=([0-9.:]+) ')
-        fra = re.compile(r'frame=(\s*\d+) ')
+        ctime = re.compile(r'time=([0-9.:]+) ')
+        cframe = re.compile(r'frame=(\s*\d+) ')
+        cfps = re.compile(r'fps=(\s*\d+) ')
+        cq = re.compile(r'q=([\d*.]+) ')
+        cspeed = re.compile(r'speed=([\s*\d*.\d*x\s*]+) ')
+        cbitrate = re.compile(r'bitrate=([\s*\d*.\d*\w*/\w*]+) ')
         frame = 0
         starttime = time.time()
         lastframetime = starttime
         ignore_non_monotonous = False
+        timecode = 0
+        fpsspec = 0
+        cqspec = 0
+        cspeedspec = 0
+        bitratespec = 0
+                
         while True:
             if timeout:
                 signal.alarm(timeout)
@@ -574,10 +584,21 @@ class FFMpeg(object):
                     return
 
             if '\r' in buf:
+                #print ("buf: %s" % (str(buf)))
                 line, buf = buf.split('\r', 1)
 
-                tmp = pat.findall(line)
-                tmpframe = fra.findall(line)
+                tmptime = ctime.findall(line)
+                tmpframe = cframe.findall(line)
+                tmpcfps = cfps.findall(line)
+                tmpcq = cq.findall(line)
+                tmpcspeed = cspeed.findall(line)
+                tmpcbitrate = cbitrate.findall(line)
+                
+                #print("tmpcfps: %s , LENGTH: %s" % (str(tmpcfps), len(tmpcfps)))
+                #print("tmpcq: %s , LENGTH: %s" % (str(tmpcq), len(tmpcq)))
+                #print("tmpcspeed: %s , LENGTH: %s" % (str(tmpcspeed), len(tmpcspeed)))
+                #print("tmpcbitrate: %s , LENGTH: %s" % (str(tmpcbitrate), len(tmpcbitrate)))
+                
                 if len(tmpframe) == 1 and frame != 0 and frame == int( tmpframe[0] ):
                     if starttime == lastframetime:
                         lastframetime = time.time()
@@ -591,17 +612,26 @@ class FFMpeg(object):
                     lastframetime = starttime
                 if len( tmpframe ) == 1:
                     frame = int( tmpframe[0] )
-                if len(tmp) == 1:
-                    timespec = tmp[0]
+                if len(tmptime) == 1:
+                    timespec = tmptime[0]
                     if ':' in timespec:
                         timecode = 0
                         for part in timespec.split(':'):
                             timecode = 60 * timecode + float(part)
                     else:
-                        timecode = float(tmp[0])
+                        timecode = float(tmptime[0])
                     yielded = True
-                    yield timecode
 
+                if len(tmpcfps) == 1:
+                    fpsspec = tmpcfps[0].strip()
+                if len(tmpcq) == 1:
+                    cqspec = tmpcq[0]
+                if len(tmpcspeed) == 1:
+                    cspeedspec = tmpcspeed[0].strip()
+                if len(tmpcbitrate) == 1:
+                    bitratespec = tmpcbitrate[0]
+                yield [timecode, fpsspec, cqspec, cspeedspec, bitratespec]
+                
         if timeout:
             signal.signal(signal.SIGALRM, signal.SIG_DFL)
 

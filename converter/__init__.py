@@ -226,22 +226,24 @@ class Converter(object):
 
         if info.format.duration < 0.01:
             raise ConverterError('Zero-length media')
-
+        myList = []
+        myLoop = 0
         if twopass:
             optlist1 = self.parse_options(options, 1)
             for timecode in self.ffmpeg.convert(infile, outfile, optlist1,
                                                 timeout=timeout, preopts=preopts, postopts=postopts):
-                yield int((50.0 * timecode) / info.format.duration)
-
+                    yield int((50.0 * timecode) / info.format.duration)    
             optlist2 = self.parse_options(options, 2)
             for timecode in self.ffmpeg.convert(infile, outfile, optlist2,
-                                                timeout=timeout, preopts=preopts, postopts=postopts):
-                yield int(50.0 + (50.0 * timecode) / info.format.duration)
+                                                timeout=timeout, preopts=preopts, postopts=postopts):                 
+                    yield int(50.0 + (50.0 * timecode) / info.format.duration)
         else:
             optlist = self.parse_options(options, twopass)
             for timecode in self.ffmpeg.convert(infile, outfile, optlist,
                                                 timeout=timeout, preopts=preopts, postopts=postopts):
-                yield int((100.0 * timecode) / info.format.duration)
+
+                tc = round(((50.0 * timecode[0]) + 50) / info.format.duration, 2)
+                yield [tc, timecode[1], timecode[2], timecode[3], timecode[4]]
 
     def probe(self, fname, posters_as_video=True):
         """

@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
+from __future__ import print_function
 import os
 import time
 import json
 import sys
+import curses
 import shutil
+import subprocess
 import logging
 from converter import Converter, FFMpegConvertError
 from extensions import valid_input_extensions, valid_output_extensions, bad_subtitle_codecs, valid_subtitle_extensions, subtitle_codec_extensions
@@ -398,12 +401,18 @@ class MkvtoMp4:
             return "level. currently: %s" % (info.video.video_level / 10)
         
         if (self.video_conversion_priority is None or self.video_conversion_priority == "bitrate"):
+            count = 1 # TODO: duplicate less code when not lazy
+            while(count < len(self.video_bitrate_restriction)):
+                if int(self.video_bitrate_restriction[count - 1]) >= info.video.video_width:
+                    self.video_bitrate = self.video_bitrate_restriction[count]
+                    break
+                count+=2
             try:
                 vbr = self.estimateVideoBitrate(info)
             except:
                 vbr = info.format.bitrate / 1000
-     
-            if self.video_bitrate and vbr > self.video_bitrate:
+            #print("video_bitrate: %s vbr: %s" % (self.video_bitrate, vbr))
+            if self.video_bitrate and vbr > int(self.video_bitrate):
                 self.log.debug("The bitrate is to high.. converting: %s" % (vbr))
                 return "bitrate. currently: %s" % (vbr)                                                 
 
@@ -456,8 +465,9 @@ class MkvtoMp4:
                 self.bufsize = self.bufsize[count]
                 break
             count+=2
-
+        print("forceconvert is: %s" % (self.forceConvert))
         if info.video.codec.lower() in self.video_codec and self.forceConvert is False:
+            print("Setting vcodec to copy..")
             vcodec = 'copy'
         else:
             vcodec = self.video_codec[0]
@@ -1087,18 +1097,18 @@ class MkvtoMp4:
                     outputfile = os.path.join(output_dir, filename + "(" + str(i) + ")." + self.output_extension)
                     i += i
                 self.log.debug("Unable to rename inputfile. Setting output file name to %s." % outputfile)
-
+        
         conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, timeout=None, preopts=options['preopts'], postopts=options['postopts'])
-
+        print("")
         try:
             for timecode in conv:
                 if reportProgress:
-                    try:
-                        sys.stdout.write('\r')
-                        sys.stdout.write('[{0}] {1}%'.format('#' * (timecode / 10) + ' ' * (10 - (timecode / 10)), timecode))
+                    try:           
+                        #sys.stdout.write('\r')
+                        print("\r Comp: %s%% | Fps: %s | Qual: %s | Speed: %s | Bitr: %s              " % (timecode[0], timecode[1], timecode[2], timecode[3], timecode[4]), end="")
                     except:
-                        sys.stdout.write(str(timecode))
-                    sys.stdout.flush()
+                        print("output fail", end="\r")
+                    #sys.stdout.flush()
 
             self.log.info("%s created." % outputfile)
 

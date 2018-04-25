@@ -4,6 +4,7 @@ from __future__ import print_function
 import sys
 import os
 import time
+import curses
 import guessit
 import locale
 import glob
@@ -80,6 +81,147 @@ def getYesNo():
         print("Invalid selection")
         return getYesNo()
 
+def draw_menu(stdscr):
+	k = 0
+	cursor_x = 0
+	cursor_y = 0
+
+	# Clear and refresh the screen for a blank canvas
+	stdscr.clear()
+	stdscr.refresh()
+
+	# Start colors in curses
+	curses.start_color()
+	curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
+	curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+	curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
+
+	# Loop where k is the last character pressed
+	while (k != ord('q')):
+
+		# Initialization
+		stdscr.clear()
+		height, width = stdscr.getmaxyx()
+
+		if k == curses.KEY_DOWN:
+			cursor_y = cursor_y + 1
+		elif k == curses.KEY_UP:
+			cursor_y = cursor_y - 1
+		elif k == curses.KEY_RIGHT:
+			cursor_x = cursor_x + 1
+		elif k == curses.KEY_LEFT:
+			cursor_x = cursor_x - 1
+
+		cursor_x = max(0, cursor_x)
+		cursor_x = min(width-1, cursor_x)
+
+		cursor_y = max(0, cursor_y)
+		cursor_y = min(height-1, cursor_y)
+
+		# Declaration of strings
+		title = "FFMPEG Converter"[:width-1]
+		subtitle = "Written by Matthew Toye"[:width-1]
+		keystr = "Last key pressed: {}".format(k)[:width-1]
+		statusbarstr = "Press 'q' to exit | STATUS BAR | Pos: {}, {}".format(cursor_x, cursor_y)
+		progress_title = "Current Progress"[:width-1]
+		bitrate_title = "Current Bitrate"
+		speed_title = "Current Speed"
+		quality_title = "Current Quality"
+		fps_title = "Current Fps"
+		
+		if k == 0:
+			keystr = "No key press detected..."[:width-1]
+		
+		# Centering calculations
+		start_x_title = int((width // 2) - (len(title) // 2) - len(title) % 2)
+		start_x_subtitle = int((width // 2) - (len(subtitle) // 2) - len(subtitle) % 2)
+		start_x_keystr = int((width // 2) - (len(keystr) // 2) - len(keystr) % 2)
+		start_y = int((height // 2) - 2)
+ 
+		# Render dividers and boxes to surround values and text
+		divide_by_six = int((width-2) // 6)                                          
+		first_position_div = (divide_by_six - (divide_by_six // 2))
+		first_position_x = int(divide_by_six - (len(progress_title) // 2))      
+		second_position_div = (divide_by_six + (divide_by_six // 2))
+		second_position_x = int((divide_by_six * 2) - len(speed_title) // 2)    
+		third_position_div = ((divide_by_six*2) - (divide_by_six // 2))
+		third_position_x = int((divide_by_six * 3) - len(speed_title) // 2)     
+		fourth_position_div = ((divide_by_six*3) - (divide_by_six // 2))
+		fourth_position_x = int((divide_by_six * 4) - len(quality_title) // 2)  
+		fifth_position_div = ((divide_by_six*4) - (divide_by_six // 2))
+		fifth_position_x = int((divide_by_six * 5) - len(bitrate_title) // 2)   
+		sixth_position_div = ((divide_by_six*5) - (divide_by_six // 2))
+		seventh_position_div = ((divide_by_six*5) + (divide_by_six // 2))
+ 
+		middle_div = ""
+		for x in range(divide_by_six):
+			middle_div += "-"    
+		bottom_div = ""
+		for x in range(divide_by_six):
+			bottom_div += "_"        
+					
+		stdscr.addstr(0, first_position_x, progress_title, curses.color_pair(1))        
+		stdscr.addstr(0, second_position_x, fps_title, curses.color_pair(1))       
+		stdscr.addstr(0, third_position_x, speed_title, curses.color_pair(1))       
+		stdscr.addstr(0, fourth_position_x, quality_title, curses.color_pair(1))      
+		stdscr.addstr(0, fifth_position_x, bitrate_title, curses.color_pair(1))      
+		stdscr.addstr(0, first_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(0, second_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(0, third_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(0, fourth_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(0, fifth_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(0, sixth_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(0, seventh_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(1, first_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
+		stdscr.addstr(1, second_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
+		stdscr.addstr(1, third_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
+		stdscr.addstr(1, fourth_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
+		stdscr.addstr(1, fifth_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
+		stdscr.addstr(1, sixth_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
+		stdscr.addstr(1, seventh_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(2, first_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(2, second_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(2, third_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(2, fourth_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(2, fifth_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(2, sixth_position_div, "|", curses.color_pair(1))
+		stdscr.addstr(2, seventh_position_div, "|", curses.color_pair(1))                    
+		stdscr.addstr(3, first_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
+		stdscr.addstr(3, second_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
+		stdscr.addstr(3, third_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
+		stdscr.addstr(3, fourth_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
+		stdscr.addstr(3, fifth_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
+		stdscr.addstr(3, sixth_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
+		stdscr.addstr(3, seventh_position_div, "|", curses.color_pair(1))
+		
+		# Render status bar
+		stdscr.attron(curses.color_pair(3))
+		stdscr.addstr(height-1, 0, statusbarstr)
+		stdscr.addstr(height-1, len(statusbarstr), " " * (width - len(statusbarstr) - 1))
+		stdscr.attroff(curses.color_pair(3))
+
+		# Turning on attributes for title
+		stdscr.attron(curses.color_pair(2))
+		stdscr.attron(curses.A_BOLD)
+
+		# Rendering title
+		stdscr.addstr(start_y, start_x_title, title)
+
+		# Turning off attributes for title
+		stdscr.attroff(curses.color_pair(2))
+		stdscr.attroff(curses.A_BOLD)
+
+		# Print rest of text
+		stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
+		stdscr.addstr(start_y + 3, (width // 2) - 2, '-' * 4)
+		stdscr.addstr(start_y + 5, start_x_keystr, keystr)
+		stdscr.move(cursor_y, cursor_x)
+
+		# Refresh the screen
+		stdscr.refresh()
+
+		# Wait for next input
+		k = stdscr.getch()
 
 def getinfo(fileName=None, silent=False, tag=True, tvdbid=None):
     tagdata = None
@@ -423,7 +565,6 @@ def main():
             print("No post processing enabled")
         if (args['forceConvert']):
             settings.forceConvert = True
-        
 
     # Establish the path we will be working with
     if (args['input']):

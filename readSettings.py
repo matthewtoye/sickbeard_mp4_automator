@@ -463,7 +463,9 @@ class ReadSettings:
             except:
                 log.exception("Invalid h264 level, defaulting to none.")
                 self.h264_level = None
-        self.forceConvert = False
+        self.forceConvert = config.get( section, "forceconvert" )
+        if self.forceConvert == '':
+            self.forceConvert = False
         self.handle_m2ts_files = config.getboolean( section, "handle_m2ts_files" )
         self.vprofile = config.get(section, "video-profile")
         if self.vprofile == '':
