@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import os
-
+import sys
 from converter.avcodecs import video_codec_list, audio_codec_list, subtitle_codec_list
 from converter.formats import format_list
 from converter.ffmpeg import FFMpeg, FFMpegError, FFMpegConvertError
@@ -162,7 +162,7 @@ class Converter(object):
 
         return optlist
 
-    def convert(self, infile, outfile, options, twopass=False, timeout=10, preopts=None, postopts=None):
+    def convert(self, infile, outfile, options, stop_event, twopass=False, timeout=10, preopts=None, postopts=None):
         """
         Convert media file (infile) according to specified options, and
         save it to outfile. For two-pass encoding, specify the pass (1 or 2)
@@ -230,20 +230,20 @@ class Converter(object):
         myLoop = 0
         if twopass:
             optlist1 = self.parse_options(options, 1)
-            for timecode in self.ffmpeg.convert(infile, outfile, optlist1,
+            for timecode in self.ffmpeg.convert(infile, outfile, optlist1, stop_event,
                                                 timeout=timeout, preopts=preopts, postopts=postopts):
                     yield int((50.0 * timecode) / info.format.duration)    
             optlist2 = self.parse_options(options, 2)
-            for timecode in self.ffmpeg.convert(infile, outfile, optlist2,
+            for timecode in self.ffmpeg.convert(infile, outfile, optlist2, stop_event,
                                                 timeout=timeout, preopts=preopts, postopts=postopts):                 
                     yield int(50.0 + (50.0 * timecode) / info.format.duration)
         else:
             optlist = self.parse_options(options, twopass)
-            for timecode in self.ffmpeg.convert(infile, outfile, optlist,
+            for timecode in self.ffmpeg.convert(infile, outfile, optlist, stop_event,
                                                 timeout=timeout, preopts=preopts, postopts=postopts):
 
-                tc = round(((50.0 * timecode[0]) + 50) / info.format.duration, 2)
-                yield [tc, timecode[1], timecode[2], timecode[3], timecode[4]]
+                tc = round(((100.0 * timecode[0]) / info.format.duration), 2)
+                yield [tc, timecode[1], timecode[2], timecode[3], timecode[4], timecode[5]]
 
     def probe(self, fname, posters_as_video=True):
         """

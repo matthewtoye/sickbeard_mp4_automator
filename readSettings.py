@@ -45,7 +45,7 @@ class ReadSettings:
                 log.exception("Sorry, your environment is not setup correctly for utf-8 support. Please fix your setup and try again")
                 sys.exit("Sorry, your environment is not setup correctly for utf-8 support. Please fix your setup and try again")
 
-        log.info(sys.executable)
+        log.debug(sys.executable)
 
         # Default settings for SickBeard
         sb_defaults = {'host': 'localhost',
@@ -405,34 +405,34 @@ class ReadSettings:
                 self.vbitrate = int(self.vbitrate)
                 if not (self.vbitrate > 0):
                     self.vbitrate = None
-                    log.warning("Video bitrate must be greater than 0, defaulting to no video bitrate cap.")
+                    log.debug("Video bitrate must be greater than 0, defaulting to no video bitrate cap.")
             except:
                 log.exception("Invalid video bitrate, defaulting to no video bitrate cap.")
                 self.vbitrate = None
         self.vpriority = config.get(section, "video-conversion-priority")
         if self.vpriority == '':
             self.vpriority = None
-            log.warning("conversion priority is not set.. setting vpriority to: none")
+            log.debug("conversion priority is not set.. setting vpriority to: none")
         else:
             try:
                 if self.vpriority.lower() == "codec":
                     self.vpriority = "codec"
-                    log.warning("conversion priority set to codec.. setting vpriority")
+                    log.debug("conversion priority set to codec.. setting vpriority")
                 elif self.vpriority.lower() == "bitrate":
                     self.vpriority = "bitrate"
-                    log.warning("conversion priority set to bitrate.. setting vpriority")
+                    log.debug("conversion priority set to bitrate.. setting vpriority")
                 elif self.vpriority.lower() == "level":
                     self.vpriority = "level"
-                    log.warning("conversion priority set to level.. setting vpriority")
+                    log.debug("conversion priority set to level.. setting vpriority")
                 elif self.vpriority.lower() == "extension":
                     self.vpriority = "extension"
-                    log.warning("conversion priority set to extension.. setting vpriority")
+                    log.debug("conversion priority set to extension.. setting vpriority")
                 else:
                     self.vpriority = None
-                    log.warning("Invalid type of video conversion priority.. defaulting to None")
+                    log.debug("Invalid type of video conversion priority.. defaulting to None")
             except:
                 self.vpriority = None
-                log.warning("Invalid type of video conversion priority.. defaulting to None")
+                log.debug("Invalid type of video conversion priority.. defaulting to None")
                 
         self.vcrf = config.get(section, "video-crf")
         if self.vcrf == '':

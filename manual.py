@@ -4,13 +4,15 @@ from __future__ import print_function
 import sys
 import os
 import time
-import curses
 import guessit
 import locale
 import glob
+import signal
 import argparse
 import struct
 import logging
+import multiprocessing
+from multiprocessing import Process, Event, Pool
 from subprocess import call
 from readSettings import ReadSettings
 from tvdb_mp4 import Tvdb_mp4
@@ -21,6 +23,8 @@ from tvdb_api import tvdb_api
 from tmdb_api import tmdb
 from extensions import tmdb_api_key
 from logging.config import fileConfig
+original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+sys.tracebacklimit=0
 
 if sys.version[0] == "3":
     raw_input = input
@@ -31,11 +35,6 @@ logging.getLogger("subliminal").setLevel(logging.CRITICAL)
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("enzyme").setLevel(logging.WARNING)
 logging.getLogger("qtfaststart").setLevel(logging.WARNING)
-
-log.info("Manual processor started.")
-
-settings = ReadSettings(os.path.dirname(sys.argv[0]), "autoProcess.ini", logger=log)
-
 
 def mediatype():
     print("Select media type:")
@@ -50,7 +49,6 @@ def mediatype():
     else:
         print("Invalid selection")
         return mediatype()
-
 
 def getValue(prompt, num=False):
     print(prompt + ":")
@@ -80,148 +78,6 @@ def getYesNo():
     else:
         print("Invalid selection")
         return getYesNo()
-
-def draw_menu(stdscr):
-	k = 0
-	cursor_x = 0
-	cursor_y = 0
-
-	# Clear and refresh the screen for a blank canvas
-	stdscr.clear()
-	stdscr.refresh()
-
-	# Start colors in curses
-	curses.start_color()
-	curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
-	curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
-	curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
-
-	# Loop where k is the last character pressed
-	while (k != ord('q')):
-
-		# Initialization
-		stdscr.clear()
-		height, width = stdscr.getmaxyx()
-
-		if k == curses.KEY_DOWN:
-			cursor_y = cursor_y + 1
-		elif k == curses.KEY_UP:
-			cursor_y = cursor_y - 1
-		elif k == curses.KEY_RIGHT:
-			cursor_x = cursor_x + 1
-		elif k == curses.KEY_LEFT:
-			cursor_x = cursor_x - 1
-
-		cursor_x = max(0, cursor_x)
-		cursor_x = min(width-1, cursor_x)
-
-		cursor_y = max(0, cursor_y)
-		cursor_y = min(height-1, cursor_y)
-
-		# Declaration of strings
-		title = "FFMPEG Converter"[:width-1]
-		subtitle = "Written by Matthew Toye"[:width-1]
-		keystr = "Last key pressed: {}".format(k)[:width-1]
-		statusbarstr = "Press 'q' to exit | STATUS BAR | Pos: {}, {}".format(cursor_x, cursor_y)
-		progress_title = "Current Progress"[:width-1]
-		bitrate_title = "Current Bitrate"
-		speed_title = "Current Speed"
-		quality_title = "Current Quality"
-		fps_title = "Current Fps"
-		
-		if k == 0:
-			keystr = "No key press detected..."[:width-1]
-		
-		# Centering calculations
-		start_x_title = int((width // 2) - (len(title) // 2) - len(title) % 2)
-		start_x_subtitle = int((width // 2) - (len(subtitle) // 2) - len(subtitle) % 2)
-		start_x_keystr = int((width // 2) - (len(keystr) // 2) - len(keystr) % 2)
-		start_y = int((height // 2) - 2)
- 
-		# Render dividers and boxes to surround values and text
-		divide_by_six = int((width-2) // 6)                                          
-		first_position_div = (divide_by_six - (divide_by_six // 2))
-		first_position_x = int(divide_by_six - (len(progress_title) // 2))      
-		second_position_div = (divide_by_six + (divide_by_six // 2))
-		second_position_x = int((divide_by_six * 2) - len(speed_title) // 2)    
-		third_position_div = ((divide_by_six*2) - (divide_by_six // 2))
-		third_position_x = int((divide_by_six * 3) - len(speed_title) // 2)     
-		fourth_position_div = ((divide_by_six*3) - (divide_by_six // 2))
-		fourth_position_x = int((divide_by_six * 4) - len(quality_title) // 2)  
-		fifth_position_div = ((divide_by_six*4) - (divide_by_six // 2))
-		fifth_position_x = int((divide_by_six * 5) - len(bitrate_title) // 2)   
-		sixth_position_div = ((divide_by_six*5) - (divide_by_six // 2))
-		seventh_position_div = ((divide_by_six*5) + (divide_by_six // 2))
- 
-		middle_div = ""
-		for x in range(divide_by_six):
-			middle_div += "-"    
-		bottom_div = ""
-		for x in range(divide_by_six):
-			bottom_div += "_"        
-					
-		stdscr.addstr(0, first_position_x, progress_title, curses.color_pair(1))        
-		stdscr.addstr(0, second_position_x, fps_title, curses.color_pair(1))       
-		stdscr.addstr(0, third_position_x, speed_title, curses.color_pair(1))       
-		stdscr.addstr(0, fourth_position_x, quality_title, curses.color_pair(1))      
-		stdscr.addstr(0, fifth_position_x, bitrate_title, curses.color_pair(1))      
-		stdscr.addstr(0, first_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(0, second_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(0, third_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(0, fourth_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(0, fifth_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(0, sixth_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(0, seventh_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(1, first_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
-		stdscr.addstr(1, second_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
-		stdscr.addstr(1, third_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
-		stdscr.addstr(1, fourth_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
-		stdscr.addstr(1, fifth_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
-		stdscr.addstr(1, sixth_position_div, ("|%s" % (middle_div)), curses.color_pair(1))
-		stdscr.addstr(1, seventh_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(2, first_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(2, second_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(2, third_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(2, fourth_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(2, fifth_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(2, sixth_position_div, "|", curses.color_pair(1))
-		stdscr.addstr(2, seventh_position_div, "|", curses.color_pair(1))                    
-		stdscr.addstr(3, first_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
-		stdscr.addstr(3, second_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
-		stdscr.addstr(3, third_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
-		stdscr.addstr(3, fourth_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
-		stdscr.addstr(3, fifth_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
-		stdscr.addstr(3, sixth_position_div, ("|%s" % (bottom_div)), curses.color_pair(1))
-		stdscr.addstr(3, seventh_position_div, "|", curses.color_pair(1))
-		
-		# Render status bar
-		stdscr.attron(curses.color_pair(3))
-		stdscr.addstr(height-1, 0, statusbarstr)
-		stdscr.addstr(height-1, len(statusbarstr), " " * (width - len(statusbarstr) - 1))
-		stdscr.attroff(curses.color_pair(3))
-
-		# Turning on attributes for title
-		stdscr.attron(curses.color_pair(2))
-		stdscr.attron(curses.A_BOLD)
-
-		# Rendering title
-		stdscr.addstr(start_y, start_x_title, title)
-
-		# Turning off attributes for title
-		stdscr.attroff(curses.color_pair(2))
-		stdscr.attroff(curses.A_BOLD)
-
-		# Print rest of text
-		stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
-		stdscr.addstr(start_y + 3, (width // 2) - 2, '-' * 4)
-		stdscr.addstr(start_y + 5, start_x_keystr, keystr)
-		stdscr.move(cursor_y, cursor_x)
-
-		# Refresh the screen
-		stdscr.refresh()
-
-		# Wait for next input
-		k = stdscr.getch()
 
 def getinfo(fileName=None, silent=False, tag=True, tvdbid=None):
     tagdata = None
@@ -276,7 +132,7 @@ def guessInfo(fileName, tvdbid=None):
     except Exception as e:
         print(e)
         return None
-
+        
 
 def tmdbInfo(guessData):
     tmdb.configure(tmdb_api_key)
@@ -316,7 +172,8 @@ def tvdbInfo(guessData, tvdbid=None):
     return 3, tvdbid, season, episode
 
 
-def processFile(inputfile, tagdata, relativePath=None):
+def processFile(inputfile, tagdata, stop_event, relativePath=None):
+    
     # Gather tagdata
     if tagdata is False:
         return  # This means the user has elected to skip the file
@@ -349,9 +206,8 @@ def processFile(inputfile, tagdata, relativePath=None):
     # Process
     if MkvtoMp4(settings, logger=log).validSource(inputfile):
         converter = MkvtoMp4(settings, logger=log)
-        output = converter.process(inputfile, True)
+        output = converter.process(inputfile, stop_event, True)
         if output:
-            print("We made it past output")
             if tagmp4 is not None:
                 try:
                     tagmp4.setHD(output['x'], output['y'])
@@ -372,22 +228,31 @@ def processFile(inputfile, tagdata, relativePath=None):
                     elif tagdata[0] is 3:
                         post_processor.setTV(tagdata[1], tagdata[2], tagdata[3])
                 post_processor.run_scripts()
-
-def getFileInfo(inputfile):
+            print("Conversion Successful. File: %s" % (output))
+     
+     
+def getFileInfo(inputfile, stop_event):
     if os.path.isdir(inputfile):
         cpt = sum([len(files) for r, d, files in os.walk(inputfile)])
-        count = 0
-        once = False
-        print("total files in directory: %s" % (cpt))
-        print("Resetting filesToConvert.log")
+        log.info("\ntotal files in directory: %s" % (cpt))
+        log.debug("Resetting filesToConvert.log")
         file = open(os.path.join(os.path.dirname(sys.argv[0]), 'filesToConvert.log'),"w")  
         file.write("")          
         file.close()
+        count = 0
+        once = False
+        b = []
+        
+        print("\n------------------------------\n")
         
         for r, d, f in os.walk(inputfile):
             for file in f:
+                if stop_event.is_set():
+                    break;
+                
                 count += 1
                 updatedCount = percentage(count, cpt)
+                
                 print("Completion: %%%s" % round(updatedCount, 2), end='\r')
                 
                 filepath = os.path.join(r, file)
@@ -396,7 +261,7 @@ def getFileInfo(inputfile):
 
                         reason = MkvtoMp4(settings, logger=log).needConversion(filepath)
                         if reason:
-                            print("Logging file: %s because of incorrect %s" % (filepath, reason))
+                            log.info("Logging file: %s because of incorrect %s" % (filepath, reason))
                             file = open(os.path.join(os.path.dirname(sys.argv[0]), 'filesToConvert.log'),"a")
                             
                             if once == False:
@@ -405,11 +270,15 @@ def getFileInfo(inputfile):
                             else:
                                 file.write("\n")
                                 file.write("%s" % (filepath))
-                            file.close()                
+                            file.close()
+                            b.append(filepath)
+                            
                 except Exception as e:
-                    print("An unexpected error occurred, processing of this file has failed")
-                    print(str(e))
-                    
+                    log.warning("An unexpected error occurred, processing of this file has failed")
+                    log.warning(str(e))
+        print("")
+        log.info("Total amount of files that need converting: %s\nFiles logged in filesToConvert.log\n" % (len(b)))
+        
     elif (os.path.isfile(inputfile) and MkvtoMp4(settings, logger=log).validSource(inputfile)):
         if MkvtoMp4(settings, logger=log).validSource(inputfile):
 
@@ -422,8 +291,9 @@ def getFileInfo(inputfile):
             print("File %s is not in the correct format" % (path))
         except:
             print("File is not in the correct format")
-      
-def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
+
+            
+def walkDir(dir, stop_event, silent=False, preserveRelative=False, tvdbid=None, tag=True):
     biggest_file_size = 0
     biggest_file_name = ""
     m2ts_file = False
@@ -438,6 +308,9 @@ def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
                     biggest_file_name = filepath
 
         for file in f:
+            if stop_event.is_set():
+                break;
+                
             filepath = os.path.join(r, file)
             if m2ts_file == True:
                 dir_name = os.path.dirname(os.path.realpath( biggest_file_name ))
@@ -456,7 +329,7 @@ def walkDir(dir, silent=False, preserveRelative=False, tvdbid=None, tag=True):
                         tagdata = getinfo(filepath, silent, tvdbid=tvdbid)
                     else:
                         tagdata = None
-                    processFile(filepath, tagdata, relativePath=relative)
+                    processFile(filepath, tagdata, stop_event, relativePath=relative)
                     if m2ts_file == True:
                         filelist = [ f_r for f_r in os.listdir(dir_name) if f_r.endswith(".m2ts") ]
                         for f_r in filelist:
@@ -487,181 +360,209 @@ def checkForSpot(maxproc, printlog=True):
   return checkForSpot(maxproc, False)
 
 
-def main():
-    global settings
+def main_functions(stop_event):
+    try:
+        global settings
+        settings = ReadSettings(os.path.dirname(sys.argv[0]), "autoProcess.ini", logger=log)
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-    parser = argparse.ArgumentParser(description="Manual conversion and tagging script for sickbeard_mp4_automator")
-    parser.add_argument('-i', '--input', help='The source that will be converted. May be a file or a directory')
-    parser.add_argument('-r', '--readonly', action="store_true", help='Read all data from files in the directory provided, and list them in a file')
-    parser.add_argument('-c', '--config', help='Specify an alternate configuration file location')
-    parser.add_argument('-a', '--auto', action="store_true", help="Enable auto mode, the script will not prompt you for any further input, good for batch files. It will guess the metadata using guessit")
-    parser.add_argument('-tv', '--tvdbid', help="Set the TVDB ID for a tv show")
-    parser.add_argument('-s', '--season', help="Specifiy the season number")
-    parser.add_argument('-e', '--episode', help="Specify the episode number")
-    parser.add_argument('-imdb', '--imdbid', help="Specify the IMDB ID for a movie")
-    parser.add_argument('-tmdb', '--tmdbid', help="Specify theMovieDB ID for a movie")
-    parser.add_argument('-nm', '--nomove', action='store_true', help="Overrides and disables the custom moving of file options that come from output_dir and move-to")
-    parser.add_argument('-nc', '--nocopy', action='store_true', help="Overrides and disables the custom copying of file options that come from output_dir and move-to")
-    parser.add_argument('-nd', '--nodelete', action='store_true', help="Overrides and disables deleting of original files")
-    parser.add_argument('-nt', '--notag', action="store_true", help="Overrides and disables tagging when using the automated option")
-    parser.add_argument('-np', '--nopost', action="store_true", help="Overrides and disables the execution of additional post processing scripts")
-    parser.add_argument('-pr', '--preserveRelative', action='store_true', help="Preserves relative directories when processing multiple files using the copy-to or move-to functionality")
-    parser.add_argument('-cmp4', '--convertmp4', action='store_true', help="Overrides convert-mp4 setting in autoProcess.ini enabling the reprocessing of mp4 files")
-    parser.add_argument('-mp', '--maxproc', help="Specify the max amount of concurrent scripts can happen. Passmark score of your CPU / 2000 is a good baseline.")
-    parser.add_argument('-m', '--moveto', help="Override move-to value setting in autoProcess.ini changing the final destination of the file")
-    parser.add_argument('-fc', '--forceConvert', action='store_true', help="Override video copying and force encoding, useful for files that have timescale issues.") 
+        parser = argparse.ArgumentParser(description="Manual conversion and tagging script for sickbeard_mp4_automator")
+        parser.add_argument('-i', '--input', help='The source that will be converted. May be a file or a directory')
+        parser.add_argument('-r', '--readonly', action="store_true", help='Read all data from files in the directory provided, and list them in a file')
+        parser.add_argument('-c', '--config', help='Specify an alternate configuration file location')
+        parser.add_argument('-a', '--auto', action="store_true", help="Enable auto mode, the script will not prompt you for any further input, good for batch files. It will guess the metadata using guessit")
+        parser.add_argument('-tv', '--tvdbid', help="Set the TVDB ID for a tv show")
+        parser.add_argument('-s', '--season', help="Specifiy the season number")
+        parser.add_argument('-e', '--episode', help="Specify the episode number")
+        parser.add_argument('-imdb', '--imdbid', help="Specify the IMDB ID for a movie")
+        parser.add_argument('-tmdb', '--tmdbid', help="Specify theMovieDB ID for a movie")
+        parser.add_argument('-nm', '--nomove', action='store_true', help="Overrides and disables the custom moving of file options that come from output_dir and move-to")
+        parser.add_argument('-nc', '--nocopy', action='store_true', help="Overrides and disables the custom copying of file options that come from output_dir and move-to")
+        parser.add_argument('-nd', '--nodelete', action='store_true', help="Overrides and disables deleting of original files")
+        parser.add_argument('-nt', '--notag', action="store_true", help="Overrides and disables tagging when using the automated option")
+        parser.add_argument('-np', '--nopost', action="store_true", help="Overrides and disables the execution of additional post processing scripts")
+        parser.add_argument('-pr', '--preserveRelative', action='store_true', help="Preserves relative directories when processing multiple files using the copy-to or move-to functionality")
+        parser.add_argument('-cmp4', '--convertmp4', action='store_true', help="Overrides convert-mp4 setting in autoProcess.ini enabling the reprocessing of mp4 files")
+        parser.add_argument('-mp', '--maxproc', help="Specify the max amount of concurrent scripts can happen. Passmark score of your CPU / 2000 is a good baseline.")
+        parser.add_argument('-m', '--moveto', help="Override move-to value setting in autoProcess.ini changing the final destination of the file")
+        parser.add_argument('-fc', '--forceConvert', action='store_true', help="Override video copying and force encoding, useful for files that have timescale issues.") 
 
-    args = vars(parser.parse_args())
+        args = vars(parser.parse_args())
 
-    # Setup the silent mode
-    silent = args['auto']
-    tag = True
+        # Setup the silent mode
+        silent = args['auto']
+        tag = True
 
-    print("%sbit Python." % (struct.calcsize("P") * 8))
-
-    #Concurrent
-    if not args['maxproc'] == None:
-        checkForSpot(args['maxproc'])
+        #Concurrent
+        if not args['maxproc'] == None:
+            checkForSpot(args['maxproc'])
 
 
-    # Settings overrides
-    if(args['config']):
-        if os.path.exists(args['config']):
-            print('Using configuration file "%s"' % (args['config']))
-            settings = ReadSettings(os.path.split(args['config'])[0], os.path.split(args['config'])[1], logger=log)
-        elif os.path.exists(os.path.join(os.path.dirname(sys.argv[0]), args['config'])):
-            print('Using configuration file "%s"' % (args['config']))
-            settings = ReadSettings(os.path.dirname(sys.argv[0]), args['config'], logger=log)
+        # Settings overrides
+        if(args['config']):
+            if os.path.exists(args['config']):
+                print('Using configuration file "%s"' % (args['config']))
+                settings = ReadSettings(os.path.split(args['config'])[0], os.path.split(args['config'])[1], logger=log)
+            elif os.path.exists(os.path.join(os.path.dirname(sys.argv[0]), args['config'])):
+                print('Using configuration file "%s"' % (args['config']))
+                settings = ReadSettings(os.path.dirname(sys.argv[0]), args['config'], logger=log)
+            else:
+                print('Configuration file "%s" not present, using default autoProcess.ini' % (args['config']))
+
+        # IF READONLY IS SET, WE WILL ONLY DO THAT. WE WILL NOT USE ANY OTHER CMD ARGUMENT GIVEN (EXCEPT CONFIG)
+        if (args['readonly']):
+            log.debug("Reading info about files only..Ignoring all other command arguments..")
+            readonly = True
         else:
-            print('Configuration file "%s" not present, using default autoProcess.ini' % (args['config']))
+            readonly = False
+            if (args['nomove']):
+                settings.output_dir = None
+                settings.moveto = None
+                print("No-move enabled")
+            elif (args['moveto']):
+                settings.moveto = args['moveto']
+                print("Overriden move-to to " + args['moveto'])
+            if (args['nocopy']):
+                settings.copyto = None
+                print("No-copy enabled")
+            if (args['nodelete']):
+                settings.delete = False
+                print("No-delete enabled")
+            if (args['convertmp4']):
+                settings.processMP4 = True
+                print("Reprocessing of MP4 files enabled")
+            if (args['notag']):
+                settings.tagfile = False
+                print("No-tagging enabled")
+            if (args['nopost']):
+                settings.postprocess = False
+                print("No post processing enabled")
+            if (args['forceConvert']):
+                settings.forceConvert = True
 
-    # IF READONLY IS SET, WE WILL ONLY DO THAT. WE WILL NOT USE ANY OTHER CMD ARGUMENT GIVEN (EXCEPT CONFIG)
-    if (args['readonly']):
-        print("Reading info about files only..Ignoring all other command arguments..")
-        readonly = True
-    else:
-        readonly = False
-        if (args['nomove']):
-            settings.output_dir = None
-            settings.moveto = None
-            print("No-move enabled")
-        elif (args['moveto']):
-            settings.moveto = args['moveto']
-            print("Overriden move-to to " + args['moveto'])
-        if (args['nocopy']):
-            settings.copyto = None
-            print("No-copy enabled")
-        if (args['nodelete']):
-            settings.delete = False
-            print("No-delete enabled")
-        if (args['convertmp4']):
-            settings.processMP4 = True
-            print("Reprocessing of MP4 files enabled")
-        if (args['notag']):
-            settings.tagfile = False
-            print("No-tagging enabled")
-        if (args['nopost']):
-            settings.postprocess = False
-            print("No post processing enabled")
-        if (args['forceConvert']):
-            settings.forceConvert = True
-
-    # Establish the path we will be working with
-    if (args['input']):
-        path = (str(args['input']))
-        try:
-            path = glob.glob(path)[0]
-        except:
-            pass
-    else:
-        path = getValue("Enter path to file")
-    
-    if readonly:
-        getFileInfo(path)
-    else:
-        tvdbid = int(args['tvdbid']) if args['tvdbid'] else None
-        if os.path.isdir(path):
-            walkDir(path, silent, tvdbid=tvdbid, preserveRelative=args['preserveRelative'], tag=settings.tagfile)
-        elif (os.path.isfile(path) and MkvtoMp4(settings, logger=log).validSource(path)):
-            if (not settings.tagfile):
-                tagdata = None
-            elif (args['tvdbid'] and not (args['imdbid'] or args['tmdbid'])):
-                season = int(args['season']) if args['season'] else None
-                episode = int(args['episode']) if args['episode'] else None
-                if (tvdbid and season and episode):
-                    tagdata = [3, tvdbid, season, episode]
+        # Establish the path we will be working with
+        if (args['input']):
+            path = (str(args['input']))
+            try:
+                path = glob.glob(path)[0]
+            except:
+                pass
+        else:
+            path = getValue("Enter path to file")
+        
+        if readonly:
+            getFileInfo(path, stop_event)
+        else:
+            tvdbid = int(args['tvdbid']) if args['tvdbid'] else None
+            if os.path.isdir(path):
+                walkDir(path, stop_event, silent, tvdbid=tvdbid, preserveRelative=args['preserveRelative'], tag=settings.tagfile)
+            elif (os.path.isfile(path) and MkvtoMp4(settings, logger=log).validSource(path)):
+                if (not settings.tagfile):
+                    tagdata = None
+                elif (args['tvdbid'] and not (args['imdbid'] or args['tmdbid'])):
+                    season = int(args['season']) if args['season'] else None
+                    episode = int(args['episode']) if args['episode'] else None
+                    if (tvdbid and season and episode):
+                        tagdata = [3, tvdbid, season, episode]
+                    else:
+                        tagdata = getinfo(path, silent=silent, tvdbid=tvdbid)
+                elif ((args['imdbid'] or args['tmdbid']) and not args['tvdbid']):
+                    if (args['imdbid']):
+                        imdbid = args['imdbid']
+                        tagdata = [1, imdbid]
+                    elif (args['tmdbid']):
+                        tmdbid = int(args['tmdbid'])
+                        tagdata = [2, tmdbid]
                 else:
                     tagdata = getinfo(path, silent=silent, tvdbid=tvdbid)
-            elif ((args['imdbid'] or args['tmdbid']) and not args['tvdbid']):
-                if (args['imdbid']):
-                    imdbid = args['imdbid']
-                    tagdata = [1, imdbid]
-                elif (args['tmdbid']):
-                    tmdbid = int(args['tmdbid'])
-                    tagdata = [2, tmdbid]
-            else:
-                tagdata = getinfo(path, silent=silent, tvdbid=tvdbid)
-            processFile(path, tagdata)
-        elif (os.path.isfile(path)):
-            try:
-                with open(path) as f:
-                    content = f.readlines()
-                    content = [x.strip() for x in content]
-                    contentCopy = list(content)
-                    contentLen = len(content)
-                    print("TOTAL FILES TO CONVERT: %s" % contentLen)
-                    count = 0
                 
-                try:            
-                    for x in content:
-                        currFile = x;
-                        updatedCount = percentage(count, contentLen)
-                        print("Completion: %%%s" % round(updatedCount, 2), end='\r')    
-                        
-                        if MkvtoMp4(settings, logger=log).validSource(currFile):
-                            if (not settings.tagfile):
-                                tagdata = None
-                            elif (args['tvdbid'] and not (args['imdbid'] or args['tmdbid'])):
-                                tvdbid = int(args['tvdbid']) if args['tvdbid'] else None
-                                season = int(args['season']) if args['season'] else None
-                                episode = int(args['episode']) if args['episode'] else None
-                                if (tvdbid and season and episode):
-                                    tagdata = [3, tvdbid, season, episode]
+                processFile(path, tagdata, stop_event)
+            elif (os.path.isfile(path)):
+                try:
+                    with open(path) as f:
+                        content = f.readlines()
+                        content = [x.strip() for x in content]
+                        contentCopy = list(content)
+                        contentLen = len(content)
+                        print("TOTAL FILES TO CONVERT: %s" % contentLen)
+                        count = 0
+                    
+                    try:            
+                        for x in content:
+                            currFile = x;
+                            updatedCount = percentage(count, contentLen)
+                            print("Completion: %%%s" % round(updatedCount, 2), end='\r')    
+                            
+                            if MkvtoMp4(settings, logger=log).validSource(currFile):
+                                if (not settings.tagfile):
+                                    tagdata = None
+                                elif (args['tvdbid'] and not (args['imdbid'] or args['tmdbid'])):
+                                    tvdbid = int(args['tvdbid']) if args['tvdbid'] else None
+                                    season = int(args['season']) if args['season'] else None
+                                    episode = int(args['episode']) if args['episode'] else None
+                                    if (tvdbid and season and episode):
+                                        tagdata = [3, tvdbid, season, episode]
+                                    else:
+                                        tagdata = getinfo(currFile, silent=silent, tvdbid=tvdbid)
+                                elif ((args['imdbid'] or args['tmdbid']) and not args['tvdbid']):
+                                    if (args['imdbid']):
+                                        imdbid = args['imdbid']
+                                        tagdata = [1, imdbid]
+                                    elif (args['tmdbid']):
+                                        tmdbid = int(args['tmdbid'])
+                                        tagdata = [2, tmdbid]
                                 else:
-                                    tagdata = getinfo(currFile, silent=silent, tvdbid=tvdbid)
-                            elif ((args['imdbid'] or args['tmdbid']) and not args['tvdbid']):
-                                if (args['imdbid']):
-                                    imdbid = args['imdbid']
-                                    tagdata = [1, imdbid]
-                                elif (args['tmdbid']):
-                                    tmdbid = int(args['tmdbid'])
-                                    tagdata = [2, tmdbid]
-                            else:
-                                tagdata = getinfo(currFile, silent=silent)
-                            
-                            print("PROCCESSING: %s" % (currFile))
-                            processFile(currFile, tagdata)
-                            
-                            count += 1
-                            print("removing %s from file..list length before: %s" % (currFile, len(contentCopy)))
-                            contentCopy.remove(currFile)
-                            print("list length after: %s" % (len(contentCopy)))
-                            
-                            data = open(path, "w")
-                            for c in contentCopy:
-                                   data.write("%s\n" % (c))
-                            data.close()
-                except Exception as e:
-                    print(e)
-  
-            except:
-                print("File %s is not in the correct format" % (path))
+                                    tagdata = getinfo(currFile, silent=silent)
+                                
+                                print("PROCCESSING: %s" % (currFile))
+                                processFile(currFile, tagdata, stop_event)
+                                
+                                count += 1
+                                print("removing %s from file..list length before: %s" % (currFile, len(contentCopy)))
+                                contentCopy.remove(currFile)
+                                print("list length after: %s" % (len(contentCopy)))
+                                
+                                data = open(path, "w")
+                                for c in contentCopy:
+                                       data.write("%s\n" % (c))
+                                data.close()
+                    except Exception as e:
+                        print(e)
+      
+                except:
+                    print("File %s is not in the correct format" % (path))
+            else:
+                try:
+                    print("File %s is not in the correct format" % (path))
+                except:
+                    print("File is not in the correct format")
+    except:
+        if stop_event.is_set():
+            print("Manually stopping conversion...")
         else:
-            try:
-                print("File %s is not in the correct format" % (path))
-            except:
-                print("File is not in the correct format")
-
-
+            raise Exception("".join(traceback.format_exception(*sys.exc_info())))
+    
+    #print("done with conversions.")
+    stop_event.set()
+        
+def main():
+    global original_sigint_handler
+    log.debug("Manual processor started.")
+   
+    stop_event=Event()
+    wp = Process(target=main_functions, name='main functions', args=(stop_event,))
+    log.debug("created process: %s" % (wp.name))
+    
+    try:
+        wp.start()
+        signal.signal(signal.SIGINT, original_sigint_handler)
+        
+        while not stop_event.is_set():
+            time.sleep(.1)
+            
+    except KeyboardInterrupt:
+        stop_event.set()
+        wp.join()
+        print ("Process successfully halted")
 if __name__ == '__main__':
     main()

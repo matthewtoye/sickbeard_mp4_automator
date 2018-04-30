@@ -4,7 +4,6 @@ import os
 import time
 import json
 import sys
-import curses
 import shutil
 import subprocess
 import logging
@@ -12,7 +11,7 @@ from converter import Converter, FFMpegConvertError
 from extensions import valid_input_extensions, valid_output_extensions, bad_subtitle_codecs, valid_subtitle_extensions, subtitle_codec_extensions
 from babelfish import Language
 import datetime
-
+global fpsspec, cqspec, cspeedspec, bitratespec, mypid
 
 class MkvtoMp4:
     def __init__(self, settings=None,
@@ -255,9 +254,32 @@ class MkvtoMp4:
 
         self.log.debug("Settings imported.")
 
+    def get_conversion_stats(self):
+        try:
+            fpsspec = fpsspec
+        except:
+            fpsspec = 0
+        try:
+            cqspec = cqspec
+        except:
+            cqspec = 0
+        try:
+            cspeedspec = cspeedspec
+        except:
+            cspeedspec = 0
+        try:
+            bitratespec = bitratespec
+        except:
+            bitratespec = 0
+        try:
+            mypid = mypid
+        except:
+            mypid = 0
+            
+        return fpsspec, cqspec, cspeedspec, bitratespec, mypid
+        
     # Process a file from start to finish, with checking to make sure formats are compatible with selected settings
-    def process(self, inputfile, reportProgress=False, original=None):
-
+    def process(self, inputfile, stop_event, reportProgress=False, original=None):
         self.log.debug("Process started.")
 
         delete = self.delete
@@ -268,7 +290,7 @@ class MkvtoMp4:
 
         if self.needProcessing(inputfile):
             self.log.debug("NEED PROCESSING IS TRUE.")
-            options = self.generateOptions(inputfile, original=original)
+            options = self.generateOptions(inputfile, stop_event, original=original)
             self.log.debug("PAST OPTIONS____________")
             
             if options == None:
@@ -281,8 +303,8 @@ class MkvtoMp4:
                     self.log.debug(json.dumps(options, sort_keys=False, indent=4))
             except:
                 self.log.exception("Unable to log options.")
-
-            outputfile, inputfile = self.convert(inputfile, options, reportProgress)
+            
+            outputfile, inputfile = self.convert(inputfile, options, stop_event, reportProgress)
 
             if not outputfile:
                 self.log.debug("Error converting, no outputfile present.")
@@ -386,7 +408,12 @@ class MkvtoMp4:
         info = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).probe(inputfile)
 
         if loud:
-            print("codec: %s\n level: %s\n bitrate: %s" % (info.video.codec, info.video.video_level, (info.format.bitrate / 1000)))
+            try:
+                vbr = self.estimateVideoBitrate(info)
+            except:
+                vbr = info.format.bitrate / 1000
+                
+            print("\n-----------Video Info------------\nFilename: %s.%s\nCodec: %s\nLevel: %s\nBitrate: %s\n---------------------------------\n" % (filename, input_extension, info.video.codec, (info.video.video_level / 10), round(vbr, 2)))
 
         if (self.video_conversion_priority is None or self.video_conversion_priority == "extension") and input_extension.lower() != "mp4":
             self.log.debug("Not the correct extension.. converting: %s" % (input_extension.encode(sys.stdout.encoding, errors='ignore')))
@@ -411,13 +438,13 @@ class MkvtoMp4:
                 vbr = self.estimateVideoBitrate(info)
             except:
                 vbr = info.format.bitrate / 1000
-            #print("video_bitrate: %s vbr: %s" % (self.video_bitrate, vbr))
+
             if self.video_bitrate and vbr > int(self.video_bitrate):
                 self.log.debug("The bitrate is to high.. converting: %s" % (vbr))
-                return "bitrate. currently: %s" % (vbr)                                                 
+                return "bitrate for %sx%s. currently: %s" % (info.video.video_width, info.video.video_height, vbr)                                                 
 
     # Generate a list of options to be passed to FFMPEG based on selected settings and the source file parameters and streams
-    def generateOptions(self, inputfile, original=None):
+    def generateOptions(self, inputfile, stop_event, original=None):
         # Get path information from the input file
         input_dir, filename, input_extension = self.parseFile(inputfile)
         drive_letter, directory = os.path.splitdrive( input_dir )
@@ -482,8 +509,9 @@ class MkvtoMp4:
                 vprofile = self.video_profile[0]
         else:
             pix_fmt = None
-
-        if self.video_bitrate is not None and vbr > self.video_bitrate:
+        
+        #print("vbr type %s self.video type %s" % (type(vbr), type(self.video_bitrate)))
+        if self.video_bitrate is not None and vbr > int(self.video_bitrate):
             self.log.debug("Overriding video bitrate. Codec cannot be copied because video bitrate is too high.")
             vcodec = self.video_codec[0]
             vbitrate = self.video_bitrate
@@ -812,13 +840,13 @@ class MkvtoMp4:
                             i += 1
                         try:
                             self.log.info("Ripping %s subtitle from source stream %s into external file." % (s.metadata['language'], s.index))
-                            conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, timeout=None)
+                            conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, stop_event, timeout=None)
                             for timecode in conv:
                                     pass
 
                             self.log.info("%s created." % outputfile)
                         except:
-                            self.log.exception("Unabled to create external subtitle file for stream %s." % (s.index))
+                            self.log.exception("Unable to create external subtitle file for stream %s." % (s.index))
 
         # Attempt to download subtitles if they are missing using subliminal
         languages = set()
@@ -1045,7 +1073,7 @@ class MkvtoMp4:
         return options
 
     # Encode a new file based on selected options, built in naming conflict resolution
-    def convert(self, inputfile, options, reportProgress=False):
+    def convert(self, inputfile, options, stop_event, reportProgress=False):
         self.log.info("Starting conversion.")
 
         input_dir, filename, input_extension = self.parseFile(inputfile)
@@ -1079,7 +1107,8 @@ class MkvtoMp4:
             outputfile = os.path.join(output_dir.decode(sys.getfilesystemencoding()), filename.decode(sys.getfilesystemencoding()) + "." + self.output_extension).encode(sys.getfilesystemencoding())
         except:
             outputfile = os.path.join(output_dir, filename + "." + self.output_extension)
-        self.log.debug("Input directory: %s." % input_dir)
+
+            self.log.debug("Input directory: %s." % input_dir)
         self.log.debug("File name: %s." % filename)
         self.log.debug("Input extension: %s." % input_extension)
         self.log.debug("Output directory: %s." % output_dir)
@@ -1098,20 +1127,25 @@ class MkvtoMp4:
                     i += i
                 self.log.debug("Unable to rename inputfile. Setting output file name to %s." % outputfile)
         
-        conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, timeout=None, preopts=options['preopts'], postopts=options['postopts'])
-        print("")
+        conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, stop_event, timeout=None, preopts=options['preopts'], postopts=options['postopts'])
+      
         try:
+            self.log.info("%s created." % outputfile)   
+            self.log.info("\n-------------------------------------\nPRESS CTRL-C to stop the conversion\n-------------------------------------\n")
+            
             for timecode in conv:
                 if reportProgress:
-                    try:           
-                        #sys.stdout.write('\r')
-                        print("\r Comp: %s%% | Fps: %s | Qual: %s | Speed: %s | Bitr: %s              " % (timecode[0], timecode[1], timecode[2], timecode[3], timecode[4]), end="")
-                    except:
-                        print("output fail", end="\r")
-                    #sys.stdout.flush()
-
-            self.log.info("%s created." % outputfile)
-
+                    try:     
+                        fpsspec = timecode[1] 
+                        cqspec = timecode[2] 
+                        cspeedspec = timecode[3] 
+                        bitratespec = timecode[4]
+                        mypid = timecode[5]
+                        print("Comp: %s%% | Fps: %s | Qual: %s | Speed: %s | Bitr: %s | PID: %s           " % (timecode[0], fpsspec, cqspec, cspeedspec, bitratespec, mypid), end='\r')
+                        
+                    except Exception as e:
+                        self.log.debug("\r output fail %s" % (e))
+            print("\n")
             try:
                 os.chmod(outputfile, self.permissions)  # Set permissions of newly created file
             except:
@@ -1121,6 +1155,7 @@ class MkvtoMp4:
             self.log.exception("Error converting file, FFMPEG error.")
             self.log.error(e.cmd)
             self.log.error(e.output)
+                
             if os.path.isfile(outputfile):
                 self.removeFile(outputfile)
                 self.log.error("%s deleted." % outputfile)

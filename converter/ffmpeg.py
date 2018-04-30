@@ -15,13 +15,11 @@ import time
 from sys import platform
 
 logger = logging.getLogger(__name__)
-
 console_encoding = locale.getdefaultlocale()[1] or 'UTF-8'
 
 
 class FFMpegError(Exception):
     pass
-
 
 class FFMpegConvertError(Exception):
     def __init__(self, message, cmd, output, details=None, pid=0):
@@ -44,16 +42,20 @@ class FFMpegConvertError(Exception):
         self.output = output
         self.details = details
         self.pid = pid
-
+        self.message = message
+        
     def __repr__(self):
         error = self.details if self.details else self.message
+        
         return ('<FFMpegConvertError error="%s", pid=%s, cmd="%s">' %
                 (error, self.pid, self.cmd))
-
     def __str__(self):
-        return self.__repr__()
-
-
+        try:
+            s = self.__repr__()
+        except Exception as e:
+            print ("ERROR in FFMpegConvertError! %s %s" % (type(e),e))
+        return s
+        
 class MediaFormatInfo(object):
     """
     Describes the media container format. The attributes are:
@@ -400,6 +402,7 @@ class FFMpeg(object):
         kwargs = {}
         if sys.platform == 'win32':
         # from msdn [1]
+            kwargs.update(shell=False)
             CREATE_NEW_PROCESS_GROUP = 0x00000200  # note: could get it from subprocess
             DETACHED_PROCESS = 0x00000008          # 0x8 | 0x200 == 0x208
             kwargs.update(creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)  
@@ -407,7 +410,7 @@ class FFMpeg(object):
             kwargs.update(preexec_fn=os.setsid)
         else:  # Python 3.2+ and Unix
             kwargs.update(start_new_session=True)
-        return subprocess.Popen( cmds, stdin=PIPE, stdout=PIPE, stderr=PIPE, **kwargs )
+        return subprocess.Popen(cmds, stdin=PIPE, stdout=PIPE, stderr=PIPE, **kwargs )
 
     def probe(self, fname, posters_as_video=True):
         """
@@ -450,7 +453,7 @@ class FFMpeg(object):
 
         return info
 
-    def convert(self, infile, outfile, opts, timeout=10, preopts=None, postopts=None):
+    def convert(self, infile, outfile, opts, stop_event, timeout=10, preopts=None, postopts=None):
         """
         Convert the source media (infile) according to specified options
         (a list of ffmpeg switches as strings) and save it to outfile.
@@ -527,8 +530,21 @@ class FFMpeg(object):
         cqspec = 0
         cspeedspec = 0
         bitratespec = 0
-                
-        while True:
+        
+        while not stop_event.is_set():
+            
+            event_is_set = stop_event.wait(.1)
+            
+            if event_is_set:
+                pid = p.pid
+
+                try:
+                    p.terminate()
+                except:
+                    print ("Terminated gracefully")
+                return
+
+                    
             if timeout:
                 signal.alarm(timeout)
 
@@ -584,7 +600,6 @@ class FFMpeg(object):
                     return
 
             if '\r' in buf:
-                #print ("buf: %s" % (str(buf)))
                 line, buf = buf.split('\r', 1)
 
                 tmptime = ctime.findall(line)
@@ -593,20 +608,14 @@ class FFMpeg(object):
                 tmpcq = cq.findall(line)
                 tmpcspeed = cspeed.findall(line)
                 tmpcbitrate = cbitrate.findall(line)
-                
-                #print("tmpcfps: %s , LENGTH: %s" % (str(tmpcfps), len(tmpcfps)))
-                #print("tmpcq: %s , LENGTH: %s" % (str(tmpcq), len(tmpcq)))
-                #print("tmpcspeed: %s , LENGTH: %s" % (str(tmpcspeed), len(tmpcspeed)))
-                #print("tmpcbitrate: %s , LENGTH: %s" % (str(tmpcbitrate), len(tmpcbitrate)))
-                
+
                 if len(tmpframe) == 1 and frame != 0 and frame == int( tmpframe[0] ):
                     if starttime == lastframetime:
                         lastframetime = time.time()
                     elif ( time.time() - lastframetime ) > 600.0:
                         cmd = ' '.join(cmds)
                         p.terminate()
-                        raise FFMpegConvertError('Forcing ffmpeg to close due to taking more than 10 minutes to render a single frame. Source file may be corrupt.', cmd, total_output,
-                            "", pid=p.pid)
+                        raise FFMpegConvertError('Forcing ffmpeg to close due to taking more than 10 minutes to render a single frame. Source file may be corrupt.', cmd, total_output, "None", pid=p.pid)
                 else:
                     starttime = time.time()
                     lastframetime = starttime
@@ -620,8 +629,6 @@ class FFMpeg(object):
                             timecode = 60 * timecode + float(part)
                     else:
                         timecode = float(tmptime[0])
-                    yielded = True
-
                 if len(tmpcfps) == 1:
                     fpsspec = tmpcfps[0].strip()
                 if len(tmpcq) == 1:
@@ -630,8 +637,8 @@ class FFMpeg(object):
                     cspeedspec = tmpcspeed[0].strip()
                 if len(tmpcbitrate) == 1:
                     bitratespec = tmpcbitrate[0]
-                yield [timecode, fpsspec, cqspec, cspeedspec, bitratespec]
-                
+                yielded = True                
+                yield [timecode, fpsspec, cqspec, cspeedspec, bitratespec, p.pid]
         if timeout:
             signal.signal(signal.SIGALRM, signal.SIG_DFL)
 
@@ -662,8 +669,8 @@ class FFMpeg(object):
                                          total_output, line, pid=p.pid)
         if p.returncode != 0:
             raise FFMpegConvertError('Exited with code %d' % p.returncode, cmd,
-                                     total_output, pid=p.pid)
-
+                                    total_output, pid=p.pid)
+        
     def thumbnail(self, fname, time, outfile, size=None, quality=DEFAULT_JPEG_QUALITY):
         """
         Create a thumbnal of media file, and store it to outfile
