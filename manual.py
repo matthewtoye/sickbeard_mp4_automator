@@ -476,7 +476,7 @@ def main_functions(stop_event):
                 else:
                     tagdata = getinfo(path, silent=silent, tvdbid=tvdbid)
                 
-                processFile(path, tagdata, stop_event)
+                processFile(path, tagdata, stop_event, None)
             elif (os.path.isfile(path)):
                 try:
                     with open(path) as f:

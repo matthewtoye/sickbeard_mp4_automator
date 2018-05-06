@@ -84,6 +84,7 @@ class ReadSettings:
                         'video-crf': '',
                         'video-max-width': '',
                         'nvenc_profile':'',
+                        'video_two_pass':'False',
                         'nvenc_preset':'',
                         'qmin':'',
                         'qmax':'',
@@ -443,6 +444,16 @@ class ReadSettings:
             except:
                 log.exception("Invalid CRF setting, defaulting to none.")
                 self.vcrf = None
+        
+        self.vtwopass = config.get(section, "video_two_pass")
+        if self.vtwopass == '':
+            self.vtwopass = False
+        else:
+            try:
+                self.vtwopass = self.vtwopass
+            except:
+                log.exception("Invalid CRF setting, defaulting to none.")
+                self.vtwopass = None
 
         self.vwidth = config.get(section, "video-max-width")
         if self.vwidth == '':

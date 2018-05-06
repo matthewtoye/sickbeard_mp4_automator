@@ -46,7 +46,7 @@ class Converter(object):
             name = cls.format_name
             self.formats[name] = cls
 
-    def parse_options(self, opt, twopass=None):
+    def parse_options(self, opt, twopass=False):
         """
         Parse format/codec options and prepare raw ffmpeg option list.
         """
@@ -155,9 +155,9 @@ class Converter(object):
         # aggregate all options
         optlist = video_options + audio_options + subtitle_options + format_options
 
-        if twopass == 1:
+        if twopass == False:
             optlist.extend(['-pass', '1'])
-        elif twopass == 2:
+        elif twopass == True:
             optlist.extend(['-pass', '2'])
 
         return optlist
@@ -204,7 +204,9 @@ class Converter(object):
         >>> for timecode in conv:
         ...   pass # can be used to inform the user about the progress
         """
-
+        if twopass and twopass is True:
+            print("WE GOT TWOPASS WE GOT TWOPASS WE GOT TWOPASS WE GOT TWOPASS")
+            
         if not isinstance(options, dict):
             raise ConverterError('Invalid options')
 
@@ -232,11 +234,15 @@ class Converter(object):
             optlist1 = self.parse_options(options, 1)
             for timecode in self.ffmpeg.convert(infile, outfile, optlist1, stop_event,
                                                 timeout=timeout, preopts=preopts, postopts=postopts):
-                    yield int((50.0 * timecode) / info.format.duration)    
+                    #yield int((50.0 * timecode) / info.format.duration)
+                    tc = round(((50.0 * timecode[0]) / info.format.duration), 2)
+                    yield [tc, timecode[1], timecode[2], timecode[3], timecode[4], timecode[5]]                 
             optlist2 = self.parse_options(options, 2)
             for timecode in self.ffmpeg.convert(infile, outfile, optlist2, stop_event,
                                                 timeout=timeout, preopts=preopts, postopts=postopts):                 
-                    yield int(50.0 + (50.0 * timecode) / info.format.duration)
+                    #yield int(50.0 + (50.0 * timecode) / info.format.duration)
+                    tc = round((50.0 + (50.0 * timecode[0]) / info.format.duration), 2)
+                    yield [tc, timecode[1], timecode[2], timecode[3], timecode[4], timecode[5]]
         else:
             optlist = self.parse_options(options, twopass)
             for timecode in self.ffmpeg.convert(infile, outfile, optlist, stop_event,

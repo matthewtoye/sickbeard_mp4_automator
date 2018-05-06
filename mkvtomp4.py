@@ -34,6 +34,7 @@ class MkvtoMp4:
                  qmin=None,
                  qmax=None,
                  global_quality=None,
+                 vtwopass=False,
                  maxrate=None,
                  minrate=None,
                  bufsize=None,
@@ -126,6 +127,7 @@ class MkvtoMp4:
         self.maxrate = maxrate
         self.minrate = minrate
         self.bufsize = bufsize
+        self.vtwopass = vtwopass
         self.nvenc_gpu = nvenc_gpu
         self.nvenc_temporal_aq = nvenc_temporal_aq
         self.nvenc_weighted_prediction = nvenc_weighted_prediction
@@ -279,7 +281,7 @@ class MkvtoMp4:
         return fpsspec, cqspec, cspeedspec, bitratespec, mypid
         
     # Process a file from start to finish, with checking to make sure formats are compatible with selected settings
-    def process(self, inputfile, stop_event, reportProgress=False, original=None):
+    def process(self, inputfile, stop_event, reportProgress=False, vtwopass=False, original=None):
         self.log.debug("Process started.")
 
         delete = self.delete
@@ -304,7 +306,7 @@ class MkvtoMp4:
             except:
                 self.log.exception("Unable to log options.")
             
-            outputfile, inputfile = self.convert(inputfile, options, stop_event, reportProgress)
+            outputfile, inputfile = self.convert(inputfile, options, stop_event, reportProgress, vtwopass)
 
             if not outputfile:
                 self.log.debug("Error converting, no outputfile present.")
@@ -1073,7 +1075,7 @@ class MkvtoMp4:
         return options
 
     # Encode a new file based on selected options, built in naming conflict resolution
-    def convert(self, inputfile, options, stop_event, reportProgress=False):
+    def convert(self, inputfile, options, stop_event, reportProgress=False, vtwopass=False):
         self.log.info("Starting conversion.")
 
         input_dir, filename, input_extension = self.parseFile(inputfile)
@@ -1127,24 +1129,39 @@ class MkvtoMp4:
                     i += i
                 self.log.debug("Unable to rename inputfile. Setting output file name to %s." % outputfile)
         
-        conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, stop_event, timeout=None, preopts=options['preopts'], postopts=options['postopts'])
+        conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, stop_event, vtwopass, timeout=None, preopts=options['preopts'], postopts=options['postopts'])
       
         try:
             self.log.info("%s created." % outputfile)   
             self.log.info("\n-------------------------------------\nPRESS CTRL-C to stop the conversion\n-------------------------------------\n")
+            start = time.time()
             
             for timecode in conv:
                 if reportProgress:
-                    try:     
+                    try:
+                        rtime = time.time()
+                        temp = rtime-start
+                        
+                        rhours = temp//3600
+                        temp = temp - 3600*rhours
+                        rminutes = temp//60
+                        rseconds = temp - 60*rminutes
+                        #if rhours < 10:
+                        #    rhours = int('0%s' % (rhours))
+                        #if rminutes < 10:
+                        #    rminutes = int('0%s' % (rminutes))
+                        #if rseconds < 10:
+                        #    rseconds = int('0%s' % (rseconds))
+                        my_time = ('%02d:%02d:%02d' %(rhours,rminutes,rseconds))
                         fpsspec = timecode[1] 
                         cqspec = timecode[2] 
                         cspeedspec = timecode[3] 
                         bitratespec = timecode[4]
                         mypid = timecode[5]
-                        print("Comp: %s%% | Fps: %s | Qual: %s | Speed: %s | Bitr: %s | PID: %s           " % (timecode[0], fpsspec, cqspec, cspeedspec, bitratespec, mypid), end='\r')
+                        print("Comp: %s%% | Fps: %s | Qual: %s | Speed: %s | Bitr: %s | PID: %s | Runtime: %s          " % (timecode[0], fpsspec, cqspec, cspeedspec, bitratespec, mypid, my_time), end='\r')
                         
                     except Exception as e:
-                        self.log.debug("\r output fail %s" % (e))
+                        print("\r output fail %s" % (e))
             print("\n")
             try:
                 os.chmod(outputfile, self.permissions)  # Set permissions of newly created file
