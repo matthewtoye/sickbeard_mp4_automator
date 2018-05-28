@@ -1,0 +1,11 @@
+python -m pip install setuptools
+python -m pip install requests
+python -m pip install requests[security]
+python -m pip install requests-cache
+python -m pip install babelfish
+python -m pip install "guessit<2"
+python -m pip install "subliminal<2"
+python -m pip install stevedore==1.19.1
+python -m pip install python-dateutil
+python -m pip install deluge-client
+python -m pip install qtfaststart
