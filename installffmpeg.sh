@@ -20,8 +20,8 @@ checkStatus(){
         exit $?
     fi
 }
-
-if [ "$(whoami)" -eq "sysadmin" ] || [ "$(whoami)" -eq "root" ]; then
+echo "i am! $(whoami)"
+if [ "$(whoami)" = "sysadmin" ] || [ "$(whoami)" = "root" ]; then
     echo 'Removing existing packages...'
     sudo apt-get remove ffmpeg x264 libav-tools libvpx-dev libx264-dev yasm -y
     checkStatus()
@@ -61,7 +61,7 @@ if [ "$(whoami)" -eq "sysadmin" ] || [ "$(whoami)" -eq "root" ]; then
     sleep 2
     git clone --depth 1 git://git.videolan.org/x264.git || ( echo 'Check internet connection...' && exit 1 )
     cd x264
-    ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static
+    ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static --disable-asm
     make
     sudo checkinstall --pkgname=x264 --pkgversion="3:$(./version.sh | awk -F'[" ]' '/POINT/{print $4"+git"$5}')" --deldoc=yes --fstrans=no --default
     checkStatus()

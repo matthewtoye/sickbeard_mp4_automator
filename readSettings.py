@@ -428,6 +428,12 @@ class ReadSettings:
                 elif self.vpriority.lower() == "extension":
                     self.vpriority = "extension"
                     log.debug("conversion priority set to extension.. setting vpriority")
+                elif self.vpriority.lower() == "4k":
+                    self.vpriority = "4k"
+                    log.debug("conversion priority set to 4k resolution.. setting vpriority")
+                elif self.vpriority.lower() == "1080p":
+                    self.vpriority = "1080p"
+                    log.debug("conversion priority set to 1080p resolution.. setting vpriority")
                 else:
                     self.vpriority = None
                     log.debug("Invalid type of video conversion priority.. defaulting to None")

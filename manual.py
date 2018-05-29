@@ -24,7 +24,7 @@ from tmdb_api import tmdb
 from extensions import tmdb_api_key
 from logging.config import fileConfig
 original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
-sys.tracebacklimit=0
+#sys.tracebacklimit=0
 
 if sys.version[0] == "3":
     raw_input = input
@@ -365,7 +365,7 @@ def main_functions(stop_event):
         global settings
         settings = ReadSettings(os.path.dirname(sys.argv[0]), "autoProcess.ini", logger=log)
         signal.signal(signal.SIGINT, signal.SIG_IGN)
-
+        
         parser = argparse.ArgumentParser(description="Manual conversion and tagging script for sickbeard_mp4_automator")
         parser.add_argument('-i', '--input', help='The source that will be converted. May be a file or a directory')
         parser.add_argument('-r', '--readonly', action="store_true", help='Read all data from files in the directory provided, and list them in a file')
@@ -547,6 +547,7 @@ def main_functions(stop_event):
         
 def main():
     global original_sigint_handler
+    #log.info("LOG LEVEL %s " % (log.getEffectiveLevel()))
     log.debug("Manual processor started.")
    
     stop_event=Event()

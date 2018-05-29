@@ -532,7 +532,7 @@ class FFMpeg(object):
         bitratespec = 0
         
         while not stop_event.is_set():
-            
+           
             event_is_set = stop_event.wait(.1)
             
             if event_is_set:
@@ -561,16 +561,19 @@ class FFMpeg(object):
                 break
 
             try:
+                #print("in decode try")
                 ret = ret.decode(console_encoding)
             except UnicodeDecodeError:
                 try:
+                    #print("in unicode decode error try")
                     ret = ret.decode(console_encoding, errors="ignore")
                 except:
                     pass
 
             total_output += ret
             buf += ret
-
+            #print(buf)
+            #print("buf is %s" % (buf))
             # If the audio is being converted but the video is not, sometimes ffmpeg will spam warnings about 
             # how there is a "non-monotonous dts in output stream" -- This basically means that the sound is going
             # to be out of sync with the video and the only way to fix this it to re-encode the video along with the sound.
@@ -600,6 +603,7 @@ class FFMpeg(object):
                     return
 
             if '\r' in buf:
+                #print("in buf")
                 line, buf = buf.split('\r', 1)
 
                 tmptime = ctime.findall(line)

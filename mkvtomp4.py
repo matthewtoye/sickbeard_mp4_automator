@@ -408,7 +408,24 @@ class MkvtoMp4:
         input_dir, filename, input_extension = self.parseFile(inputfile)
 
         info = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).probe(inputfile)
-
+        
+        if (self.video_conversion_priority == "4k" or self.video_conversion_priority == "1080p"):
+            if self.video_conversion_priority == "4k":
+                if info.video.video_width >= 3800:
+                    self.log.info("video is greater than 3800... checking if it needs conversion.. priority is: %s" % (self.video_conversion_priority))
+                    self.video_conversion_priority = None
+                else:
+                    #self.log.info("video is NOT greater than 3800... returning false")
+                    return False
+                    
+            elif self.video_conversion_priority == "1080p":
+                if info.video.video_width >= 1900:
+                    self.log.info("video is greater than 1900... checking if it needs conversion.. priority is: %s" % (self.video_conversion_priority))
+                    self.video_conversion_priority = None
+                else:
+                    #self.log.info("video is NOT greater than 1900... returning false")
+                    return False
+                            
         if loud:
             try:
                 vbr = self.estimateVideoBitrate(info)
@@ -417,18 +434,14 @@ class MkvtoMp4:
                 
             print("\n-----------Video Info------------\nFilename: %s.%s\nCodec: %s\nLevel: %s\nBitrate: %s\n---------------------------------\n" % (filename, input_extension, info.video.codec, (info.video.video_level / 10), round(vbr, 2)))
 
-        if (self.video_conversion_priority is None or self.video_conversion_priority == "extension") and input_extension.lower() != "mp4":
-            self.log.debug("Not the correct extension.. converting: %s" % (input_extension.encode(sys.stdout.encoding, errors='ignore')))
-            return "extension. currently: %s" % (input_extension.encode(sys.stdout.encoding, errors='ignore'))
-        
         if (self.video_conversion_priority is None or self.video_conversion_priority == "codec") and info.video.codec.lower() not in self.video_codec:
             self.log.debug("Not the right codec.. Converting: %s" % (info.video.codec.lower()))
             return "codec. currently: %s" % (info.video.codec.lower())
             
         if (self.video_conversion_priority is None or self.video_conversion_priority == "level") and info.video.codec.lower() in self.video_codec and self.h264_level and info.video.video_level and (info.video.video_level / 10 > self.h264_level):
-            self.log.debug("Not the right h264 video level.. converting: %s" % (info.video.video_level / 10 <= self.h264_level))
+            self.log.info("Not the right h264 video level.. converting: %s" % (info.video.video_level / 10 <= self.h264_level))
             return "level. currently: %s" % (info.video.video_level / 10)
-        
+
         if (self.video_conversion_priority is None or self.video_conversion_priority == "bitrate"):
             count = 1 # TODO: duplicate less code when not lazy
             while(count < len(self.video_bitrate_restriction)):
@@ -444,7 +457,11 @@ class MkvtoMp4:
             if self.video_bitrate and vbr > int(self.video_bitrate):
                 self.log.debug("The bitrate is to high.. converting: %s" % (vbr))
                 return "bitrate for %sx%s. currently: %s" % (info.video.video_width, info.video.video_height, vbr)                                                 
-
+        
+        if (self.video_conversion_priority is None or self.video_conversion_priority == "extension") and input_extension.lower() != "mp4":
+            self.log.debug("Not the correct extension.. converting: %s" % (input_extension.encode(sys.stdout.encoding, errors='ignore')))
+            return "extension. currently: %s" % (input_extension.encode(sys.stdout.encoding, errors='ignore'))
+        
     # Generate a list of options to be passed to FFMPEG based on selected settings and the source file parameters and streams
     def generateOptions(self, inputfile, stop_event, original=None):
         # Get path information from the input file
@@ -975,7 +992,7 @@ class MkvtoMp4:
             del options['video']['bitrate']
             options['video']['crf'] = self.vcrf
 
-        options['postopts'].extend([ '-max_muxing_queue_size', '2048' ] )  
+        #options['postopts'].extend([ '-max_muxing_queue_size', '2048' ] )  
         # Some ffmpeg filters are in a state of internal API transition with how they handle certain magic
         # that I don't understand, but read about and nodded about on the ffmpeg mailing list.
         # Allowing a higher queue size fixes whatever wizardry is happening, and shouldn't be needed in a year or so. 02/11/2018
@@ -1082,7 +1099,13 @@ class MkvtoMp4:
         output_dir = input_dir if self.output_dir is None else self.output_dir
         
         #TODO, make it work with unix/linux directories...
-        mySplit = input_dir.split('\\')
+        if sys.platform == "linux" or sys.platform == "linux2":
+            mySplit = input_dir.split('/')
+        elif sys.platform == "darwin":
+            mySplit = input_dir.split('/')
+        elif sys.platform == "win32":
+            mySplit = input_dir.split('\\')
+
         lastDir = ''
         
         for i in range(len(mySplit)):
@@ -1130,13 +1153,14 @@ class MkvtoMp4:
                 self.log.debug("Unable to rename inputfile. Setting output file name to %s." % outputfile)
         
         conv = Converter(self.FFMPEG_PATH, self.FFPROBE_PATH).convert(inputfile, outputfile, options, stop_event, vtwopass, timeout=None, preopts=options['preopts'], postopts=options['postopts'])
-      
+
         try:
             self.log.info("%s created." % outputfile)   
             self.log.info("\n-------------------------------------\nPRESS CTRL-C to stop the conversion\n-------------------------------------\n")
             start = time.time()
             
             for timecode in conv:
+                
                 if reportProgress:
                     try:
                         rtime = time.time()
