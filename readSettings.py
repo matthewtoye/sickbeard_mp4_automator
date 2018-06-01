@@ -1,7 +1,7 @@
 import os
 import sys
 import locale
-
+import platform
 try:
     import configparser
 except ImportError:
@@ -9,7 +9,7 @@ except ImportError:
 import logging
 from extensions import *
 from babelfish import Language
-
+from subprocess import Popen, PIPE
 
 class ReadSettings:
 
@@ -242,8 +242,35 @@ class ReadSettings:
 
         # Read relevant MP4 section information
         section = "MP4"
-        self.ffmpeg = os.path.normpath(self.raw(config.get(section, "ffmpeg")))  # Location of FFMPEG.exe
-        self.ffprobe = os.path.normpath(self.raw(config.get(section, "ffprobe")))  # Location of FFPROBE.exe
+        if os.name != 'nt':
+            p = Popen(['/usr/bin/whereis', 'ffmpeg'], stdin=PIPE, stdout=PIPE, stderr=PIPE, encoding='utf8')
+            output, err = p.communicate()
+            ffmpegLoc = output.split(' ')
+            
+            #print("ffmpeg Length %s" % (len(ffmpegLoc)))
+            
+            p = Popen(['/usr/bin/whereis', 'ffprobe'], stdin=PIPE, stdout=PIPE, stderr=PIPE, encoding='utf8')
+            output, err = p.communicate()
+            ffprobeLoc = output.split(' ')
+            
+            #print("ffprobe Length %s" % (len(ffprobeLoc)))
+        
+        self.ffmpeg = config.get(section, "ffmpeg")  # Location of FFMPEG.exe       
+        self.ffprobe = config.get(section, "ffprobe")  # Location of FFPROBE.exe
+
+        # Auto find binary if wrong location for ffmpeg/ffprobe (or if .exe is detected)
+        if os.name != 'nt':
+            if ".exe" in self.ffmpeg or self.ffmpeg == '':
+                if len(ffmpegLoc) > 1:
+                    print("Error in ffmpeg location.. We automatically found the binary.. %s" % (ffmpegLoc[1]))
+                    self.ffmpeg = ffmpegLoc[1]
+            if ".exe" in self.ffprobe or self.ffprobe == '':
+                if len(ffmpegLoc) > 1:
+                    print("Error in ffprobe location.. We automatically found the binary.. %s" % (ffprobeLoc[1]))
+                    self.ffprobe = ffprobeLoc[1]        
+        
+        self.ffmpeg = os.path.normpath(self.raw(self.ffmpeg))
+        self.ffprobe = os.path.normpath(self.raw(self.ffprobe))
         self.threads = config.get(section, "threads")  # Number of FFMPEG threads
         try:
             if int(self.threads) < 1:

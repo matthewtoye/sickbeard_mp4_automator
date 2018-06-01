@@ -506,7 +506,7 @@ class FFMpeg(object):
                 raise Exception('timed out while waiting for ffmpeg')
 
             signal.signal(signal.SIGALRM, on_sigalrm)
-        #print("command is: %s" % (cmds))
+        print("command is: %s" % (cmds))
         try:
             p = self._spawn(cmds)
         except OSError:

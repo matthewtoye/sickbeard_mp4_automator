@@ -10,6 +10,7 @@ import glob
 import signal
 import argparse
 import struct
+import platform
 import logging
 import multiprocessing
 from multiprocessing import Process, Event, Pool
@@ -29,7 +30,7 @@ original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
 if sys.version[0] == "3":
     raw_input = input
 
-fileConfig(os.path.join(os.path.dirname(sys.argv[0]), 'logging.ini'), defaults={'logfilename': os.path.join(os.path.dirname(sys.argv[0]), 'info.log').replace("\\", "/")})
+fileConfig(os.path.join(os.path.dirname(sys.argv[0]), 'logging.ini'), defaults={'logfilename': os.path.join(os.path.dirname(sys.argv[0]), ("info-%s.log" % (platform.node()))).replace("\\", "/")})
 log = logging.getLogger("MANUAL")
 logging.getLogger("subliminal").setLevel(logging.CRITICAL)
 logging.getLogger("requests").setLevel(logging.WARNING)
@@ -235,8 +236,10 @@ def getFileInfo(inputfile, stop_event):
     if os.path.isdir(inputfile):
         cpt = sum([len(files) for r, d, files in os.walk(inputfile)])
         log.info("\ntotal files in directory: %s" % (cpt))
-        log.debug("Resetting filesToConvert.log")
-        file = open(os.path.join(os.path.dirname(sys.argv[0]), 'filesToConvert.log'),"w")  
+        fileTracker = ("filesToConvert-%s.log" % (platform.node()))
+
+        log.debug("Resetting %s" % (fileTracker))
+        file = open(os.path.join(os.path.dirname(sys.argv[0]), fileTracker),"w")  
         file.write("")          
         file.close()
         count = 0
@@ -262,7 +265,7 @@ def getFileInfo(inputfile, stop_event):
                         reason = MkvtoMp4(settings, logger=log).needConversion(filepath)
                         if reason:
                             log.info("Logging file: %s because of incorrect %s" % (filepath, reason))
-                            file = open(os.path.join(os.path.dirname(sys.argv[0]), 'filesToConvert.log'),"a")
+                            file = open(os.path.join(os.path.dirname(sys.argv[0]), fileTracker),"a")
                             
                             if once == False:
                                 file.write("%s" % (filepath))

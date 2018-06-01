@@ -154,10 +154,11 @@ class Converter(object):
 
         # aggregate all options
         optlist = video_options + audio_options + subtitle_options + format_options
-
-        if twopass == False:
-            optlist.extend(['-pass', '1'])
-        elif twopass == True:
+        # These lines are messing with setting profile to High
+        #if twopass == False:
+        #    optlist.extend(['-pass', '1'])
+        #elif twopass == True:
+        if twopass == True:
             optlist.extend(['-pass', '2'])
 
         return optlist

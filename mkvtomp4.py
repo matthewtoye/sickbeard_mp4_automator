@@ -992,7 +992,7 @@ class MkvtoMp4:
             del options['video']['bitrate']
             options['video']['crf'] = self.vcrf
 
-        #options['postopts'].extend([ '-max_muxing_queue_size', '2048' ] )  
+        options['postopts'].extend([ '-max_muxing_queue_size', '2048' ] )  
         # Some ffmpeg filters are in a state of internal API transition with how they handle certain magic
         # that I don't understand, but read about and nodded about on the ffmpeg mailing list.
         # Allowing a higher queue size fixes whatever wizardry is happening, and shouldn't be needed in a year or so. 02/11/2018
@@ -1098,7 +1098,7 @@ class MkvtoMp4:
         input_dir, filename, input_extension = self.parseFile(inputfile)
         output_dir = input_dir if self.output_dir is None else self.output_dir
         
-        #TODO, make it work with unix/linux directories...
+        #Figure out what type of system we are running on so directories are correct..
         if sys.platform == "linux" or sys.platform == "linux2":
             mySplit = input_dir.split('/')
         elif sys.platform == "darwin":
@@ -1133,7 +1133,7 @@ class MkvtoMp4:
         except:
             outputfile = os.path.join(output_dir, filename + "." + self.output_extension)
 
-            self.log.debug("Input directory: %s." % input_dir)
+        self.log.debug("Input directory: %s." % input_dir)
         self.log.debug("File name: %s." % filename)
         self.log.debug("Input extension: %s." % input_extension)
         self.log.debug("Output directory: %s." % output_dir)
@@ -1170,12 +1170,6 @@ class MkvtoMp4:
                         temp = temp - 3600*rhours
                         rminutes = temp//60
                         rseconds = temp - 60*rminutes
-                        #if rhours < 10:
-                        #    rhours = int('0%s' % (rhours))
-                        #if rminutes < 10:
-                        #    rminutes = int('0%s' % (rminutes))
-                        #if rseconds < 10:
-                        #    rseconds = int('0%s' % (rseconds))
                         my_time = ('%02d:%02d:%02d' %(rhours,rminutes,rseconds))
                         fpsspec = timecode[1] 
                         cqspec = timecode[2] 
