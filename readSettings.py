@@ -61,6 +61,7 @@ class ReadSettings:
                         'threads': '0',
                         'vsync': '-1',
                         'output_directory': '',
+                        'create_subdirectories': 'True',
                         'copy_to': '',
                         'move_to': '',
                         'output_extension': 'mp4',
@@ -280,6 +281,8 @@ class ReadSettings:
 
         self.vsync = config.get( section, "vsync")
 
+        self.create_subdirectories = config.get(section, "create_subdirectories")
+            
         self.output_dir = config.get(section, "output_directory")
         if self.output_dir == '':
             self.output_dir = None

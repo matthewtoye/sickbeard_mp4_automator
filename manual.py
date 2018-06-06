@@ -15,6 +15,7 @@ import logging
 import multiprocessing
 from multiprocessing import Process, Event, Pool
 from subprocess import call
+from autoSetup import autoSetup
 from readSettings import ReadSettings
 from tvdb_mp4 import Tvdb_mp4
 from tmdb_mp4 import tmdb_mp4
@@ -376,6 +377,7 @@ def main_functions(stop_event):
         parser.add_argument('-a', '--auto', action="store_true", help="Enable auto mode, the script will not prompt you for any further input, good for batch files. It will guess the metadata using guessit")
         parser.add_argument('-tv', '--tvdbid', help="Set the TVDB ID for a tv show")
         parser.add_argument('-s', '--season', help="Specifiy the season number")
+        parser.add_argument('-o', '--outdir', help="Specifiy the output directory")
         parser.add_argument('-e', '--episode', help="Specify the episode number")
         parser.add_argument('-imdb', '--imdbid', help="Specify the IMDB ID for a movie")
         parser.add_argument('-tmdb', '--tmdbid', help="Specify theMovieDB ID for a movie")
@@ -418,6 +420,10 @@ def main_functions(stop_event):
             readonly = True
         else:
             readonly = False
+            if (args['outdir']):
+                settings.output_dir = os.path.normpath(args['outdir'])
+                settings.create_subdirectories = False
+                print("new output directory: %s. Setting create_subdirectories False" % (settings.output_dir))
             if (args['nomove']):
                 settings.output_dir = None
                 settings.moveto = None
@@ -550,9 +556,25 @@ def main_functions(stop_event):
         
 def main():
     global original_sigint_handler
-    #log.info("LOG LEVEL %s " % (log.getEffectiveLevel()))
-    log.debug("Manual processor started.")
-   
+
+    log.info("Manual processor started.")
+
+    if os.path.isfile(("SYSTEM-SETUP-COMPLETE-%s" % (platform.node()))):
+        log.debug("setup was complete.. continuing")
+    else:
+        log.info("setup was not complete.. Let's try and setup everything..")
+        
+        if autoSetup(logger=log).setup_everything() == 0:
+            file = open(os.path.join(os.path.dirname(sys.argv[0]), ("SYSTEM-SETUP-COMPLETE-%s" % (platform.node()))),"w")  
+            file.write("COMPLETE")          
+            file.close()
+        else:
+            raise SystemExit
+            
+    if autoSetup(logger=log).check_modules() > 0:
+        print("THERE ARE ERRORS IN YOUR INSTALL. CHECK AND TRY AGAIN")
+        raise SystemExit
+        
     stop_event=Event()
     wp = Process(target=main_functions, name='main functions', args=(stop_event,))
     log.debug("created process: %s" % (wp.name))

@@ -1,164 +1,152 @@
-[SickBeard]
-host = localhost
-port = 8081
-username =
-password =
-web_root =
-ssl = False
-api_key =
-
-[Sonarr]
-host = localhost
-port = 8989
-web_root =
-ssl = False
-apikey =
-
-[Radarr]
-host = localhost
-port = 7878
-web_root =
-ssl = False
-apikey =
-
 [MP4]
-ffmpeg = ffmpeg.exe
 ffprobe = ffprobe.exe
-threads = auto
-output_directory =
-copy_to =
-move_to =
+ffmpeg = ffmpeg.exe
+delete_original = False
+permissions = 777
+threads = 0
+output_directory = Y:\converted
+create_subdirectories = True
+forceconvert = False
+copy_to = 
+move_to = 
+preopts = 
+postopts = -preset,veryfast
+fullpathguess = True
+download-artwork = poster
+video-crf = 23
+h264-max-level = 4.1
+pix-fmt = yuv420p
 output_extension = mp4
-output_format = mp4
-delete_original = True
-relocate_moov = True
-video-codec = h264,x264
-video-bitrate =
+vsync = -1
+video-max-width = 
+resolution-bitrate-restriction = 
 video-conversion-priority = 
-resolution-bitrate-restriction =
-video-crf =
-video-max-width =
-video-profile =
-h264-max-level =
-use-qsv-decoder-with-encoder = True
-use-hevc-qsv-decoder = False
-enable_dxva2_gpu_decode = False
-ios-audio = True
-qmin =
-qmax = 
-global_quality = 
-maxrate =
-minrate = 
-bufsize =
-nvenc_encoder_gpu =
-nvenc_profile =
-nvenc_preset =
-nvenc_rate_control =
-nvenc_temporal_aq = False
-nvenc_weighted_prediction = False
-nvenc_rc_lookahead =
 enable_nvenc_decoder = False
 enable_nvenc_hevc_decoder = False
-nvenc_decoder_gpu =
-nvenc_hevc_decoder_gpu =
-ios-first-track-only = False
-ios-audio-filter =
-ios-move-last = False
-max-audio-channels =
-audio-codec = ac3
-audio-language =
-audio-default-language =
-audio-channel-bitrate =
-audio-filter =
+nvenc_rc_lookahead = 
+nvenc_encoder_gpu = 
+nvenc_rate_control = 
+nvenc_hevc_decoder_gpu = 
+nvenc_preset = 
+nvenc_decoder_gpu = 
+nvenc_temporal_aq = False
+nvenc_weighted_prediction = False
+nvenc_profile = 
+use-qsv-decoder-with-encoder = True
+use-hevc-qsv-decoder = False
+qmin = 
+enable_dxva2_gpu_decode = False
+video-profile =
+output_format = mp4
+video-bitrate = 
+convert-mp4 = True
+qmax = 
+video-codec = h264, x264, h265, x265
+video_two_pass = False
+minrate = 
 audio-copy-original = False
-subtitle-codec = mov_text
-subtitle-language =
-subtitle-default-language =
-subtitle-encoding =
-fullpathguess = True
-convert-mp4 = False
-tagfile = True
-tag-language = en
-download-artwork = Poster
+audio-codec = ac3,mp3,dts,dca,aac
+audio-filter = 
+ios-move-last = False
+audio-default-language = eng
+ios-audio-filter = 
+audio-language = eng
+ios-first-track-only = False
+max-audio-channels = 
+aac_adtstoasc = False
+sample_rate = 48000
+ios-audio = True
+audio-channel-bitrate = 256
+burn_in_forced_subs = True
+subtitle-encoding = 
 download-subs = False
+relocate_moov = False
+subtitle-codec = 
+subtitle-default-language = eng
 embed-subs = True
 embed-only-internal-subs = False
-sub-providers = addic7ed,podnapisi,thesubdb,opensubtitles
-permissions = 0777
-post-process = False
-pix-fmt =
-aac_adtstoasc = False
+subtitle-language = eng
+sub-providers = addic7ed, podnapisi, thesubdb, opensubtitles
+tagfile = False
+tag-language = en
 handle_m2ts_files = False
-forceconvert = False
-vsync = -1
-sample_rate = 
-burn_in_forced_subs = False
-
-[CouchPotato]
-host = localhost
-port = 5050
-username =
-password =
-web_root =
-ssl = False
-apikey =
-delay = 65
-method = renamer
-delete_failed = False
-
-[uTorrent]
-convert =
-couchpotato-label = couchpotato
-sickbeard-label = sickbeard
-sonarr-label = sonarr
-bypass-label = bypass
-sickrage-label = sickrage
-webui = False
-action_before = stop
-action_after = removedata
-host = http://localhost:8080/
-username =
-password =
-output_directory =
+post-process = False
+global_quality = 
+maxrate = 
+bufsize = 
 
 [Deluge]
-host = localhost
-username =
-convert = True
-password =
+username = 
 sonarr-label = sonarr
-bypass-label = bypass
-sickbeard-label = sickbeard
+output_directory = 
+host = localhost
+radarr-label = radarr
+password = 
 port = 58846
-sickrage-label = sickrage
-couchpotato-label = couchpotato
-output_directory =
+convert = True
+sickbeard-label = sickbeard
 remove = false
+couchpotato-label = couchpotato
+bypass-label = bypass
+sickrage-label = sickrage
+
+[Sickrage]
+username = 
+password = 
+ssl = False
+host = localhost
+web_root = 
+api_key = 
+port = 8081
+
+[uTorrent]
+username = 
+action_after = removedata
+sonarr-label = sonarr
+output_directory = 
+host = http://localhost:8080/
+radarr-label = radarr
+webui = False
+password = 
+convert = True
+sickbeard-label = sickbeard
+couchpotato-label = couchpotato
+action_before = stop
+bypass-label = bypass
+sickrage-label = sickrage
 
 [SABNZBD]
 convert = True
 sickrage-category = sickrage
-sonarr-category = sonarr
 radarr-category = radarr
+sonarr-category = sonarr
 bypass-category = bypass
 couchpotato-category = couchpotato
 sickbeard-category = sickbeard
-output_directory =
+output_directory = 
 
-[Sickrage]
-host = localhost
-port = 8081
-username =
-password =
-web_root =
+[Sonarr]
 ssl = False
-api_key =
-
-[Plex]
 host = localhost
-port = 32400
-refresh = True
-token =
+apikey = 
+port = 8989
+web_root = 
+
+[Radarr]
+ssl = False
+host = localhost
+apikey = 
+port = 7878
+web_root = 
+
+[SickBeard]
+username = 
+password = 
+ssl = False
+host = localhost
+web_root = 
+api_key = 
+port = 8081
 
 [Opensubtitles]
 username = 
@@ -166,5 +154,24 @@ password =
 only_foreign = true
 is_vip = false
 
+[Plex]
+token = 
+host = localhost
+port = 32400
+refresh = true
+
+[CouchPotato]
+username = 
+delay = 65
+host = localhost
+apikey = 
+web_root = 
+delete_failed = False
+ssl = False
+password = 
+port = 5050
+method = renamer
+
 [Podnapisi]
 only_foreign = true
+

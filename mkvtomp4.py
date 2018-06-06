@@ -20,6 +20,7 @@ class MkvtoMp4:
                  delete=True,
                  output_extension='mp4',
                  output_dir=None,
+                 create_subdirectories=True,
                  relocate_moov=True,
                  output_format='mp4',
                  video_codec=['h264', 'x264'],
@@ -104,6 +105,7 @@ class MkvtoMp4:
         self.output_extension = output_extension
         self.output_format = output_format
         self.output_dir = output_dir
+        self.create_subdirectories = create_subdirectories
         self.relocate_moov = relocate_moov
         self.processMP4 = processMP4
         self.forceConvert = forceConvert
@@ -187,6 +189,7 @@ class MkvtoMp4:
         self.output_extension = settings.output_extension
         self.output_format = settings.output_format
         self.output_dir = settings.output_dir
+        self.create_subdirectories = settings.create_subdirectories
         self.relocate_moov = settings.relocate_moov
         self.processMP4 = settings.processMP4
         self.forceConvert = settings.forceConvert
@@ -1098,36 +1101,38 @@ class MkvtoMp4:
         input_dir, filename, input_extension = self.parseFile(inputfile)
         output_dir = input_dir if self.output_dir is None else self.output_dir
         
-        #Figure out what type of system we are running on so directories are correct..
-        if sys.platform == "linux" or sys.platform == "linux2":
-            mySplit = input_dir.split('/')
-        elif sys.platform == "darwin":
-            mySplit = input_dir.split('/')
-        elif sys.platform == "win32":
-            mySplit = input_dir.split('\\')
+        if self.create_subdirectories:
+            #Figure out what type of system we are running on so directories are correct..
+            if sys.platform == "linux" or sys.platform == "linux2":
+                mySplit = input_dir.split('/')
+            elif sys.platform == "darwin":
+                mySplit = input_dir.split('/')
+            elif sys.platform == "win32":
+                mySplit = input_dir.split('\\')
 
-        lastDir = ''
-        
-        for i in range(len(mySplit)):
-            remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|')
-            currDir = os.path.join(lastDir, mySplit[i].translate(remove_punctuation_map))
-            lastDir = currDir
+            lastDir = ''
+            
+            for i in range(len(mySplit)):
+                remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|')
+                currDir = os.path.join(lastDir, mySplit[i].translate(remove_punctuation_map))
+                lastDir = currDir
 
-            print("Checking if directory is made: %s" % (os.path.join(output_dir, currDir)))
-                
-            mySplit[i] = os.path.normpath(os.path.join(output_dir, currDir))
-            if not os.path.isdir(mySplit[i]):
-                try:
-                    os.makedirs(mySplit[i])
-                except:
-                    log.exception("Error making directory %s." % (mySplit[i]))
+                print("Checking if directory is made: %s" % (os.path.join(output_dir, currDir)))
+                    
+                mySplit[i] = os.path.normpath(os.path.join(output_dir, currDir))
+                if not os.path.isdir(mySplit[i]):
+                    try:
+                        os.makedirs(mySplit[i])
+                    except:
+                        log.exception("Error making directory %s." % (mySplit[i]))
                         
-        #print("Final output directory is: %s" % (os.path.join(output_dir, lastDir)))
-        if os.path.isdir(os.path.join(output_dir, lastDir)):
-            output_dir = os.path.join(output_dir, lastDir)
-            print("Changed output_dir to: %s" % (output_dir))
-        else:
-            print("Something happened while trying to create the folders for output directory.. defaulting to base output folder")
+            #print("Final output directory is: %s" % (os.path.join(output_dir, lastDir)))
+            if os.path.isdir(os.path.join(output_dir, lastDir)):
+                output_dir = os.path.join(output_dir, lastDir)
+                print("Changed output_dir to: %s" % (output_dir))
+            else:
+                print("Something happened while trying to create the folders for output directory.. defaulting to base output folder")
+                
         try:
             outputfile = os.path.join(output_dir.decode(sys.getfilesystemencoding()), filename.decode(sys.getfilesystemencoding()) + "." + self.output_extension).encode(sys.getfilesystemencoding())
         except:
